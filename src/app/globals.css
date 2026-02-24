@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --pomg-purple: #43437A;
+  --pomg-purple-light: #b5b6dc;
+  --pomg-gold: #C9A84C;
+  --pomg-dark: #0a0a0f;
+  --pomg-darker: #050508;
+  --pomg-card: #111118;
+  --pomg-border: #1e1e2e;
+  --pomg-text: #e4e4e7;
+  --pomg-text-muted: #71717a;
+}
+
+@theme inline {
+  --color-pomg-purple: var(--pomg-purple);
+  --color-pomg-purple-light: var(--pomg-purple-light);
+  --color-pomg-gold: var(--pomg-gold);
+  --color-pomg-dark: var(--pomg-dark);
+  --color-pomg-darker: var(--pomg-darker);
+  --color-pomg-card: var(--pomg-card);
+  --color-pomg-border: var(--pomg-border);
+  --color-pomg-text: var(--pomg-text);
+  --color-pomg-muted: var(--pomg-text-muted);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--pomg-darker);
+  color: var(--pomg-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--pomg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--pomg-purple);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pomg-purple-light);
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(67, 67, 122, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(67, 67, 122, 0.6); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Stagger children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in 0.4s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Product image placeholder */
+.product-image-placeholder {
+  background: linear-gradient(135deg, var(--pomg-card) 0%, #1a1a2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
