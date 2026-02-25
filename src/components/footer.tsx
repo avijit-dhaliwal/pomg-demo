@@ -2,36 +2,35 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Youtube, Facebook, Shield, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Shield, MapPin, Phone, Mail, Clock, Globe, Video, Users } from "lucide-react";
 
 const shopLinks = [
-  { label: "Firearms", href: "/shop/firearms" },
-  { label: "Silencers", href: "/silencers" },
-  { label: "Optics", href: "/shop/optics" },
-  { label: "Accessories", href: "/shop/accessories" },
-  { label: "Knives", href: "/shop/knives" },
+  { label: "Firearms", href: "/shop?category=firearms" },
+  { label: "Silencers", href: "/shop?category=silencers" },
+  { label: "Optics", href: "/shop?category=optics" },
+  { label: "Accessories", href: "/shop?category=accessories" },
+  { label: "Knives", href: "/shop?category=knives" },
   { label: "All Products", href: "/shop" },
 ];
 
 const resourceLinks = [
   { label: "NFA Guide", href: "/nfa-guide" },
-  { label: "How Buying Works", href: "/how-it-works" },
-  { label: "Shipping Policy", href: "/shipping" },
-  { label: "FFL Transfers", href: "/ffl-transfers" },
-  { label: "FAQ", href: "/faq" },
+  { label: "How Buying Works", href: "/nfa-guide" },
+  { label: "Shipping & FFL", href: "/contact" },
+  { label: "Build Your Setup", href: "/build-your-setup" },
+  { label: "FAQ", href: "/nfa-guide" },
 ];
 
 const companyLinks = [
   { label: "Our Story", href: "/about" },
-  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
-  { label: "Careers", href: "/careers" },
+  { label: "Dashboard Demo", href: "/dashboard" },
 ];
 
 const socials = [
-  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-  { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
-  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+  { icon: Globe, href: "https://instagram.com", label: "Instagram" },
+  { icon: Video, href: "https://youtube.com", label: "YouTube" },
+  { icon: Users, href: "https://facebook.com", label: "Facebook" },
 ];
 
 export default function Footer() {
@@ -178,19 +177,13 @@ export default function Footer() {
 
             {/* Right */}
             <div className="flex items-center gap-3 text-xs">
-              <Link
-                href="/privacy"
-                className="text-pomg-muted transition hover:text-pomg-text"
-              >
+              <span className="text-pomg-muted">
                 Privacy Policy
-              </Link>
+              </span>
               <span className="text-pomg-dim">|</span>
-              <Link
-                href="/terms"
-                className="text-pomg-muted transition hover:text-pomg-text"
-              >
+              <span className="text-pomg-muted">
                 Terms of Service
-              </Link>
+              </span>
               <span className="ml-2 inline-flex items-center rounded-full border border-pomg-border/50 bg-pomg-surface/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-pomg-dim">
                 Demo Site
               </span>
