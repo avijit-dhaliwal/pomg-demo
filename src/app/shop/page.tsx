@@ -1,237 +1,206 @@
 "use client";
 
-import { useState, useMemo, useCallback, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Search, SlidersHorizontal, X, ChevronDown, Filter, Package } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ProductCard from "@/components/product-card";
-import {
-  products,
-  categories,
-  manufacturers,
-  calibers,
-} from "@/data/products";
-import type { Product } from "@/data/products";
-import {
-  Search,
-  SlidersHorizontal,
-  X,
-  ChevronDown,
-  Filter,
-} from "lucide-react";
+import { products, categories, manufacturers, calibers } from "@/data/products";
 
-/* ---------- sort helpers ---------- */
-type SortOption =
-  | "featured"
-  | "price-asc"
-  | "price-desc"
-  | "newest"
-  | "name-az";
+type SortOption = "featured" | "price-asc" | "price-desc" | "newest" | "name-az";
 
-const SORT_LABELS: Record<SortOption, string> = {
-  featured: "Featured",
-  "price-asc": "Price: Low → High",
-  "price-desc": "Price: High → Low",
-  newest: "Newest",
-  "name-az": "Name: A → Z",
-};
-
-function sortProducts(list: Product[], sort: SortOption): Product[] {
-  const copy = [...list];
-  switch (sort) {
-    case "featured":
-      return copy.sort(
-        (a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0)
-      );
-    case "price-asc":
-      return copy.sort((a, b) => a.price - b.price);
-    case "price-desc":
-      return copy.sort((a, b) => b.price - a.price);
-    case "newest":
-      return copy.sort(
-        (a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0)
-      );
-    case "name-az":
-      return copy.sort((a, b) => a.name.localeCompare(b.name));
-    default:
-      return copy;
-  }
-}
-
-/* =========================================================
-   Inner shop component (needs useSearchParams inside Suspense)
-   ========================================================= */
-function ShopInner() {
+function ShopContent() {
   const searchParams = useSearchParams();
-  const urlCategory = searchParams.get("category") ?? "";
+  const preselectedCategory = searchParams.get("category");
+  const preselectedManufacturer = searchParams.get("manufacturer");
 
-  /* --- filter state --- */
+  /* ── State ── */
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    urlCategory ? [urlCategory] : []
+    preselectedCategory ? [preselectedCategory] : []
   );
-  const [selectedManufacturer, setSelectedManufacturer] = useState("");
+  const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>(
+    preselectedManufacturer ? [preselectedManufacturer] : []
+  );
   const [selectedCalibers, setSelectedCalibers] = useState<string[]>([]);
-  const [priceMin, setPriceMin] = useState<number>(0);
-  const [priceMax, setPriceMax] = useState<number>(5000);
+  const [priceMin, setPriceMin] = useState<string>("");
+  const [priceMax, setPriceMax] = useState<string>("");
   const [inStockOnly, setInStockOnly] = useState(false);
   const [nfaOnly, setNfaOnly] = useState(false);
-  const [sort, setSort] = useState<SortOption>("featured");
-  const [sortOpen, setSortOpen] = useState(false);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
-  /* --- derived min/max from catalogue --- */
-  const globalMinPrice = 0;
-  const globalMaxPrice = 5000;
-
-  /* --- toggle helpers --- */
-  const toggleCategory = useCallback((id: string) => {
+  /* ── Togglers ── */
+  const toggleCategory = (id: string) =>
     setSelectedCategories((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
-  }, []);
-
-  const toggleCaliber = useCallback((cal: string) => {
+  const toggleManufacturer = (name: string) =>
+    setSelectedManufacturers((prev) =>
+      prev.includes(name) ? prev.filter((m) => m !== name) : [...prev, name]
+    );
+  const toggleCaliber = (cal: string) =>
     setSelectedCalibers((prev) =>
       prev.includes(cal) ? prev.filter((c) => c !== cal) : [...prev, cal]
     );
-  }, []);
 
-  /* --- active filter chips --- */
-  const activeFilters = useMemo(() => {
-    const chips: { label: string; clear: () => void }[] = [];
-    selectedCategories.forEach((cat) => {
-      const found = categories.find((c) => c.id === cat);
-      chips.push({
-        label: `Category: ${found?.name ?? cat}`,
-        clear: () =>
-          setSelectedCategories((p) => p.filter((c) => c !== cat)),
-      });
-    });
-    if (selectedManufacturer) {
-      chips.push({
-        label: `Mfr: ${selectedManufacturer}`,
-        clear: () => setSelectedManufacturer(""),
-      });
-    }
-    selectedCalibers.forEach((cal) => {
-      chips.push({
-        label: `Caliber: ${cal}`,
-        clear: () =>
-          setSelectedCalibers((p) => p.filter((c) => c !== cal)),
-      });
-    });
-    if (priceMin > globalMinPrice || priceMax < globalMaxPrice) {
-      chips.push({
-        label: `$${priceMin} – $${priceMax}`,
-        clear: () => {
-          setPriceMin(globalMinPrice);
-          setPriceMax(globalMaxPrice);
-        },
-      });
-    }
-    if (inStockOnly) {
-      chips.push({
-        label: "In Stock Only",
-        clear: () => setInStockOnly(false),
-      });
-    }
-    if (nfaOnly) {
-      chips.push({
-        label: "NFA Items",
-        clear: () => setNfaOnly(false),
-      });
-    }
-    return chips;
-  }, [
-    selectedCategories,
-    selectedManufacturer,
-    selectedCalibers,
-    priceMin,
-    priceMax,
-    inStockOnly,
-    nfaOnly,
-  ]);
-
-  const clearAllFilters = useCallback(() => {
+  const clearAllFilters = () => {
+    setSearchQuery("");
     setSelectedCategories([]);
-    setSelectedManufacturer("");
+    setSelectedManufacturers([]);
     setSelectedCalibers([]);
-    setPriceMin(globalMinPrice);
-    setPriceMax(globalMaxPrice);
+    setPriceMin("");
+    setPriceMax("");
     setInStockOnly(false);
     setNfaOnly(false);
-    setSearchQuery("");
-  }, []);
+  };
 
-  /* --- filtered + sorted products --- */
+  const hasActiveFilters =
+    searchQuery ||
+    selectedCategories.length > 0 ||
+    selectedManufacturers.length > 0 ||
+    selectedCalibers.length > 0 ||
+    priceMin ||
+    priceMax ||
+    inStockOnly ||
+    nfaOnly;
+
+  /* ── Filter + Sort ── */
   const filteredProducts = useMemo(() => {
-    let list = [...products];
+    let result = [...products];
 
-    // search
-    if (searchQuery.trim()) {
+    // Search
+    if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      list = list.filter(
+      result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.manufacturer.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.includes(q)) ||
+          p.tags.some((t) => t.toLowerCase().includes(q)) ||
           p.caliber?.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.category.toLowerCase().includes(q)
       );
     }
 
-    // category
+    // Categories
     if (selectedCategories.length > 0) {
-      list = list.filter((p) => selectedCategories.includes(p.category));
+      result = result.filter((p) => selectedCategories.includes(p.category));
     }
 
-    // manufacturer
-    if (selectedManufacturer) {
-      list = list.filter((p) => p.manufacturer === selectedManufacturer);
+    // Manufacturers
+    if (selectedManufacturers.length > 0) {
+      result = result.filter((p) => selectedManufacturers.includes(p.manufacturer));
     }
 
-    // caliber
+    // Calibers
     if (selectedCalibers.length > 0) {
-      list = list.filter(
-        (p) => p.caliber && selectedCalibers.some((c) => p.caliber!.includes(c))
-      );
+      result = result.filter((p) => p.caliber && selectedCalibers.includes(p.caliber));
     }
 
-    // price
-    list = list.filter((p) => p.price >= priceMin && p.price <= priceMax);
+    // Price range
+    if (priceMin) {
+      result = result.filter((p) => p.price >= Number(priceMin));
+    }
+    if (priceMax) {
+      result = result.filter((p) => p.price <= Number(priceMax));
+    }
 
-    // in stock
+    // Stock
     if (inStockOnly) {
-      list = list.filter((p) => p.inStock);
+      result = result.filter((p) => p.inStock);
     }
 
-    // nfa
+    // NFA
     if (nfaOnly) {
-      list = list.filter((p) => p.isNfa);
+      result = result.filter((p) => p.isNfa);
     }
 
-    return sortProducts(list, sort);
+    // Sort
+    switch (sortBy) {
+      case "price-asc":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        break;
+      case "name-az":
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "featured":
+      default:
+        result.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+        break;
+    }
+
+    return result;
   }, [
     searchQuery,
     selectedCategories,
-    selectedManufacturer,
+    selectedManufacturers,
     selectedCalibers,
     priceMin,
     priceMax,
     inStockOnly,
     nfaOnly,
-    sort,
+    sortBy,
   ]);
 
-  /* ---------- sidebar JSX (shared desktop + mobile) ---------- */
-  const sidebarContent = (
-    <div className="space-y-8">
-      {/* --- Category --- */}
+  /* ── Active filter chips ── */
+  const activeChips: { label: string; onRemove: () => void }[] = [];
+  selectedCategories.forEach((cat) => {
+    const c = categories.find((c) => c.id === cat);
+    activeChips.push({
+      label: c?.name ?? cat,
+      onRemove: () => toggleCategory(cat),
+    });
+  });
+  selectedManufacturers.forEach((mfr) => {
+    activeChips.push({ label: mfr, onRemove: () => toggleManufacturer(mfr) });
+  });
+  selectedCalibers.forEach((cal) => {
+    activeChips.push({ label: cal, onRemove: () => toggleCaliber(cal) });
+  });
+  if (priceMin) {
+    activeChips.push({ label: `Min $${priceMin}`, onRemove: () => setPriceMin("") });
+  }
+  if (priceMax) {
+    activeChips.push({ label: `Max $${priceMax}`, onRemove: () => setPriceMax("") });
+  }
+  if (inStockOnly) {
+    activeChips.push({ label: "In Stock", onRemove: () => setInStockOnly(false) });
+  }
+  if (nfaOnly) {
+    activeChips.push({ label: "NFA Items", onRemove: () => setNfaOnly(false) });
+  }
+
+  const sortOptions: { value: SortOption; label: string }[] = [
+    { value: "featured", label: "Featured" },
+    { value: "price-asc", label: "Price: Low to High" },
+    { value: "price-desc", label: "Price: High to Low" },
+    { value: "newest", label: "Newest" },
+    { value: "name-az", label: "Name: A–Z" },
+  ];
+
+  /* ── Manufacturer counts ── */
+  const manufacturerCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    products.forEach((p) => {
+      counts[p.manufacturer] = (counts[p.manufacturer] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
+  /* ── Sidebar Content (shared desktop/mobile) ── */
+  const filterSidebar = (
+    <div className="space-y-6">
+      {/* Category */}
       <div>
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+        <h3 className="font-display text-sm uppercase tracking-wider text-pomg-gold mb-3">
           Category
         </h3>
         <div className="space-y-2">
@@ -244,42 +213,48 @@ function ShopInner() {
                 type="checkbox"
                 checked={selectedCategories.includes(cat.id)}
                 onChange={() => toggleCategory(cat.id)}
-                className="w-4 h-4 rounded border-pomg-border bg-pomg-card text-pomg-purple focus:ring-pomg-purple/50 focus:ring-offset-0 accent-pomg-purple cursor-pointer"
+                className="h-4 w-4 rounded border-pomg-border bg-pomg-surface text-pomg-purple focus:ring-pomg-purple focus:ring-offset-0 focus:ring-offset-pomg-dark accent-pomg-purple cursor-pointer"
               />
-              <span className="text-sm text-pomg-text group-hover:text-white transition-colors flex-1">
+              <span className="text-sm text-pomg-muted group-hover:text-pomg-text transition-colors flex-1">
                 {cat.name}
               </span>
-              <span className="text-xs text-pomg-muted">{cat.count}</span>
+              <span className="text-xs text-pomg-dim">{cat.count}</span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* --- Manufacturer --- */}
+      {/* Manufacturer */}
       <div>
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+        <h3 className="font-display text-sm uppercase tracking-wider text-pomg-gold mb-3">
           Manufacturer
         </h3>
-        <div className="relative">
-          <select
-            value={selectedManufacturer}
-            onChange={(e) => setSelectedManufacturer(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-lg bg-pomg-card border border-pomg-border text-sm text-pomg-text appearance-none cursor-pointer hover:border-pomg-purple/50 focus:border-pomg-purple focus:outline-none transition-colors"
-          >
-            <option value="">All Manufacturers</option>
-            {manufacturers.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pomg-muted pointer-events-none" />
+        <div className="space-y-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-pomg-border scrollbar-track-transparent">
+          {manufacturers.map((mfr) => (
+            <label
+              key={mfr}
+              className="flex items-center gap-2.5 cursor-pointer group"
+            >
+              <input
+                type="checkbox"
+                checked={selectedManufacturers.includes(mfr)}
+                onChange={() => toggleManufacturer(mfr)}
+                className="h-4 w-4 rounded border-pomg-border bg-pomg-surface text-pomg-purple focus:ring-pomg-purple focus:ring-offset-0 focus:ring-offset-pomg-dark accent-pomg-purple cursor-pointer"
+              />
+              <span className="text-sm text-pomg-muted group-hover:text-pomg-text transition-colors flex-1">
+                {mfr}
+              </span>
+              <span className="text-xs text-pomg-dim">
+                {manufacturerCounts[mfr] || 0}
+              </span>
+            </label>
+          ))}
         </div>
       </div>
 
-      {/* --- Caliber --- */}
+      {/* Caliber */}
       <div>
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+        <h3 className="font-display text-sm uppercase tracking-wider text-pomg-gold mb-3">
           Caliber
         </h3>
         <div className="space-y-2">
@@ -292,9 +267,9 @@ function ShopInner() {
                 type="checkbox"
                 checked={selectedCalibers.includes(cal)}
                 onChange={() => toggleCaliber(cal)}
-                className="w-4 h-4 rounded border-pomg-border bg-pomg-card text-pomg-purple focus:ring-pomg-purple/50 focus:ring-offset-0 accent-pomg-purple cursor-pointer"
+                className="h-4 w-4 rounded border-pomg-border bg-pomg-surface text-pomg-purple focus:ring-pomg-purple focus:ring-offset-0 focus:ring-offset-pomg-dark accent-pomg-purple cursor-pointer"
               />
-              <span className="text-sm text-pomg-text group-hover:text-white transition-colors">
+              <span className="text-sm text-pomg-muted group-hover:text-pomg-text transition-colors">
                 {cal}
               </span>
             </label>
@@ -302,108 +277,82 @@ function ShopInner() {
         </div>
       </div>
 
-      {/* --- Price Range --- */}
+      {/* Price Range */}
       <div>
-        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+        <h3 className="font-display text-sm uppercase tracking-wider text-pomg-gold mb-3">
           Price Range
         </h3>
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <label className="text-[11px] text-pomg-muted mb-1 block">Min</label>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-pomg-dim">$</span>
             <input
               type="number"
-              min={globalMinPrice}
-              max={priceMax}
+              placeholder="Min"
               value={priceMin}
-              onChange={(e) =>
-                setPriceMin(Math.max(0, parseInt(e.target.value) || 0))
-              }
-              className="w-full px-2.5 py-2 rounded-lg bg-pomg-card border border-pomg-border text-sm text-pomg-text focus:border-pomg-purple focus:outline-none transition-colors"
-              placeholder="$0"
+              onChange={(e) => setPriceMin(e.target.value)}
+              className="w-full rounded-md border border-pomg-border bg-pomg-surface py-2 pl-7 pr-2 text-sm text-pomg-text placeholder:text-pomg-dim focus:border-pomg-purple focus:outline-none focus:ring-1 focus:ring-pomg-purple"
             />
           </div>
-          <span className="text-pomg-muted mt-5">–</span>
-          <div className="flex-1">
-            <label className="text-[11px] text-pomg-muted mb-1 block">Max</label>
+          <span className="text-pomg-dim text-xs">–</span>
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-pomg-dim">$</span>
             <input
               type="number"
-              min={priceMin}
-              max={globalMaxPrice}
+              placeholder="Max"
               value={priceMax}
-              onChange={(e) =>
-                setPriceMax(
-                  Math.min(globalMaxPrice, parseInt(e.target.value) || globalMaxPrice)
-                )
-              }
-              className="w-full px-2.5 py-2 rounded-lg bg-pomg-card border border-pomg-border text-sm text-pomg-text focus:border-pomg-purple focus:outline-none transition-colors"
-              placeholder="$5000"
+              onChange={(e) => setPriceMax(e.target.value)}
+              className="w-full rounded-md border border-pomg-border bg-pomg-surface py-2 pl-7 pr-2 text-sm text-pomg-text placeholder:text-pomg-dim focus:border-pomg-purple focus:outline-none focus:ring-1 focus:ring-pomg-purple"
             />
           </div>
-        </div>
-        {/* visual bar */}
-        <div className="mt-3 h-1.5 rounded-full bg-pomg-card border border-pomg-border overflow-hidden">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-pomg-purple to-pomg-gold"
-            style={{
-              marginLeft: `${(priceMin / globalMaxPrice) * 100}%`,
-              width: `${((priceMax - priceMin) / globalMaxPrice) * 100}%`,
-            }}
-          />
         </div>
       </div>
 
-      {/* --- Toggles --- */}
-      <div className="space-y-4">
-        {/* In Stock Only */}
-        <label className="flex items-center justify-between cursor-pointer group">
-          <span className="text-sm text-pomg-text group-hover:text-white transition-colors">
-            In Stock Only
-          </span>
+      {/* Toggles */}
+      <div className="space-y-3">
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className="text-sm text-pomg-muted">In Stock Only</span>
           <button
             type="button"
             role="switch"
             aria-checked={inStockOnly}
-            onClick={() => setInStockOnly((p) => !p)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-              inStockOnly ? "bg-pomg-purple" : "bg-pomg-card border border-pomg-border"
+            onClick={() => setInStockOnly((v) => !v)}
+            className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
+              inStockOnly ? "bg-pomg-purple" : "bg-pomg-surface border border-pomg-border"
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform duration-200 ${
-                inStockOnly ? "translate-x-6" : "translate-x-1"
+              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                inStockOnly ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
         </label>
 
-        {/* NFA Items */}
-        <label className="flex items-center justify-between cursor-pointer group">
-          <span className="text-sm text-pomg-text group-hover:text-white transition-colors">
-            NFA Items
-          </span>
+        <label className="flex items-center justify-between cursor-pointer">
+          <span className="text-sm text-pomg-muted">NFA Items Only</span>
           <button
             type="button"
             role="switch"
             aria-checked={nfaOnly}
-            onClick={() => setNfaOnly((p) => !p)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
-              nfaOnly ? "bg-pomg-gold" : "bg-pomg-card border border-pomg-border"
+            onClick={() => setNfaOnly((v) => !v)}
+            className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
+              nfaOnly ? "bg-pomg-purple" : "bg-pomg-surface border border-pomg-border"
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform duration-200 ${
-                nfaOnly ? "translate-x-6" : "translate-x-1"
+              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                nfaOnly ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
         </label>
       </div>
 
-      {/* --- Clear All --- */}
-      {activeFilters.length > 0 && (
+      {/* Clear All */}
+      {hasActiveFilters && (
         <button
           onClick={clearAllFilters}
-          className="w-full py-2.5 rounded-lg border border-pomg-border text-sm text-pomg-muted hover:text-white hover:border-pomg-purple/50 transition-colors"
+          className="w-full rounded-lg border border-pomg-border py-2.5 text-sm font-medium text-pomg-muted hover:border-pomg-border-light hover:text-pomg-text transition-colors"
         >
           Clear All Filters
         </button>
@@ -412,270 +361,224 @@ function ShopInner() {
   );
 
   return (
-    <>
+    <div className="min-h-screen bg-pomg-dark">
       <Header />
 
-      <main className="min-h-screen bg-pomg-darker">
-        {/* -------- Hero / page header -------- */}
-        <section className="relative overflow-hidden border-b border-pomg-border">
-          <div className="absolute inset-0 bg-gradient-to-br from-pomg-purple/10 via-transparent to-pomg-gold/5" />
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Shop
-            </h1>
-            <p className="mt-2 text-pomg-muted text-sm sm:text-base max-w-xl">
-              Browse our curated collection of premium firearms, silencers,
-              optics, and accessories.
-            </p>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* ── Page Header ── */}
+        <div className="mb-8">
+          <nav className="flex items-center gap-2 text-xs text-pomg-dim mb-4">
+            <a href="/" className="hover:text-pomg-muted transition-colors">Home</a>
+            <ChevronDown className="h-3 w-3 -rotate-90" />
+            <span className="text-pomg-muted">Shop</span>
+          </nav>
+          <div className="flex items-end justify-between">
+            <div>
+              <h1 className="font-display text-5xl uppercase text-white">Shop</h1>
+              <p className="text-sm text-pomg-muted mt-1">
+                {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+              </p>
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* -------- Main content grid -------- */}
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex gap-8">
-            {/* === Desktop Sidebar === */}
-            <aside className="hidden lg:block w-64 shrink-0">
-              <div className="sticky top-24 pr-2 pb-8 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-thin">
-                {sidebarContent}
-              </div>
-            </aside>
+        {/* ── Main Layout ── */}
+        <div className="flex gap-8">
+          {/* ── Desktop Sidebar ── */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-24">{filterSidebar}</div>
+          </aside>
 
-            {/* === Product area === */}
-            <div className="flex-1 min-w-0">
-              {/* --- Toolbar: search, sort, mobile filter toggle --- */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-                {/* Search */}
-                <div className="relative flex-1 w-full sm:max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pomg-muted" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search products..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-pomg-card border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-pomg-muted hover:text-white"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  {/* Mobile filter button */}
+          {/* ── Product Area ── */}
+          <div className="flex-1 min-w-0">
+            {/* Top Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+              {/* Search */}
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-pomg-dim" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-lg border border-pomg-border bg-pomg-surface py-2.5 pl-10 pr-4 text-sm text-pomg-text placeholder:text-pomg-dim focus:border-pomg-purple focus:outline-none focus:ring-1 focus:ring-pomg-purple"
+                />
+                {searchQuery && (
                   <button
-                    onClick={() => setMobileFilterOpen(true)}
-                    className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pomg-card border border-pomg-border text-sm text-pomg-text hover:text-white hover:border-pomg-purple/50 transition-colors"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-pomg-dim hover:text-pomg-muted"
                   >
-                    <Filter className="w-4 h-4" />
-                    Filters
-                    {activeFilters.length > 0 && (
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pomg-purple text-white text-[10px] font-bold">
-                        {activeFilters.length}
-                      </span>
-                    )}
+                    <X className="h-4 w-4" />
                   </button>
-
-                  {/* Sort dropdown */}
-                  <div className="relative ml-auto sm:ml-0">
-                    <button
-                      onClick={() => setSortOpen((o) => !o)}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pomg-card border border-pomg-border text-sm text-pomg-text hover:text-white hover:border-pomg-purple/50 transition-colors"
-                    >
-                      <SlidersHorizontal className="w-4 h-4" />
-                      <span className="hidden sm:inline">
-                        {SORT_LABELS[sort]}
-                      </span>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 transition-transform ${
-                          sortOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {sortOpen && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setSortOpen(false)}
-                        />
-                        <div className="absolute right-0 mt-2 w-52 rounded-xl bg-pomg-card border border-pomg-border shadow-xl shadow-black/30 z-20 py-1 overflow-hidden">
-                          {(Object.keys(SORT_LABELS) as SortOption[]).map(
-                            (key) => (
-                              <button
-                                key={key}
-                                onClick={() => {
-                                  setSort(key);
-                                  setSortOpen(false);
-                                }}
-                                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                                  sort === key
-                                    ? "text-white bg-pomg-purple/20"
-                                    : "text-pomg-text hover:bg-pomg-dark hover:text-white"
-                                }`}
-                              >
-                                {SORT_LABELS[key]}
-                              </button>
-                            )
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* --- Active filter chips --- */}
-              {activeFilters.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 mb-5">
-                  {activeFilters.map((f, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pomg-purple/15 border border-pomg-purple/30 text-xs font-medium text-pomg-purple-light"
-                    >
-                      {f.label}
-                      <button
-                        onClick={f.clear}
-                        className="hover:text-white transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                  <button
-                    onClick={clearAllFilters}
-                    className="text-xs text-pomg-muted hover:text-white transition-colors underline underline-offset-2"
-                  >
-                    Clear all
-                  </button>
-                </div>
-              )}
+              {/* Sort Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setSortDropdownOpen((v) => !v)}
+                  className="flex items-center gap-2 rounded-lg border border-pomg-border bg-pomg-surface px-4 py-2.5 text-sm text-pomg-muted hover:border-pomg-border-light transition-colors whitespace-nowrap"
+                >
+                  <span>{sortOptions.find((s) => s.value === sortBy)?.label}</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${sortDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+                {sortDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setSortDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-1 z-20 w-52 rounded-lg border border-pomg-border bg-pomg-card shadow-xl py-1">
+                      {sortOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setSortDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                            sortBy === opt.value
+                              ? "text-pomg-gold bg-pomg-surface"
+                              : "text-pomg-muted hover:text-pomg-text hover:bg-pomg-surface"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
 
-              {/* --- Product count --- */}
-              <p className="text-sm text-pomg-muted mb-5">
-                Showing{" "}
-                <span className="text-white font-semibold">
-                  {filteredProducts.length}
-                </span>{" "}
-                {filteredProducts.length === 1 ? "product" : "products"}
-                {activeFilters.length > 0 && (
-                  <span>
-                    {" "}
-                    (filtered from {products.length} total)
+              {/* Mobile Filter Button */}
+              <button
+                onClick={() => setMobileFiltersOpen(true)}
+                className="lg:hidden flex items-center gap-2 rounded-lg border border-pomg-border bg-pomg-surface px-4 py-2.5 text-sm text-pomg-muted hover:border-pomg-border-light transition-colors"
+              >
+                <Filter className="h-4 w-4" />
+                Filters
+                {hasActiveFilters && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-pomg-purple text-[10px] font-bold text-white">
+                    {activeChips.length}
                   </span>
                 )}
-              </p>
-
-              {/* --- Product grid --- */}
-              {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-20 h-20 rounded-full bg-pomg-card border border-pomg-border flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8 text-pomg-muted" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    No products found
-                  </h3>
-                  <p className="text-sm text-pomg-muted max-w-sm mb-6">
-                    Try adjusting your filters or search query to find what
-                    you&apos;re looking for.
-                  </p>
-                  <button
-                    onClick={clearAllFilters}
-                    className="px-5 py-2.5 rounded-xl bg-pomg-purple text-white text-sm font-medium hover:bg-pomg-purple/80 transition-colors"
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-              )}
+              </button>
             </div>
+
+            {/* Active Filter Chips */}
+            {activeChips.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                {activeChips.map((chip, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-pomg-border bg-pomg-surface px-3 py-1 text-xs text-pomg-muted"
+                  >
+                    {chip.label}
+                    <button
+                      onClick={chip.onRemove}
+                      className="text-pomg-dim hover:text-pomg-text transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                <button
+                  onClick={clearAllFilters}
+                  className="text-xs text-pomg-purple-light hover:text-pomg-purple transition-colors"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
+
+            {/* Product Grid */}
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-pomg-surface mb-4">
+                  <Package className="h-8 w-8 text-pomg-dim" />
+                </div>
+                <h3 className="font-display text-xl uppercase text-pomg-muted mb-2">
+                  No Products Found
+                </h3>
+                <p className="text-sm text-pomg-dim max-w-sm mb-6">
+                  Try adjusting your filters or search query to find what you&apos;re looking for.
+                </p>
+                <button
+                  onClick={clearAllFilters}
+                  className="btn-primary rounded-lg px-6 py-2.5 text-sm font-medium"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>
 
-      {/* ======== Mobile filter drawer ======== */}
-      {mobileFilterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+      {/* ── Mobile Filter Slide-Over ── */}
+      {mobileFiltersOpen && (
+        <>
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setMobileFilterOpen(false)}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            onClick={() => setMobileFiltersOpen(false)}
           />
-          {/* Drawer */}
-          <div className="absolute top-0 left-0 h-full w-[85vw] max-w-sm bg-pomg-dark border-r border-pomg-border shadow-2xl shadow-black/50 flex flex-col animate-slide-in-left">
-            {/* Drawer header */}
-            <div className="flex items-center justify-between px-5 h-16 border-b border-pomg-border/60 shrink-0">
+
+          {/* Panel */}
+          <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-pomg-darker shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-pomg-border/50 px-5 py-4">
               <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-pomg-purple" />
-                <span className="text-lg font-bold text-white">Filters</span>
+                <SlidersHorizontal className="h-5 w-5 text-pomg-gold" />
+                <span className="font-display text-lg uppercase text-white">Filters</span>
               </div>
               <button
-                onClick={() => setMobileFilterOpen(false)}
-                className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-pomg-card text-pomg-muted hover:text-white transition-colors"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="rounded-full p-2 text-pomg-muted hover:text-pomg-text transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
-            {/* Drawer body */}
-            <div className="flex-1 overflow-y-auto px-5 py-6">
-              {sidebarContent}
+
+            {/* Scrollable Filters */}
+            <div className="flex-1 overflow-y-auto px-5 py-5">
+              {filterSidebar}
             </div>
-            {/* Drawer footer */}
-            <div className="px-5 py-4 border-t border-pomg-border/60 shrink-0">
+
+            {/* Footer */}
+            <div className="border-t border-pomg-border/50 p-5">
               <button
-                onClick={() => setMobileFilterOpen(false)}
-                className="w-full py-3 rounded-xl bg-pomg-purple text-white text-sm font-semibold hover:bg-pomg-purple/80 transition-colors"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="btn-gold w-full rounded-lg py-3 font-display text-sm uppercase tracking-wider"
               >
-                Show {filteredProducts.length} Products
+                Show {filteredProducts.length} Result{filteredProducts.length !== 1 ? "s" : ""}
               </button>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       <Footer />
-
-      {/* slide-in animation for mobile drawer */}
-      <style jsx>{`
-        @keyframes slide-in-left {
-          from {
-            transform: translateX(-100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        .animate-slide-in-left {
-          animation: slide-in-left 0.3s ease-out;
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
 
-/* =========================================================
-   Page wrapper — Suspense boundary for useSearchParams
-   ========================================================= */
 export default function ShopPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-pomg-darker flex items-center justify-center">
-          <div className="animate-pulse text-pomg-muted text-sm">
-            Loading shop...
-          </div>
+        <div className="min-h-screen bg-pomg-dark flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-pomg-purple border-t-transparent" />
         </div>
       }
     >
-      <ShopInner />
+      <ShopContent />
     </Suspense>
   );
 }

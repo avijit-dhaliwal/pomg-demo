@@ -22,490 +22,583 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Data                                                               */
+/*  DATA                                                               */
 /* ------------------------------------------------------------------ */
 
 const nfaItems = [
   {
     icon: Shield,
     title: "Silencers / Suppressors",
-    desc: "Reduce report and recoil on rifles, pistols, and rimfire hosts. We carry Dead Air, SilencerCo, Surefire, CGS, and more.",
+    description:
+      "Reduce sound signature and recoil. We carry top-tier cans from Dead Air, SilencerCo, Surefire, CGS Group, and more. The single best upgrade for any shooting platform.",
+    popular: true,
   },
   {
     icon: FileText,
     title: "Short Barreled Rifles (SBRs)",
-    desc: "Rifles with barrels under 16\u2033 or an overall length under 26\u2033. Perfect for home defense and compact builds.",
+    description:
+      "Rifles with barrels under 16\". Compact, maneuverable platforms ideal for home defense and vehicle operations. Register a lower and configure it however you want.",
+    popular: false,
   },
   {
     icon: Scale,
     title: "Short Barreled Shotguns (SBSs)",
-    desc: "Shotguns with barrels under 18\u2033 or overall length under 26\u2033. Devastating in close-quarters situations.",
+    description:
+      "Shotguns with barrels under 18\". Devastating close-range capability in a compact package. Less common but incredibly effective for home defense.",
+    popular: false,
   },
   {
     icon: AlertTriangle,
     title: "Any Other Weapons (AOWs)",
-    desc: "Specialty items such as pen guns, cane guns, and smooth-bore pistols. Only a $5 transfer tax stamp.",
+    description:
+      "Catch-all NFA category covering items like pen guns, cane guns, and smooth-bore pistols. Only $5 transfer tax vs $200 for other NFA items.",
+    popular: false,
   },
 ];
 
 const steps = [
   {
-    num: 1,
+    number: 1,
     icon: Shield,
     title: "Choose Your Item",
-    detail:
-      "Browse our NFA collection in-store or online. Our staff will help you pick the right silencer, SBR, or other NFA item for your intended use and host firearm.",
+    description:
+      "Browse our silencer and NFA inventory in-store or online. Our staff will help you find the perfect match for your host firearm, shooting style, and budget. We stock all major manufacturers and can special-order anything.",
   },
   {
-    num: 2,
+    number: 2,
     icon: FileText,
-    title: "Purchase & Begin Paperwork",
-    detail:
-      "Complete a Form 4473 (standard background check) and an ATF Form 4 (Application for Tax Paid Transfer). We walk you through every field so nothing is left blank or incorrect.",
+    title: "Purchase & Paperwork",
+    description:
+      "Complete the purchase and we'll start your ATF Form 4473 and Form 4 (for individual) or Form 4 with Trust (for trust purchases). We handle all the paperwork — you just need to sign. We recommend purchasing or setting up a gun trust beforehand.",
   },
   {
-    num: 3,
+    number: 3,
     icon: Camera,
     title: "Photos & Fingerprints",
-    detail:
-      "Two passport-style photos and two FBI fingerprint cards are required. We handle both right here in our store\u2014no need to visit a separate service.",
+    description:
+      "We take your passport-style photos and digital fingerprints right here in our shop — no need to go to a separate location. Everything is done in one visit. Each responsible person on a trust will need their own set.",
   },
   {
-    num: 4,
+    number: 4,
     icon: Send,
     title: "Submit to ATF",
-    detail:
-      "We submit your completed application electronically via the ATF eForms system. Electronic submissions are significantly faster than paper forms.",
+    description:
+      "We submit your completed Form 4 via the ATF's eForm system electronically. E-filed forms have been processing significantly faster than paper forms. You'll receive a confirmation that your application is pending.",
   },
   {
-    num: 5,
+    number: 5,
     icon: Clock,
     title: "Wait Period",
-    detail:
-      "The current average approval time is roughly 6\u20138 months for eForm 4 submissions. We\u2019ll notify you the moment your stamp is approved. You can check status on the ATF eForms portal anytime.",
+    description:
+      "Current ATF eForm processing times average 4-6 months, though times vary. We'll notify you the moment your stamp is approved. During this time, your item is held securely at our shop. Some states allow conjugal visits — Utah does.",
   },
   {
-    num: 6,
+    number: 6,
     icon: CheckCircle,
     title: "Approval & Pickup",
-    detail:
-      "Once your Form 4 is approved, we\u2019ll call you to schedule a pickup. You\u2019ll complete a final 4473, and your NFA item is yours to take home. Congratulations!",
+    description:
+      "Once approved, we'll call you immediately. Come in, complete a final 4473, and take your NFA item home. The entire pickup process takes about 15 minutes. Congratulations — you now own one of the most satisfying upgrades in the firearms world.",
   },
 ];
 
-const trustVsIndividual = {
-  headers: ["Feature", "Individual", "Gun Trust"],
-  rows: [
-    ["Registered to", "One person", "Trust entity (multiple trustees)"],
-    ["Shared use", "Owner only", "Any trustee can possess & use"],
-    ["Inheritance", "Must transfer via executor", "Seamless to successor trustees"],
-    ["Photos & prints", "Applicant only", "All responsible persons"],
-    ["CLEO notification", "Yes", "Yes"],
-    ["Cost", "$0 extra", "$50 \u2013 $150 for trust setup"],
-    ["Best for", "Solo owners", "Families, shooting partners, estate planning"],
-  ],
-};
+const trustComparison = [
+  {
+    feature: "Multiple Owners",
+    individual: "No — registered to one person only",
+    trust: "Yes — add multiple responsible persons",
+  },
+  {
+    feature: "Inheritance",
+    individual: "Complex — requires new Form 4 transfer",
+    trust: "Seamless — passes to beneficiaries automatically",
+  },
+  {
+    feature: "CLEO Notification",
+    individual: "Required for the individual",
+    trust: "Required for each responsible person",
+  },
+  {
+    feature: "Photos & Prints",
+    individual: "One set for the applicant",
+    trust: "One set per responsible person",
+  },
+  {
+    feature: "Privacy",
+    individual: "Personal name on registration",
+    trust: "Trust name on registration",
+  },
+  {
+    feature: "Cost",
+    individual: "No additional cost",
+    trust: "$50–$150 for trust setup",
+  },
+  {
+    feature: "Who Can Possess",
+    individual: "Only the registered owner",
+    trust: "Any responsible person on the trust",
+  },
+  {
+    feature: "Best For",
+    individual: "Single owners, simplicity",
+    trust: "Families, shared collections, estate planning",
+  },
+];
 
-const faqs: { q: string; a: string }[] = [
+const costCards = [
   {
-    q: "How long does approval take?",
-    a: "Electronic Form 4 (eForm 4) submissions currently average 6\u20138 months. Paper Form 4 submissions can take 9\u201312 months or longer. We always file electronically to get you the fastest turnaround.",
+    icon: DollarSign,
+    title: "Item Price",
+    value: "Varies",
+    description:
+      "The cost of the silencer or NFA item itself. We carry options from $399 to $1,500+. Our team will help you find the best value for your needs.",
   },
   {
-    q: "Can I use my silencer while waiting?",
-    a: "No. Federal law requires that you wait until your Form 4 is approved before you can take possession. The item stays in our secure NFA vault until your stamp comes back.",
+    icon: FileText,
+    title: "$200 Tax Stamp",
+    value: "$200",
+    description:
+      "One-time federal tax paid to the ATF for each NFA item registration. This fee is non-refundable and required by law. AOWs are only $5.",
   },
   {
-    q: "Do I need to be 21?",
-    a: "Yes. For transfers from a licensed dealer (Form 4), you must be 21 years of age or older. This applies to all NFA items including silencers, SBRs, and SBSs.",
+    icon: Users,
+    title: "Gun Trust (Optional)",
+    value: "$50–$150",
+    description:
+      "A legal trust document that allows multiple people to possess NFA items. Highly recommended for families. We can help you set one up.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How long does the NFA approval process take?",
+    answer:
+      "E-filed Form 4 applications currently average 4-6 months. Paper forms take significantly longer (8-12+ months). We exclusively use e-filing to get you your item as fast as possible. Times fluctuate based on ATF volume.",
   },
   {
-    q: "Can I take my NFA items out of state?",
-    a: "For silencers, no prior approval is needed\u2014just make sure the destination state allows them. For SBRs, SBSs, and other NFA firearms, you must file ATF Form 5320.20 and receive approval before transporting across state lines.",
+    question: "Can I shoot my silencer while waiting for the stamp?",
+    answer:
+      "In Utah, yes! Utah allows \"conjugal visits\" where you can come to the dealer and use your pending NFA item at a range under our supervision. Not all states allow this, but we're happy to offer it.",
   },
   {
-    q: "What happens if I\u2019m denied?",
-    a: "If your Form 4 is denied, you receive a full refund of the item purchase price. The $200 tax stamp fee is refunded directly by the ATF. Denials are rare if you can pass a standard NICS check.",
+    question: "Do I need to be 21 to buy a silencer?",
+    answer:
+      "You must be 21 to purchase a silencer or any NFA item from a dealer. You must also be legally eligible to purchase a firearm (pass a background check, no felony convictions, etc.).",
   },
   {
-    q: "Can I buy online and transfer to my local dealer?",
-    a: "Absolutely. We handle FFL transfers for NFA items. If you find something online from another dealer, have them ship it to us and we\u2019ll process all the paperwork on our end.",
+    question: "Are silencers legal in Utah?",
+    answer:
+      "Yes! Utah is one of the most NFA-friendly states in the country. Silencers, SBRs, SBSs, and AOWs are all legal. There are no state-level restrictions beyond federal law. Utah also has a state-level silencer protection act.",
   },
   {
-    q: "What is a gun trust?",
-    a: "A gun trust is a legal entity (revocable living trust) specifically designed to hold NFA items. It allows multiple trustees to legally possess and use the items, simplifies inheritance, and provides clear legal structure for your collection.",
+    question: "What is a gun trust and do I need one?",
+    answer:
+      "A gun trust is a legal document that allows multiple people (trustees) to legally possess your NFA items. While not required, we strongly recommend trusts for anyone who shares firearms with family members, wants easier inheritance planning, or values the flexibility of multiple authorized users.",
   },
   {
-    q: "Do silencers wear out?",
-    a: "Quality silencers are built to last. Most welded-baffle designs will handle 30,000+ rounds before any performance degradation. User-serviceable rimfire and pistol cans can be cleaned and maintained indefinitely. We\u2019ll help you pick a silencer rated for your caliber and volume of shooting.",
+    question: "Can I take my silencer out of state?",
+    answer:
+      "Yes, but you must first submit an ATF Form 5320.20 (Application to Transport) to notify the ATF before crossing state lines with any NFA item. This is free and typically approved within a few weeks. Some states do not allow silencers, so always verify destination state law.",
+  },
+  {
+    question: "What caliber silencer should I buy first?",
+    answer:
+      "We generally recommend a .30 caliber silencer as your first can. A .30 cal suppressor can be used on 5.56, .300 BLK, .308, and many other calibers — making it the most versatile choice. If you primarily shoot pistols, a 9mm can is ideal as a first purchase.",
+  },
+  {
+    question: "What happens if my Form 4 is denied?",
+    answer:
+      "Denials are rare if you're legally eligible. If denied, you'll receive a letter from the ATF explaining why. Common reasons include errors on the form or background check issues. In most cases, we can help resolve the issue and resubmit. The $200 tax is refundable if denied.",
   },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Component                                                          */
+/*  COMPONENT                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function NfaGuidePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-pomg-darker">
+    <>
       <Header />
 
-      {/* ============ HERO ============ */}
-      <section className="relative overflow-hidden">
-        {/* background glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-pomg-purple/5 blur-[120px] pointer-events-none" />
-
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pomg-purple/10 border border-pomg-purple/20 text-pomg-purple-light text-xs font-semibold uppercase tracking-widest mb-6">
-            <Shield className="w-3.5 h-3.5" />
-            NFA Buying Guide
+      <main className="min-h-screen bg-pomg-dark">
+        {/* ── Hero ────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden border-b border-pomg-border">
+          <div className="noise-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent" />
+          <div className="relative mx-auto max-w-7xl px-4 py-28 text-center sm:px-6 lg:px-8">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pomg-purple/30 bg-pomg-purple/10 px-4 py-1.5 text-sm text-pomg-purple-light">
+              <Shield className="h-4 w-4" />
+              Complete NFA Buying Resource
+            </div>
+            <h1 className="font-display text-5xl uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Understanding NFA Transfers
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-pomg-muted">
+              Everything you need to know about buying silencers, SBRs, and
+              other NFA items. From paperwork to pickup — we walk you through
+              every step.
+            </p>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight">
-            Understanding{" "}
-            <span className="text-pomg-gold">NFA Transfers</span>
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-pomg-muted max-w-2xl mx-auto leading-relaxed">
-            Buying a silencer, SBR, or other NFA item doesn&rsquo;t have to be
-            intimidating. We&rsquo;ll walk you through every step of the
-            process\u2014from choosing the right item to picking it up after
-            approval.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ WHAT IS THE NFA ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-pomg-card border border-pomg-border rounded-2xl p-8 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            What Is the NFA?
-          </h2>
-          <p className="text-pomg-text leading-relaxed mb-4">
-            The <strong className="text-white">National Firearms Act (NFA)</strong>{" "}
-            was enacted in 1934 and regulates the manufacture, transfer, and
-            possession of certain categories of firearms and accessories. Items
-            regulated under the NFA include silencers (suppressors), short
-            barreled rifles (SBRs), short barreled shotguns (SBSs), machine
-            guns, destructive devices, and any other weapons (AOWs).
-          </p>
-          <p className="text-pomg-text leading-relaxed">
-            To legally purchase an NFA item from a dealer, you must pay a{" "}
-            <strong className="text-pomg-gold">$200 federal tax stamp</strong>,
-            submit an application (ATF Form 4) with photos and fingerprints,
-            pass a background check, and wait for ATF approval. It sounds like a
-            lot, but we handle the heavy lifting for you.
-          </p>
-        </div>
-      </section>
-
-      {/* ============ NFA ITEMS WE CARRY ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
-          NFA Items We Carry
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {nfaItems.map((item) => (
-            <div
-              key={item.title}
-              className="bg-pomg-card border border-pomg-border rounded-2xl p-6 hover:border-pomg-purple/40 transition-colors group"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-pomg-purple/10 border border-pomg-purple/20 text-pomg-purple-light group-hover:bg-pomg-purple/20 transition-colors">
-                  <item.icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-semibold text-white">
-                  {item.title}
-                </h3>
-              </div>
-              <p className="text-pomg-muted text-sm leading-relaxed">
-                {item.desc}
+        {/* ── What is the NFA? ────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                What Is the NFA?
+              </h2>
+              <div className="section-divider mb-6 mt-4" />
+              <p className="text-pomg-muted leading-relaxed">
+                The <strong className="text-white">National Firearms Act (NFA)</strong>{" "}
+                is a federal law originally enacted in 1934 that regulates certain
+                categories of firearms and accessories. Items regulated under the NFA
+                require a special registration process, a $200 tax stamp, and ATF
+                approval before transfer.
+              </p>
+              <p className="mt-4 text-pomg-muted leading-relaxed">
+                Despite the extra paperwork, buying an NFA item is{" "}
+                <strong className="text-white">completely legal</strong> in most states
+                — including Utah. The process simply requires patience and proper
+                documentation. We handle 90% of the paperwork for you.
+              </p>
+              <p className="mt-4 text-pomg-muted leading-relaxed">
+                At Piece of Mind Guns, we specialize in NFA transfers and silencer
+                sales. We've processed hundreds of Form 4s and have the experience to
+                make your purchase smooth and stress-free.
               </p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ============ THE BUYING PROCESS ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
-          The Buying Process
-        </h2>
-        <p className="text-pomg-muted text-center max-w-2xl mx-auto mb-12">
-          Six straightforward steps from choosing your item to taking it home.
-          We guide you through every one.
-        </p>
-
-        <div className="relative">
-          {/* vertical timeline line */}
-          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-pomg-purple/60 via-pomg-purple/30 to-transparent hidden sm:block" />
-
-          <div className="space-y-8">
-            {steps.map((step) => (
-              <div key={step.num} className="relative flex gap-6 sm:gap-8">
-                {/* number circle */}
-                <div className="relative z-10 flex items-center justify-center shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-pomg-dark border-2 border-pomg-purple text-pomg-gold font-bold text-lg sm:text-xl">
-                  {step.num}
+            <div className="glass-card flex items-center justify-center p-12">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-pomg-purple/20">
+                  <FileText className="h-10 w-10 text-pomg-purple-light" />
                 </div>
+                <p className="font-display text-5xl text-pomg-gold">1934</p>
+                <p className="mt-2 text-sm text-pomg-muted">
+                  National Firearms Act Enacted
+                </p>
+                <div className="mx-auto my-6 h-px w-16 bg-pomg-border" />
+                <p className="font-display text-5xl text-pomg-gold">42</p>
+                <p className="mt-2 text-sm text-pomg-muted">
+                  States Where Silencers Are Legal
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                {/* content */}
-                <div className="bg-pomg-card border border-pomg-border rounded-2xl p-6 flex-1 hover:border-pomg-purple/30 transition-colors">
-                  <div className="flex items-center gap-3 mb-2">
-                    <step.icon className="w-5 h-5 text-pomg-purple-light" />
-                    <h3 className="text-lg font-semibold text-white">
-                      {step.title}
-                    </h3>
+        {/* ── NFA Items We Carry ──────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                NFA Items We Carry
+              </h2>
+              <div className="section-divider mx-auto mb-6 mt-4" />
+              <p className="mx-auto max-w-2xl text-pomg-muted">
+                We stock and transfer all major categories of NFA items. Silencers are
+                our specialty and make up the majority of our NFA business.
+              </p>
+            </div>
+            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {nfaItems.map((item) => (
+                <div
+                  key={item.title}
+                  className="glass-card group relative p-6 transition-colors hover:border-pomg-purple/40"
+                >
+                  {item.popular && (
+                    <span className="absolute right-4 top-4 rounded-full bg-pomg-gold/10 px-2.5 py-0.5 text-xs font-semibold text-pomg-gold">
+                      MOST POPULAR
+                    </span>
+                  )}
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-pomg-purple/10">
+                    <item.icon className="h-6 w-6 text-pomg-purple-light" />
                   </div>
-                  <p className="text-pomg-muted text-sm leading-relaxed">
-                    {step.detail}
+                  <h3 className="font-display text-xl uppercase text-white">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-pomg-muted">
+                    {item.description}
                   </p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── 6-Step Process Timeline ─────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              The Buying Process
+            </h2>
+            <div className="section-divider mx-auto mb-6 mt-4" />
+            <p className="mx-auto max-w-2xl text-pomg-muted">
+              Six straightforward steps from choosing your item to taking it home.
+              We guide you through every stage.
+            </p>
+          </div>
+
+          <div className="relative mt-16">
+            {/* Vertical line */}
+            <div className="absolute left-6 top-0 hidden h-full w-px bg-gradient-to-b from-pomg-purple via-pomg-gold to-pomg-purple/20 lg:left-1/2 lg:block" />
+
+            <div className="space-y-12 lg:space-y-16">
+              {steps.map((step, idx) => (
+                <div
+                  key={step.number}
+                  className={`relative flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-12 ${
+                    idx % 2 === 1 ? "lg:flex-row-reverse" : ""
+                  }`}
+                >
+                  {/* Number circle (center on desktop) */}
+                  <div className="absolute left-0 z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-pomg-purple bg-pomg-dark font-display text-xl text-pomg-purple-light lg:left-1/2 lg:-translate-x-1/2">
+                    {step.number}
+                  </div>
+
+                  {/* Content card */}
+                  <div
+                    className={`ml-16 lg:ml-0 lg:w-[calc(50%-3rem)] ${
+                      idx % 2 === 1 ? "lg:mr-auto" : "lg:ml-auto"
+                    }`}
+                  >
+                    <div className="glass-card p-6">
+                      <div className="mb-3 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-pomg-purple/10">
+                          <step.icon className="h-5 w-5 text-pomg-purple-light" />
+                        </div>
+                        <h3 className="font-display text-xl uppercase text-white">
+                          {step.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm leading-relaxed text-pomg-muted">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Trust vs Individual ─────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                Trust vs Individual Purchase
+              </h2>
+              <div className="section-divider mx-auto mb-6 mt-4" />
+              <p className="mx-auto max-w-2xl text-pomg-muted">
+                You can register NFA items to yourself individually or through a gun
+                trust. Here's a side-by-side comparison.
+              </p>
+            </div>
+
+            <div className="glass-card mt-12 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-pomg-border bg-pomg-surface/50">
+                      <th className="px-6 py-4 font-display text-sm uppercase tracking-wider text-pomg-muted">
+                        Feature
+                      </th>
+                      <th className="px-6 py-4 font-display text-sm uppercase tracking-wider text-pomg-purple-light">
+                        Individual
+                      </th>
+                      <th className="px-6 py-4 font-display text-sm uppercase tracking-wider text-pomg-gold">
+                        Trust
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-pomg-border/50">
+                    {trustComparison.map((row) => (
+                      <tr key={row.feature} className="transition-colors hover:bg-pomg-surface/30">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-white">
+                          {row.feature}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-pomg-muted">
+                          {row.individual}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-pomg-muted">
+                          {row.trust}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="mt-8 flex items-start gap-3 rounded-lg border border-pomg-gold/20 bg-pomg-gold/5 p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-pomg-gold" />
+              <p className="text-sm text-pomg-muted">
+                <strong className="text-pomg-gold">Our recommendation:</strong>{" "}
+                If you plan to own more than one NFA item or share access with family
+                members, a gun trust is almost always the right choice. We can help
+                you set one up during your purchase.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Cost Breakdown ──────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              Cost Breakdown
+            </h2>
+            <div className="section-divider mx-auto mb-6 mt-4" />
+            <p className="mx-auto max-w-2xl text-pomg-muted">
+              Transparent pricing — no hidden fees. Here&apos;s what you&apos;ll
+              pay for a typical NFA purchase.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {costCards.map((card) => (
+              <div
+                key={card.title}
+                className="glass-card flex flex-col items-center p-8 text-center"
+              >
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pomg-gold/10">
+                  <card.icon className="h-7 w-7 text-pomg-gold" />
+                </div>
+                <h3 className="font-display text-lg uppercase text-white">
+                  {card.title}
+                </h3>
+                <p className="mt-2 font-display text-3xl text-pomg-gold">
+                  {card.value}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-pomg-muted">
+                  {card.description}
+                </p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ TRUST VS INDIVIDUAL ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
-          Trust vs. Individual Registration
-        </h2>
-        <p className="text-pomg-muted text-center max-w-2xl mx-auto mb-12">
-          You can register NFA items to yourself as an individual or to a gun
-          trust. Here&rsquo;s how they compare.
-        </p>
-
-        <div className="overflow-x-auto rounded-2xl border border-pomg-border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-pomg-card">
-                {trustVsIndividual.headers.map((h) => (
-                  <th
-                    key={h}
-                    className="px-6 py-4 text-left font-semibold text-white border-b border-pomg-border"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {trustVsIndividual.rows.map((row, i) => (
-                <tr
-                  key={i}
-                  className="border-b border-pomg-border/50 last:border-b-0 hover:bg-pomg-card/50 transition-colors"
-                >
-                  {row.map((cell, j) => (
-                    <td
-                      key={j}
-                      className={`px-6 py-4 ${
-                        j === 0
-                          ? "font-medium text-white"
-                          : "text-pomg-muted"
-                      }`}
-                    >
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mt-6 flex items-start gap-3 bg-pomg-card border border-pomg-border rounded-xl p-5">
-          <Users className="w-5 h-5 text-pomg-purple-light shrink-0 mt-0.5" />
-          <p className="text-pomg-muted text-sm leading-relaxed">
-            <strong className="text-white">Our recommendation:</strong> If you
-            plan to own multiple NFA items or want family members to legally
-            access them, a gun trust is worth the small upfront cost. We can
-            refer you to a local attorney or help you set up a trust through a
-            reputable online service.
-          </p>
-        </div>
-      </section>
-
-      {/* ============ COST BREAKDOWN ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
-          Cost Breakdown
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            {
-              icon: DollarSign,
-              label: "Item Price",
-              detail: "The retail price of your silencer, SBR, or other NFA item.",
-              example: "e.g. $400 \u2013 $2,000+",
-            },
-            {
-              icon: FileText,
-              label: "$200 Tax Stamp",
-              detail:
-                "Federal excise tax paid to the ATF with your Form 4. This is per item.",
-              example: "$200 per item ($5 for AOWs)",
-            },
-            {
-              icon: Scale,
-              label: "Trust Costs (Optional)",
-              detail:
-                "If you choose to file under a gun trust instead of as an individual.",
-              example: "$50 \u2013 $150 one-time",
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="bg-pomg-card border border-pomg-border rounded-2xl p-6 text-center"
-            >
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-pomg-gold/10 border border-pomg-gold/20 mx-auto mb-4">
-                <item.icon className="w-7 h-7 text-pomg-gold" />
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {item.label}
-              </h3>
-              <p className="text-pomg-muted text-sm leading-relaxed mb-3">
-                {item.detail}
-              </p>
-              <span className="text-xs font-medium text-pomg-purple-light">
-                {item.example}
-              </span>
+        {/* ── FAQ ─────────────────────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                Frequently Asked Questions
+              </h2>
+              <div className="section-divider mx-auto mb-6 mt-4" />
             </div>
-          ))}
-        </div>
 
-        <div className="mt-8 bg-pomg-card border border-pomg-gold/20 rounded-2xl p-6 text-center">
-          <p className="text-pomg-text text-sm">
-            <strong className="text-pomg-gold">Example total:</strong> Dead Air
-            Sandman-S silencer ($799) + Tax Stamp ($200) = $999 &mdash; then
-            just wait for approval!
-          </p>
-        </div>
-      </section>
-
-      {/* ============ FAQ ============ */}
-      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex items-center justify-center gap-3 mb-12">
-          <HelpCircle className="w-6 h-6 text-pomg-purple-light" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
-            Frequently Asked Questions
-          </h2>
-        </div>
-
-        <div className="space-y-3">
-          {faqs.map((faq, i) => {
-            const isOpen = openFaq === i;
-            return (
-              <div
-                key={i}
-                className={`border rounded-xl transition-colors ${
-                  isOpen
-                    ? "bg-pomg-card border-pomg-purple/40"
-                    : "bg-pomg-card/50 border-pomg-border hover:border-pomg-purple/20"
-                }`}
-              >
-                <button
-                  onClick={() => setOpenFaq(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+            <div className="mt-12 space-y-3">
+              {faqs.map((faq, idx) => (
+                <div
+                  key={idx}
+                  className="glass-card overflow-hidden transition-colors"
                 >
-                  <span className="text-sm sm:text-base font-medium text-white">
-                    {faq.q}
-                  </span>
-                  {isOpen ? (
-                    <ChevronUp className="w-5 h-5 text-pomg-gold shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-pomg-muted shrink-0" />
+                  <button
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <HelpCircle className="h-5 w-5 flex-shrink-0 text-pomg-purple-light" />
+                      <span className="font-medium text-white">
+                        {faq.question}
+                      </span>
+                    </div>
+                    {openFaq === idx ? (
+                      <ChevronUp className="h-5 w-5 flex-shrink-0 text-pomg-muted" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 flex-shrink-0 text-pomg-muted" />
+                    )}
+                  </button>
+                  {openFaq === idx && (
+                    <div className="border-t border-pomg-border/50 px-6 pb-5 pt-4">
+                      <p className="text-sm leading-relaxed text-pomg-muted">
+                        {faq.answer}
+                      </p>
+                    </div>
                   )}
-                </button>
-
-                {isOpen && (
-                  <div className="px-6 pb-5">
-                    <p className="text-pomg-muted text-sm leading-relaxed">
-                      {faq.a}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ============ UTAH LAWS ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-pomg-card border border-pomg-border rounded-2xl p-8 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            Utah Firearms Laws &amp; NFA
-          </h2>
-          <div className="space-y-4 text-pomg-text text-sm leading-relaxed">
-            <p>
-              Utah is one of the most NFA-friendly states in the country.
-              Silencers, SBRs, SBSs, and AOWs are all{" "}
-              <strong className="text-white">legal to own</strong> in Utah with
-              proper ATF registration.
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-pomg-muted">
-              <li>
-                <strong className="text-white">Silencers:</strong> Legal for
-                purchase and use. No state-level restrictions beyond federal
-                law.
-              </li>
-              <li>
-                <strong className="text-white">SBRs &amp; SBSs:</strong> Legal
-                with an approved Form 4 or Form 1.
-              </li>
-              <li>
-                <strong className="text-white">Concealed carry:</strong> Utah is
-                a constitutional carry state \u2014 no permit required for
-                concealed carry (21+).
-              </li>
-              <li>
-                <strong className="text-white">Hunting with silencers:</strong>{" "}
-                Legal in Utah for all game animals.
-              </li>
-              <li>
-                <strong className="text-white">No state waiting period:</strong>{" "}
-                Beyond the federal NFA wait, Utah imposes no additional waiting
-                period.
-              </li>
-            </ul>
-            <p className="text-pomg-muted italic">
-              This is general information and not legal advice. Always verify
-              current laws with the ATF or a qualified attorney.
-            </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ CTA ============ */}
-      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-          Ready to Get Started?
-        </h2>
-        <p className="text-pomg-muted text-lg mb-8 max-w-xl mx-auto">
-          Browse our silencer collection or stop by the store. Our team will
-          walk you through the entire process from start to finish.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/shop?category=silencers"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-pomg-gold text-pomg-dark font-bold text-sm hover:brightness-110 transition"
-          >
-            Browse Silencers
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-pomg-border text-pomg-text font-semibold text-sm hover:border-pomg-purple/40 hover:text-white transition-colors"
-          >
-            Contact Us
-          </Link>
-        </div>
-      </section>
+        {/* ── Utah-Specific ───────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="glass-card overflow-hidden">
+            <div className="grid gap-0 lg:grid-cols-2">
+              <div className="p-8 lg:p-12">
+                <h2 className="font-display text-3xl uppercase tracking-tight text-white">
+                  NFA in Utah
+                </h2>
+                <div className="section-divider mb-6 mt-4" />
+                <p className="text-pomg-muted leading-relaxed">
+                  Utah is one of the most NFA-friendly states in the nation. All NFA
+                  items — silencers, SBRs, SBSs, and AOWs — are fully legal with no
+                  state-level restrictions beyond federal law.
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {[
+                    "All NFA items legal — no state restrictions",
+                    "Utah Silencer Protection Act in effect",
+                    "Conjugal visits allowed at your dealer",
+                    "No state waiting period beyond federal process",
+                    "Hunting with suppressors is fully legal",
+                    "No magazine capacity restrictions",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-pomg-gold" />
+                      <span className="text-sm text-pomg-muted">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col items-center justify-center border-t border-pomg-border bg-pomg-surface/30 p-8 lg:border-l lg:border-t-0 lg:p-12">
+                <Shield className="mb-4 h-16 w-16 text-pomg-purple-light opacity-60" />
+                <p className="text-center font-display text-2xl uppercase text-white">
+                  Class III Dealer
+                </p>
+                <p className="mt-2 text-center text-sm text-pomg-muted">
+                  Piece of Mind Guns is a licensed Class III / SOT dealer authorized
+                  to transfer all NFA items in the state of Utah.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA ─────────────────────────────────────────────────── */}
+        <section className="border-t border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              Ready to Get Started?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-pomg-muted">
+              Browse our silencer collection or reach out to our team with any
+              questions. We&apos;re here to make the NFA process as simple as
+              possible.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+              <Link href="/shop?category=silencers" className="btn-primary">
+                Browse Silencers
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+              <Link
+                href="/contact"
+                className="btn-gold"
+              >
+                Contact Us
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
-    </div>
+    </>
   );
 }

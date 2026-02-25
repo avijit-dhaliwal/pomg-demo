@@ -2,12 +2,8 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import ProductCard from "@/components/product-card";
-import { getProductBySlug, getRelatedProducts } from "@/data/products";
-import type { Product } from "@/data/products";
 import {
   Star,
   ShoppingCart,
@@ -20,131 +16,119 @@ import {
   ChevronRight,
   Package,
   Info,
+  Bell,
+  Minus,
+  Plus,
 } from "lucide-react";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import ProductCard from "@/components/product-card";
+import { getProductBySlug, getRelatedProducts, Product } from "@/data/products";
 
-/* ---------- helpers ---------- */
-function renderStars(rating: number, size = "h-5 w-5") {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      <Star
-        key={i}
-        className={`${size} ${
-          i <= Math.floor(rating)
-            ? "fill-pomg-gold text-pomg-gold"
-            : i - 0.5 <= rating
-            ? "fill-pomg-gold/50 text-pomg-gold"
-            : "fill-transparent text-pomg-muted/40"
-        }`}
-      />
-    );
-  }
-  return stars;
-}
+type Tab = "description" | "specifications" | "shipping" | "reviews";
 
-/* ---------- fake reviews data ---------- */
-const fakeReviews = [
+const sampleReviews = [
   {
     id: 1,
-    author: "Mike T.",
+    author: "Mike R.",
     rating: 5,
-    date: "2 weeks ago",
-    title: "Absolutely worth every penny",
-    body: "This exceeded all my expectations. Build quality is impeccable, and the team at POMG made the whole process seamless. Will definitely be buying here again.",
+    date: "Jan 12, 2026",
+    title: "Absolutely worth the investment",
+    body: "Build quality is outstanding. Everything arrived in perfect condition and POMG handled the transfer seamlessly. Will definitely be buying from them again.",
     verified: true,
   },
   {
     id: 2,
-    author: "Sarah K.",
-    rating: 5,
-    date: "1 month ago",
-    title: "Best purchase I've made",
-    body: "Did a lot of research before pulling the trigger (pun intended). The staff was incredibly knowledgeable and helped me pick exactly what I needed. Shipping was fast and packaging was top-notch.",
+    author: "Jason T.",
+    rating: 4,
+    date: "Dec 28, 2025",
+    title: "Great product, fast shipping",
+    body: "Exactly as described. Shipped quickly and the packaging was excellent. Only minor note is the wait for FFL transfer, but that's the process, not the dealer.",
     verified: true,
   },
   {
     id: 3,
-    author: "Jake R.",
-    rating: 4,
-    date: "2 months ago",
-    title: "Great quality, minor nitpick",
-    body: "Product itself is outstanding. Only giving 4 stars because shipping took a bit longer than expected, but the team kept me updated throughout. Would still recommend POMG to anyone.",
+    author: "Chris L.",
+    rating: 5,
+    date: "Nov 15, 2025",
+    title: "POMG is the real deal",
+    body: "Second purchase from Piece of Mind Guns. Their team is incredibly knowledgeable and the product selection is top tier. This piece exceeded my expectations.",
     verified: true,
   },
 ];
 
-/* =========================================================
-   Product Detail Page
-   ========================================================= */
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : "";
-
   const product = getProductBySlug(slug);
-  const relatedProducts = product ? getRelatedProducts(product) : [];
 
-  const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<
-    "description" | "specs" | "shipping" | "reviews"
-  >("description");
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("description");
+  const [quantity, setQuantity] = useState(1);
+  const [wishlisted, setWishlisted] = useState(false);
 
-  /* ---------- 404 state ---------- */
+  /* ── 404 ── */
   if (!product) {
     return (
-      <>
+      <div className="min-h-screen bg-pomg-dark">
         <Header />
-        <main className="min-h-screen bg-pomg-darker flex items-center justify-center">
-          <div className="text-center px-4">
-            <div className="w-24 h-24 rounded-full bg-pomg-card border border-pomg-border flex items-center justify-center mx-auto mb-6">
-              <Package className="w-10 h-10 text-pomg-muted" />
+        <main className="mx-auto max-w-7xl px-4 py-24 text-center">
+          <div className="flex flex-col items-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-pomg-surface mb-6">
+              <Package className="h-10 w-10 text-pomg-dim" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="font-display text-4xl uppercase text-white mb-3">
               Product Not Found
             </h1>
-            <p className="text-pomg-muted mb-6 max-w-sm">
-              The product you&apos;re looking for doesn&apos;t exist or may have
-              been removed.
+            <p className="text-pomg-muted mb-8 max-w-md">
+              The product you&apos;re looking for doesn&apos;t exist or may have been removed.
             </p>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-pomg-purple text-white font-medium hover:bg-pomg-purple/80 transition-colors"
+              className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
               Back to Shop
             </Link>
           </div>
         </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
-  const savings = product.msrp - product.price;
-  const hasSavings = savings > 0;
-  const savingsPercent = hasSavings
-    ? Math.round((savings / product.msrp) * 100)
-    : 0;
+  const relatedProducts = getRelatedProducts(product);
+  const savings = product.msrp > product.price ? product.msrp - product.price : 0;
+  const savingsPercent = savings > 0 ? Math.round((savings / product.msrp) * 100) : 0;
+  const fullStars = Math.floor(product.rating);
+  const hasHalf = product.rating - fullStars >= 0.5;
+
+  const tabs: { id: Tab; label: string }[] = [
+    { id: "description", label: "Description" },
+    { id: "specifications", label: "Specifications" },
+    { id: "shipping", label: "Shipping" },
+    { id: "reviews", label: "Reviews" },
+  ];
 
   const categoryLabel =
     product.category.charAt(0).toUpperCase() + product.category.slice(1);
 
-  /* ---------- tabs data ---------- */
-  const tabs = [
-    { key: "description" as const, label: "Description" },
-    { key: "specs" as const, label: "Specifications" },
-    { key: "shipping" as const, label: "Shipping" },
-    { key: "reviews" as const, label: `Reviews (${product.reviewCount})` },
+  /* ── Rating distribution (simulated) ── */
+  const ratingDistribution = [
+    { stars: 5, pct: 72 },
+    { stars: 4, pct: 18 },
+    { stars: 3, pct: 6 },
+    { stars: 2, pct: 3 },
+    { stars: 1, pct: 1 },
   ];
 
-  /* ---------- JSON-LD ---------- */
+  /* ── JSON-LD ── */
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description,
     image: product.images,
+    description: product.description,
     sku: product.sku,
     brand: {
       "@type": "Brand",
@@ -152,7 +136,7 @@ export default function ProductDetailPage() {
     },
     offers: {
       "@type": "Offer",
-      url: `https://pomgguns.com/shop/${product.slug}`,
+      url: `https://pomg.com/shop/${product.slug}`,
       priceCurrency: "USD",
       price: product.price,
       availability: product.inStock
@@ -167,540 +151,553 @@ export default function ProductDetailPage() {
       "@type": "AggregateRating",
       ratingValue: product.rating,
       reviewCount: product.reviewCount,
-      bestRating: 5,
-      worstRating: 1,
     },
   };
 
   return (
-    <>
-      {/* Schema.org JSON-LD */}
+    <div className="min-h-screen bg-pomg-dark">
+      <Header />
+
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Header />
-
-      <main className="min-h-screen bg-pomg-darker">
-        {/* ---- Breadcrumbs ---- */}
-        <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-          <ol className="flex items-center gap-1.5 text-sm text-pomg-muted flex-wrap">
-            <li>
-              <Link
-                href="/"
-                className="hover:text-white transition-colors"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </li>
-            <li>
-              <Link
-                href="/shop"
-                className="hover:text-white transition-colors"
-              >
-                Shop
-              </Link>
-            </li>
-            <li>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </li>
-            <li>
-              <Link
-                href={`/shop?category=${product.category}`}
-                className="hover:text-white transition-colors"
-              >
-                {categoryLabel}
-              </Link>
-            </li>
-            <li>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </li>
-            <li className="text-pomg-text font-medium truncate max-w-[200px]">
-              {product.name}
-            </li>
-          </ol>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* ── Breadcrumbs ── */}
+        <nav className="flex items-center gap-2 text-xs text-pomg-dim mb-8 flex-wrap">
+          <Link href="/" className="hover:text-pomg-muted transition-colors">
+            Home
+          </Link>
+          <ChevronRight className="h-3 w-3" />
+          <Link href="/shop" className="hover:text-pomg-muted transition-colors">
+            Shop
+          </Link>
+          <ChevronRight className="h-3 w-3" />
+          <Link
+            href={`/shop?category=${product.category}`}
+            className="hover:text-pomg-muted transition-colors"
+          >
+            {categoryLabel}
+          </Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-pomg-muted truncate max-w-[200px]">
+            {product.name}
+          </span>
         </nav>
 
-        {/* ---- Product hero: two-column ---- */}
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* === Left: Images === */}
-            <div className="space-y-4">
-              {/* Main image placeholder */}
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-pomg-card border border-pomg-border">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(67,67,122,0.15) 0%, rgba(201,168,76,0.08) 50%, rgba(67,67,122,0.15) 100%)",
-                  }}
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                  <Package className="h-16 w-16 text-pomg-purple/40 mb-4" />
-                  <span className="text-lg font-bold text-pomg-text/80 leading-tight">
-                    {product.name}
+        {/* ── Two-Column Layout ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* ── Left: Image Gallery ── */}
+          <div>
+            {/* Main Image */}
+            <div className="product-image-container aspect-square rounded-lg overflow-hidden relative bg-pomg-surface">
+              <Image
+                src={product.images[selectedImage] || product.image}
+                alt={product.name}
+                fill
+                className="object-contain p-8"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+
+              {/* Badges */}
+              <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
+                {product.isNew && (
+                  <span className="bg-emerald-500/90 text-white text-xs font-bold px-2.5 py-1 rounded">
+                    NEW
                   </span>
-                  <span className="text-sm text-pomg-muted mt-1">
-                    {product.manufacturer}
+                )}
+                {product.isNfa && (
+                  <span className="bg-pomg-gold text-pomg-darker text-xs font-bold px-2.5 py-1 rounded">
+                    NFA
                   </span>
-                </div>
-                {/* Badges */}
-                <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  {product.isNew && (
-                    <span className="inline-flex px-3 py-1 rounded-lg text-xs font-bold uppercase bg-emerald-500/90 text-white">
-                      NEW
-                    </span>
-                  )}
-                  {product.isNfa && (
-                    <span className="inline-flex px-3 py-1 rounded-lg text-xs font-bold uppercase bg-pomg-gold/90 text-pomg-dark">
-                      NFA ITEM
-                    </span>
-                  )}
-                </div>
-                {/* Share button */}
-                <button
-                  className="absolute top-4 right-4 p-2.5 rounded-full bg-pomg-dark/50 backdrop-blur-sm text-pomg-muted hover:text-white transition-colors"
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: product.name,
-                        url: window.location.href,
-                      });
-                    }
-                  }}
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Thumbnail row */}
-              {product.images.length > 1 && (
-                <div className="flex gap-3">
-                  {product.images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                        selectedImage === idx
-                          ? "border-pomg-purple"
-                          : "border-pomg-border hover:border-pomg-purple/50"
-                      }`}
-                    >
-                      <div className="absolute inset-0 bg-pomg-card flex items-center justify-center">
-                        <Package className="w-6 h-6 text-pomg-purple/30" />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* === Right: Details === */}
-            <div className="space-y-6">
-              {/* Manufacturer */}
-              <Link
-                href={`/shop?manufacturer=${encodeURIComponent(product.manufacturer)}`}
-                className="text-sm font-semibold uppercase tracking-widest text-pomg-purple hover:text-pomg-purple-light transition-colors"
-              >
-                {product.manufacturer}
-              </Link>
-
-              {/* Product name */}
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight -mt-2">
-                {product.name}
-              </h1>
-
-              {/* Rating */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-0.5">
-                  {renderStars(product.rating)}
-                </div>
-                <span className="text-sm text-pomg-muted">
-                  {product.rating.toFixed(1)} ({product.reviewCount}{" "}
-                  {product.reviewCount === 1 ? "review" : "reviews"})
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-end gap-3">
-                <span className="text-3xl font-extrabold text-white">
-                  ${product.price.toLocaleString()}
-                </span>
-                {hasSavings && (
-                  <>
-                    <span className="text-lg text-pomg-muted line-through">
-                      ${product.msrp.toLocaleString()}
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
-                      Save ${savings.toLocaleString()} ({savingsPercent}%)
-                    </span>
-                  </>
                 )}
               </div>
 
-              {/* NFA notice */}
-              {product.isNfa && (
-                <div className="p-4 rounded-xl border-2 border-pomg-gold/40 bg-pomg-gold/5">
-                  <div className="flex items-start gap-3">
-                    <Shield className="w-5 h-5 text-pomg-gold shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="text-sm font-bold text-pomg-gold mb-1">
-                        NFA / Tax Stamp Required
-                      </h3>
-                      <p className="text-xs text-pomg-muted leading-relaxed">
-                        This item is regulated under the National Firearms Act.
-                        Purchase requires a $200 ATF tax stamp and approximately
-                        4-12 months for Form 4 approval. We handle the
-                        paperwork and guide you through every step of the
-                        process.{" "}
-                        <Link
-                          href="/nfa-guide"
-                          className="text-pomg-gold underline underline-offset-2 hover:text-pomg-gold/80"
-                        >
-                          Learn more about the NFA process
-                        </Link>
-                        .
-                      </p>
-                    </div>
+              {/* Savings Badge */}
+              {savingsPercent > 0 && (
+                <span className="absolute bottom-3 right-3 z-10 bg-emerald-500/90 text-white text-xs font-bold px-2.5 py-1 rounded">
+                  SAVE {savingsPercent}%
+                </span>
+              )}
+            </div>
+
+            {/* Thumbnails */}
+            {product.images.length > 1 && (
+              <div className="flex gap-3 mt-4">
+                {product.images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
+                      selectedImage === i
+                        ? "border-pomg-purple ring-1 ring-pomg-purple/50"
+                        : "border-pomg-border hover:border-pomg-border-light"
+                    }`}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.name} view ${i + 1}`}
+                      fill
+                      className="object-contain p-1"
+                      sizes="80px"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Right: Product Info ── */}
+          <div>
+            {/* Manufacturer */}
+            <Link
+              href={`/shop?manufacturer=${encodeURIComponent(product.manufacturer)}`}
+              className="text-sm uppercase tracking-wider text-pomg-purple-light hover:text-pomg-purple transition-colors"
+            >
+              {product.manufacturer}
+            </Link>
+
+            {/* Product Name */}
+            <h1 className="font-display text-4xl lg:text-5xl uppercase text-white mt-2 leading-tight">
+              {product.name}
+            </h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2 mt-3">
+              <div className="flex items-center">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    size={16}
+                    className={
+                      i < fullStars
+                        ? "fill-pomg-gold text-pomg-gold"
+                        : i === fullStars && hasHalf
+                          ? "fill-pomg-gold/50 text-pomg-gold"
+                          : "text-pomg-border"
+                    }
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-pomg-muted">
+                {product.rating.toFixed(1)}
+              </span>
+              <span className="text-sm text-pomg-dim">
+                ({product.reviewCount} reviews)
+              </span>
+            </div>
+
+            {/* Price Block */}
+            <div className="mt-5 flex items-baseline gap-3 flex-wrap">
+              <span className="text-3xl font-bold text-white">
+                ${product.price.toLocaleString()}
+              </span>
+              {savings > 0 && (
+                <>
+                  <span className="text-lg text-pomg-dim line-through">
+                    MSRP ${product.msrp.toLocaleString()}
+                  </span>
+                  <span className="text-sm font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                    Save ${savings.toLocaleString()}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* NFA Notice */}
+            {product.isNfa && (
+              <div className="mt-5 rounded-lg border border-pomg-gold/30 bg-pomg-gold/5 p-4">
+                <div className="flex items-start gap-3">
+                  <Shield className="h-5 w-5 text-pomg-gold flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-pomg-gold">
+                      NFA / Tax Stamp Item
+                    </p>
+                    <p className="text-xs text-pomg-muted mt-1 leading-relaxed">
+                      This item requires a $200 federal tax stamp and ATF Form 4 approval. 
+                      Average wait time is 4–9 months. We handle all paperwork and guide you 
+                      through the entire process.
+                    </p>
+                    <Link
+                      href="/nfa-guide"
+                      className="inline-flex items-center gap-1 text-xs text-pomg-gold hover:text-pomg-gold-light mt-2 transition-colors"
+                    >
+                      Learn about the NFA process
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Stock Indicator */}
+            <div className="flex items-center gap-2 mt-5">
+              <span
+                className={`inline-block h-2.5 w-2.5 rounded-full ${
+                  product.inStock
+                    ? product.stockCount <= 3
+                      ? "bg-amber-400 animate-pulse"
+                      : "bg-emerald-400"
+                    : "bg-red-500"
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  product.inStock
+                    ? product.stockCount <= 3
+                      ? "text-amber-400"
+                      : "text-emerald-400"
+                    : "text-red-400"
+                }`}
+              >
+                {product.inStock
+                  ? product.stockCount <= 3
+                    ? `Only ${product.stockCount} left in stock`
+                    : `In Stock (${product.stockCount} available)`
+                  : "Out of Stock"}
+              </span>
+            </div>
+
+            {/* Quantity + Add to Cart */}
+            <div className="mt-6 space-y-3">
+              {/* Quantity Selector */}
+              {product.inStock && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-pomg-muted">Qty:</span>
+                  <div className="flex items-center rounded-lg border border-pomg-border overflow-hidden">
+                    <button
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="px-3 py-2 text-pomg-muted hover:text-white hover:bg-pomg-surface transition-colors"
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="w-12 text-center text-sm font-medium text-white bg-pomg-surface py-2">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setQuantity((q) => Math.min(product.stockCount, q + 1))
+                      }
+                      className="px-3 py-2 text-pomg-muted hover:text-white hover:bg-pomg-surface transition-colors"
+                      disabled={quantity >= product.stockCount}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Stock status */}
-              <div className="flex items-center gap-2">
-                {product.inStock ? (
-                  <>
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-                    </span>
-                    <span className="text-sm font-medium text-emerald-400">
-                      In Stock
-                    </span>
-                    <span className="text-sm text-pomg-muted">
-                      &mdash; {product.stockCount} available
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-                    <span className="text-sm font-medium text-red-400">
-                      Out of Stock
-                    </span>
-                  </>
-                )}
-              </div>
-
-              {/* Quantity + Add to Cart */}
-              <div className="flex items-center gap-4 pt-2">
-                {/* Quantity selector */}
-                <div className="flex items-center rounded-xl border border-pomg-border overflow-hidden">
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    disabled={!product.inStock}
-                    className="px-3.5 py-2.5 text-pomg-muted hover:text-white hover:bg-pomg-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    &minus;
-                  </button>
-                  <span className="px-4 py-2.5 text-sm font-semibold text-white min-w-[3rem] text-center border-x border-pomg-border bg-pomg-card">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setQuantity((q) =>
-                        Math.min(product.stockCount, q + 1)
-                      )
-                    }
-                    disabled={!product.inStock}
-                    className="px-3.5 py-2.5 text-pomg-muted hover:text-white hover:bg-pomg-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Add to Cart */}
-                <button
-                  disabled={!product.inStock}
-                  className={`flex-1 flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-                    product.inStock
-                      ? "bg-gradient-to-r from-pomg-purple to-pomg-purple/80 text-white hover:shadow-lg hover:shadow-pomg-purple/30 hover:brightness-110 active:scale-[0.98]"
-                      : "bg-pomg-card text-pomg-muted border border-pomg-border cursor-not-allowed"
-                  }`}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {product.inStock ? "Add to Cart" : "Sold Out"}
+              {/* Add to Cart */}
+              {product.inStock ? (
+                <button className="btn-gold w-full rounded-lg py-4 font-display text-lg uppercase tracking-wider flex items-center justify-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
                 </button>
+              ) : (
+                <button className="w-full rounded-lg border-2 border-pomg-border py-4 font-display text-lg uppercase tracking-wider text-pomg-muted hover:border-pomg-purple hover:text-pomg-text transition-colors flex items-center justify-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Notify When Available
+                </button>
+              )}
 
-                {/* Wishlist */}
+              {/* Wishlist + Share Row */}
+              <div className="flex gap-3">
                 <button
-                  onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl border transition-all duration-200 ${
-                    isWishlisted
-                      ? "bg-red-500/10 border-red-500/30 text-red-400"
-                      : "bg-pomg-card border-pomg-border text-pomg-muted hover:text-red-400 hover:border-red-500/30"
+                  onClick={() => setWishlisted((w) => !w)}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium transition-colors ${
+                    wishlisted
+                      ? "border-pomg-gold bg-pomg-gold/10 text-pomg-gold"
+                      : "border-pomg-border text-pomg-muted hover:border-pomg-border-light hover:text-pomg-text"
                   }`}
                 >
                   <Heart
-                    className={`w-5 h-5 ${
-                      isWishlisted ? "fill-red-400" : ""
-                    }`}
+                    className={`h-4 w-4 ${wishlisted ? "fill-pomg-gold" : ""}`}
                   />
+                  {wishlisted ? "Wishlisted" : "Add to Wishlist"}
+                </button>
+                <button className="flex items-center justify-center gap-2 rounded-lg border border-pomg-border px-4 py-2.5 text-sm text-pomg-muted hover:border-pomg-border-light hover:text-pomg-text transition-colors">
+                  <Share2 className="h-4 w-4" />
+                  Share
                 </button>
               </div>
+            </div>
 
-              {/* SKU */}
-              <p className="text-xs text-pomg-muted pt-1">
-                SKU: <span className="font-mono">{product.sku}</span>
-              </p>
-
-              {/* Quick trust signals */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-pomg-card border border-pomg-border">
-                  <Truck className="w-4 h-4 text-pomg-purple shrink-0" />
-                  <span className="text-xs text-pomg-text">
-                    Free shipping over $150
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-pomg-card border border-pomg-border">
-                  <Shield className="w-4 h-4 text-pomg-purple shrink-0" />
-                  <span className="text-xs text-pomg-text">
-                    Licensed FFL dealer
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-pomg-card border border-pomg-border">
-                  <Check className="w-4 h-4 text-pomg-purple shrink-0" />
-                  <span className="text-xs text-pomg-text">
-                    Authenticity guaranteed
-                  </span>
-                </div>
+            {/* Quick Info Cards */}
+            <div className="grid grid-cols-3 gap-3 mt-6">
+              <div className="rounded-lg border border-pomg-border bg-pomg-surface/50 p-3 text-center">
+                <Truck className="h-4 w-4 text-pomg-purple-light mx-auto mb-1" />
+                <p className="text-[10px] text-pomg-muted leading-tight">
+                  Free Shipping<br />Over $150
+                </p>
+              </div>
+              <div className="rounded-lg border border-pomg-border bg-pomg-surface/50 p-3 text-center">
+                <Shield className="h-4 w-4 text-pomg-purple-light mx-auto mb-1" />
+                <p className="text-[10px] text-pomg-muted leading-tight">
+                  Licensed FFL<br />Dealer
+                </p>
+              </div>
+              <div className="rounded-lg border border-pomg-border bg-pomg-surface/50 p-3 text-center">
+                <Check className="h-4 w-4 text-pomg-purple-light mx-auto mb-1" />
+                <p className="text-[10px] text-pomg-muted leading-tight">
+                  Guaranteed<br />Authentic
+                </p>
               </div>
             </div>
+
+            {/* SKU */}
+            <p className="text-xs text-pomg-dim mt-4">
+              SKU: {product.sku}
+            </p>
           </div>
-        </section>
+        </div>
 
-        {/* ---- Tabbed section ---- */}
-        <section className="border-t border-pomg-border">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-            {/* Tab buttons */}
-            <div className="flex overflow-x-auto gap-1 border-b border-pomg-border mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`whitespace-nowrap px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.key
-                      ? "border-pomg-purple text-white"
-                      : "border-transparent text-pomg-muted hover:text-pomg-text"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+        {/* ── Tabs Section ── */}
+        <div className="mt-12 lg:mt-16">
+          {/* Tab Buttons */}
+          <div className="border-b border-pomg-border flex gap-0 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`font-display text-sm uppercase tracking-wider px-5 py-3 whitespace-nowrap transition-colors border-b-2 ${
+                  activeTab === tab.id
+                    ? "border-pomg-gold text-white"
+                    : "border-transparent text-pomg-dim hover:text-pomg-muted"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-            {/* Tab content */}
-            <div className="max-w-3xl">
-              {/* Description */}
-              {activeTab === "description" && (
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-pomg-text leading-relaxed text-[15px]">
-                    {product.description}
-                  </p>
-                  {product.caliber && (
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {product.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-pomg-card border border-pomg-border text-pomg-muted"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
+          {/* Tab Content */}
+          <div className="py-8">
+            {/* ── Description ── */}
+            {activeTab === "description" && (
+              <div className="max-w-3xl space-y-4">
+                <p className="text-pomg-muted leading-relaxed">
+                  {product.description}
+                </p>
+
+                {/* Quick specs inline */}
+                {(product.caliber || product.platform || product.barrelLength || product.weight) && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                    {product.caliber && (
+                      <div className="rounded-lg bg-pomg-surface p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-pomg-dim">Caliber</p>
+                        <p className="text-sm font-medium text-white mt-0.5">{product.caliber}</p>
+                      </div>
+                    )}
+                    {product.platform && (
+                      <div className="rounded-lg bg-pomg-surface p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-pomg-dim">Platform</p>
+                        <p className="text-sm font-medium text-white mt-0.5">{product.platform}</p>
+                      </div>
+                    )}
+                    {product.barrelLength && (
+                      <div className="rounded-lg bg-pomg-surface p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-pomg-dim">Barrel</p>
+                        <p className="text-sm font-medium text-white mt-0.5">{product.barrelLength}</p>
+                      </div>
+                    )}
+                    {product.weight && (
+                      <div className="rounded-lg bg-pomg-surface p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-pomg-dim">Weight</p>
+                        <p className="text-sm font-medium text-white mt-0.5">{product.weight}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Tags */}
+                {product.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-6">
+                    {product.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-pomg-border bg-pomg-surface px-3 py-1 text-xs text-pomg-dim"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Specifications ── */}
+            {activeTab === "specifications" && (
+              <div className="max-w-2xl">
+                <div className="rounded-lg border border-pomg-border overflow-hidden">
+                  {Object.entries(product.specs).map(([key, value], i) => (
+                    <div
+                      key={key}
+                      className={`flex items-center justify-between px-4 py-3 text-sm ${
+                        i % 2 === 0 ? "bg-pomg-surface/50" : "bg-transparent"
+                      } ${i > 0 ? "border-t border-pomg-border/50" : ""}`}
+                    >
+                      <span className="text-pomg-muted font-medium">{key}</span>
+                      <span className="text-white text-right">{value}</span>
                     </div>
-                  )}
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Specifications */}
-              {activeTab === "specs" && (
-                <div className="rounded-xl border border-pomg-border overflow-hidden">
-                  <table className="w-full text-sm">
-                    <tbody>
-                      {Object.entries(product.specs).map(
-                        ([key, value], idx) => (
-                          <tr
-                            key={key}
-                            className={
-                              idx % 2 === 0 ? "bg-pomg-card" : "bg-pomg-dark"
-                            }
-                          >
-                            <td className="px-5 py-3 font-medium text-pomg-muted whitespace-nowrap w-1/3">
-                              {key}
-                            </td>
-                            <td className="px-5 py-3 text-pomg-text">
-                              {value}
-                            </td>
-                          </tr>
-                        )
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Shipping */}
-              {activeTab === "shipping" && (
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4 p-5 rounded-xl bg-pomg-card border border-pomg-border">
-                    <Truck className="w-5 h-5 text-pomg-purple shrink-0 mt-0.5" />
+            {/* ── Shipping ── */}
+            {activeTab === "shipping" && (
+              <div className="max-w-3xl space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Truck className="h-5 w-5 text-pomg-purple-light flex-shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="text-sm font-bold text-white mb-1">
-                        Standard Shipping
-                      </h3>
-                      <p className="text-sm text-pomg-muted leading-relaxed">
-                        Free on orders over $150. Orders under $150 ship for a
-                        flat rate of $9.99. Most orders ship within 1-2 business
-                        days via UPS or FedEx.
+                      <h4 className="text-sm font-semibold text-white">Standard Shipping</h4>
+                      <p className="text-sm text-pomg-muted mt-1">
+                        Free shipping on orders over $150. Standard delivery takes 3-7 business days. 
+                        All firearms and NFA items ship fully insured via FedEx with signature required.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-5 rounded-xl bg-pomg-card border border-pomg-border">
-                    <Shield className="w-5 h-5 text-pomg-purple shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-pomg-purple-light flex-shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="text-sm font-bold text-white mb-1">
-                        FFL Transfers
-                      </h3>
-                      <p className="text-sm text-pomg-muted leading-relaxed">
-                        All firearms must ship to a valid FFL holder. If
-                        you&apos;re in the Salt Lake City area, we can transfer
-                        directly at our location. For out-of-state buyers, we
-                        ship to your local FFL at no extra cost.
+                      <h4 className="text-sm font-semibold text-white">FFL Transfer</h4>
+                      <p className="text-sm text-pomg-muted mt-1">
+                        All firearms must be shipped to a Federal Firearms Licensee (FFL) near you. 
+                        During checkout, you&apos;ll select your preferred FFL dealer. We coordinate 
+                        directly with them for a seamless transfer. Your FFL may charge a transfer fee.
                       </p>
                     </div>
                   </div>
 
                   {product.isNfa && (
-                    <div className="flex items-start gap-4 p-5 rounded-xl bg-pomg-gold/5 border-2 border-pomg-gold/30">
-                      <Info className="w-5 h-5 text-pomg-gold shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3">
+                      <Info className="h-5 w-5 text-pomg-gold flex-shrink-0 mt-0.5" />
                       <div>
-                        <h3 className="text-sm font-bold text-pomg-gold mb-1">
-                          NFA Item Shipping
-                        </h3>
-                        <p className="text-sm text-pomg-muted leading-relaxed">
-                          NFA items (silencers, SBRs, etc.) are held at our
-                          facility until your Form 4 is approved by the ATF.
-                          Once approved, you can pick up in-store or we&apos;ll
-                          ship to your approved FFL/SOT dealer.
+                        <h4 className="text-sm font-semibold text-pomg-gold">NFA Item Shipping</h4>
+                        <p className="text-sm text-pomg-muted mt-1">
+                          This is an NFA-regulated item. After purchase, we&apos;ll hold the item at our 
+                          facility and submit your ATF Form 4 for processing. Once your tax stamp is 
+                          approved (typically 4–9 months), we&apos;ll ship to your designated FFL/SOT dealer 
+                          or you can pick up at our Salt Lake City location.
                         </p>
                       </div>
                     </div>
                   )}
+                </div>
 
-                  <div className="flex items-start gap-4 p-5 rounded-xl bg-pomg-card border border-pomg-border">
-                    <Package className="w-5 h-5 text-pomg-purple shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="text-sm font-bold text-white mb-1">
-                        Returns &amp; Exchanges
-                      </h3>
-                      <p className="text-sm text-pomg-muted leading-relaxed">
-                        Unused items may be returned within 30 days of delivery
-                        for a full refund. Firearms must be unfired and in
-                        original packaging. NFA items are non-returnable once
-                        the Form 4 process has begun. Contact us for details.
-                      </p>
+                <div className="rounded-lg border border-pomg-border bg-pomg-surface/50 p-4">
+                  <h4 className="text-sm font-semibold text-white mb-2">Return Policy</h4>
+                  <p className="text-sm text-pomg-muted leading-relaxed">
+                    Unfired items may be returned within 14 days for a full refund. All returns require 
+                    prior authorization. NFA items are non-returnable once the Form 4 has been submitted. 
+                    Please inspect all items upon receipt and report any issues within 48 hours.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* ── Reviews ── */}
+            {activeTab === "reviews" && (
+              <div className="max-w-3xl">
+                {/* Rating Summary */}
+                <div className="flex flex-col sm:flex-row gap-8 mb-8">
+                  {/* Overall Score */}
+                  <div className="text-center sm:text-left">
+                    <p className="text-5xl font-bold text-white">
+                      {product.rating.toFixed(1)}
+                    </p>
+                    <div className="flex items-center justify-center sm:justify-start mt-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          className={
+                            i < fullStars
+                              ? "fill-pomg-gold text-pomg-gold"
+                              : i === fullStars && hasHalf
+                                ? "fill-pomg-gold/50 text-pomg-gold"
+                                : "text-pomg-border"
+                          }
+                        />
+                      ))}
                     </div>
+                    <p className="text-xs text-pomg-dim mt-1">
+                      {product.reviewCount} reviews
+                    </p>
+                  </div>
+
+                  {/* Distribution Bars */}
+                  <div className="flex-1 space-y-1.5">
+                    {ratingDistribution.map((dist) => (
+                      <div key={dist.stars} className="flex items-center gap-2">
+                        <span className="text-xs text-pomg-dim w-3 text-right">
+                          {dist.stars}
+                        </span>
+                        <Star size={10} className="fill-pomg-gold text-pomg-gold" />
+                        <div className="flex-1 h-2 rounded-full bg-pomg-surface overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-pomg-gold transition-all"
+                            style={{ width: `${dist.pct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-pomg-dim w-8">
+                          {dist.pct}%
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              )}
 
-              {/* Reviews */}
-              {activeTab === "reviews" && (
+                {/* Sample Reviews */}
                 <div className="space-y-6">
-                  {/* Summary */}
-                  <div className="flex items-center gap-6 p-5 rounded-xl bg-pomg-card border border-pomg-border">
-                    <div className="text-center">
-                      <p className="text-4xl font-extrabold text-white">
-                        {product.rating.toFixed(1)}
-                      </p>
-                      <div className="flex items-center gap-0.5 mt-1">
-                        {renderStars(product.rating, "h-4 w-4")}
-                      </div>
-                      <p className="text-xs text-pomg-muted mt-1">
-                        {product.reviewCount} reviews
-                      </p>
-                    </div>
-                    <div className="flex-1 space-y-1.5">
-                      {[5, 4, 3, 2, 1].map((star) => {
-                        const pct =
-                          star === 5
-                            ? 78
-                            : star === 4
-                            ? 15
-                            : star === 3
-                            ? 5
-                            : star === 2
-                            ? 1
-                            : 1;
-                        return (
-                          <div
-                            key={star}
-                            className="flex items-center gap-2"
-                          >
-                            <span className="text-xs text-pomg-muted w-3">
-                              {star}
-                            </span>
-                            <Star className="w-3 h-3 fill-pomg-gold text-pomg-gold" />
-                            <div className="flex-1 h-2 rounded-full bg-pomg-dark border border-pomg-border overflow-hidden">
-                              <div
-                                className="h-full rounded-full bg-pomg-gold"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-pomg-muted w-8 text-right">
-                              {pct}%
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Individual reviews */}
-                  {fakeReviews.map((review) => (
+                  {sampleReviews.map((review) => (
                     <div
                       key={review.id}
-                      className="p-5 rounded-xl bg-pomg-card border border-pomg-border space-y-3"
+                      className="border-t border-pomg-border/50 pt-6"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-pomg-purple/20 flex items-center justify-center text-sm font-bold text-pomg-purple">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pomg-surface text-sm font-bold text-pomg-muted">
                             {review.author.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-white">
-                              {review.author}
-                            </p>
-                            <p className="text-xs text-pomg-muted">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-white">
+                                {review.author}
+                              </span>
+                              {review.verified && (
+                                <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-400">
+                                  <Check className="h-3 w-3" />
+                                  Verified
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-xs text-pomg-dim">
                               {review.date}
-                            </p>
+                            </span>
                           </div>
                         </div>
-                        {review.verified && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <Check className="w-3 h-3" />
-                            Verified
-                          </span>
-                        )}
+                        <div className="flex items-center">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              size={12}
+                              className={
+                                i < review.rating
+                                  ? "fill-pomg-gold text-pomg-gold"
+                                  : "text-pomg-border"
+                              }
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {renderStars(review.rating, "h-3.5 w-3.5")}
-                      </div>
-                      <h4 className="text-sm font-bold text-white">
+                      <h4 className="text-sm font-semibold text-white mb-1">
                         {review.title}
                       </h4>
                       <p className="text-sm text-pomg-muted leading-relaxed">
@@ -709,29 +706,28 @@ export default function ProductDetailPage() {
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Related Products ── */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-16 lg:mt-20">
+            <div className="section-divider mb-10" />
+            <h2 className="font-display text-3xl uppercase text-white mb-8">
+              You May Also Like
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {relatedProducts.map((rp) => (
+                <ProductCard key={rp.id} product={rp} />
+              ))}
             </div>
           </div>
-        </section>
-
-        {/* ---- Related Products ---- */}
-        {relatedProducts.length > 0 && (
-          <section className="border-t border-pomg-border">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-8">
-                You Might Also Like
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {relatedProducts.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </div>
-            </div>
-          </section>
         )}
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

@@ -2,266 +2,184 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Star, Eye, Heart, Package } from "lucide-react";
+import Image from "next/image";
+import { Star, Heart, ShoppingCart, Bell } from "lucide-react";
 import type { Product } from "@/data/products";
 
-interface ProductCardProps {
-  product: Product;
-}
+export default function ProductCard({ product }: { product: Product }) {
+  const [wishlisted, setWishlisted] = useState(false);
 
-export default function ProductCard({ product }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const savings = product.msrp > product.price ? product.msrp - product.price : 0;
+  const savingsPercent = savings > 0 ? Math.round((savings / product.msrp) * 100) : 0;
 
-  const savings = product.msrp - product.price;
-  const hasSavings = savings > 0;
-  const savingsPercent = hasSavings
-    ? Math.round((savings / product.msrp) * 100)
-    : 0;
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Star
-          key={i}
-          className={`h-3.5 w-3.5 ${
-            i <= Math.floor(rating)
-              ? "fill-pomg-gold text-pomg-gold"
-              : i - 0.5 <= rating
-              ? "fill-pomg-gold/50 text-pomg-gold"
-              : "fill-transparent text-pomg-muted/40"
-          }`}
-        />
-      );
-    }
-    return stars;
-  };
+  const fullStars = Math.floor(product.rating);
+  const hasHalf = product.rating - fullStars >= 0.5;
 
   return (
     <Link href={`/shop/${product.slug}`} className="group block">
-      <div
-        className={`relative rounded-xl overflow-hidden transition-all duration-300 ${
-          isHovered
-            ? "shadow-lg shadow-pomg-purple/20 -translate-y-1"
-            : "shadow-none translate-y-0"
-        }`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Gradient border effect */}
-        <div
-          className={`absolute inset-0 rounded-xl transition-opacity duration-300 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            background:
-              "linear-gradient(135deg, var(--pomg-purple), var(--pomg-gold), var(--pomg-purple))",
-            padding: "1px",
-          }}
-        >
-          <div className="absolute inset-[1px] rounded-xl bg-pomg-card" />
+      <div className="bg-pomg-card border border-pomg-border rounded-lg overflow-hidden transition-all duration-300 group-hover:border-pomg-border-light group-hover:translate-y-[-2px]">
+        {/* ── Image Area ── */}
+        <div className="product-image-container aspect-[4/3] relative">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-contain p-4"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+
+          {/* Top-left badges */}
+          <div className="absolute top-2 left-2 flex items-center gap-1.5 z-10">
+            {product.isNew && (
+              <span className="bg-emerald-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                NEW
+              </span>
+            )}
+            {product.isNfa && (
+              <span className="bg-pomg-gold text-pomg-darker text-[10px] font-bold px-2 py-0.5 rounded">
+                NFA
+              </span>
+            )}
+          </div>
+
+          {/* Top-right wishlist */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setWishlisted((w) => !w);
+            }}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-pomg-darker/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-pomg-darker/80"
+            aria-label="Add to wishlist"
+          >
+            <Heart
+              size={16}
+              className={
+                wishlisted
+                  ? "fill-pomg-gold text-pomg-gold"
+                  : "text-pomg-muted hover:text-pomg-gold"
+              }
+            />
+          </button>
+
+          {/* Bottom-right savings badge */}
+          {savingsPercent > 0 && (
+            <span className="absolute bottom-2 right-2 z-10 bg-emerald-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+              SAVE {savingsPercent}%
+            </span>
+          )}
+
+          {/* Hover glow overlay */}
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-pomg-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </div>
 
-        {/* Card content */}
-        <div className="relative bg-pomg-card border border-pomg-border rounded-xl overflow-hidden group-hover:border-transparent transition-colors duration-300">
-          {/* Image area */}
-          <div className="relative aspect-square product-image-placeholder overflow-hidden">
-            {/* Gradient overlay */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(67,67,122,0.15) 0%, rgba(201,168,76,0.08) 50%, rgba(67,67,122,0.15) 100%)",
-              }}
-            />
+        {/* ── Content Area ── */}
+        <div className="p-4">
+          {/* Manufacturer */}
+          <p className="text-[11px] uppercase tracking-wider text-pomg-muted font-medium">
+            {product.manufacturer}
+          </p>
 
-            {/* Product name display in placeholder */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-              <Package className="h-10 w-10 text-pomg-purple/40 mb-3" />
-              <span className="text-sm font-semibold text-pomg-text/70 leading-tight">
-                {product.name}
-              </span>
-              <span className="text-xs text-pomg-muted mt-1">
-                {product.manufacturer}
-              </span>
+          {/* Product name */}
+          <h3 className="text-sm font-semibold text-pomg-text leading-tight mt-1 line-clamp-2">
+            {product.name}
+          </h3>
+
+          {/* Quick specs */}
+          {(product.caliber || product.barrelLength) && (
+            <p className="text-[11px] text-pomg-dim mt-1.5 flex items-center gap-1 flex-wrap">
+              {product.caliber && <span>{product.caliber}</span>}
+              {product.caliber && product.barrelLength && (
+                <span className="text-pomg-border">&middot;</span>
+              )}
+              {product.barrelLength && <span>{product.barrelLength} barrel</span>}
+            </p>
+          )}
+
+          {/* Rating */}
+          <div className="flex items-center gap-1.5 mt-2">
+            <div className="flex items-center">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={12}
+                  className={
+                    i < fullStars
+                      ? "fill-pomg-gold text-pomg-gold"
+                      : i === fullStars && hasHalf
+                        ? "fill-pomg-gold/50 text-pomg-gold"
+                        : "text-pomg-border"
+                  }
+                />
+              ))}
             </div>
+            <span className="text-[11px] text-pomg-muted">
+              {product.rating.toFixed(1)}
+            </span>
+            <span className="text-[11px] text-pomg-dim">
+              ({product.reviewCount})
+            </span>
+          </div>
 
-            {/* Hover overlay with quick view */}
-            <div
-              className={`absolute inset-0 bg-pomg-dark/60 backdrop-blur-sm flex items-center justify-center transition-opacity duration-200 ${
-                isHovered ? "opacity-100" : "opacity-0"
+          {/* Price */}
+          <div className="mt-2.5 flex items-baseline gap-2">
+            <span className="text-lg font-bold text-white">
+              ${product.price.toLocaleString()}
+            </span>
+            {savings > 0 && (
+              <>
+                <span className="text-xs text-pomg-dim line-through">
+                  ${product.msrp.toLocaleString()}
+                </span>
+                <span className="text-xs font-medium text-emerald-400">
+                  Save ${savings.toLocaleString()}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Stock indicator */}
+          <div className="flex items-center gap-1.5 mt-2">
+            <span
+              className={`inline-block w-1.5 h-1.5 rounded-full ${
+                product.inStock
+                  ? "bg-emerald-400 animate-pulse"
+                  : "bg-red-500"
               }`}
-            >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-pomg-purple/80 text-white text-sm font-medium">
-                <Eye className="h-4 w-4" />
-                Quick View
-              </div>
-            </div>
+            />
+            <span className="text-[11px] text-pomg-dim">
+              {product.inStock
+                ? product.stockCount <= 3
+                  ? `Only ${product.stockCount} left`
+                  : "In Stock"
+                : "Out of Stock"}
+            </span>
+          </div>
 
-            {/* Top badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-              {/* Category badge */}
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-pomg-purple/80 text-white backdrop-blur-sm">
-                {product.category}
-              </span>
-
-              {/* NEW badge */}
-              {product.isNew && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/90 text-white backdrop-blur-sm">
-                  NEW
-                </span>
-              )}
-
-              {/* NFA badge */}
-              {product.isNfa && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-pomg-gold/90 text-pomg-dark backdrop-blur-sm">
-                  NFA
-                </span>
-              )}
-            </div>
-
-            {/* Wishlist button */}
+          {/* Add to Cart / Notify */}
+          {product.inStock ? (
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setIsWishlisted(!isWishlisted);
               }}
-              className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                isWishlisted
-                  ? "bg-red-500/20 text-red-400"
-                  : "bg-pomg-dark/40 text-pomg-muted hover:text-red-400 hover:bg-red-500/20"
-              }`}
+              className="w-full mt-3 py-2 text-xs font-semibold rounded btn-primary flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
             >
-              <Heart
-                className={`h-4 w-4 transition-all ${
-                  isWishlisted ? "fill-red-400" : ""
-                }`}
-              />
+              <ShoppingCart size={14} />
+              Add to Cart
             </button>
-
-            {/* Savings badge - bottom right of image */}
-            {hasSavings && (
-              <div className="absolute bottom-3 right-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-sm">
-                  SAVE {savingsPercent}%
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Info section */}
-          <div className="p-4 space-y-3">
-            {/* Manufacturer */}
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-pomg-purple">
-              {product.manufacturer}
-            </p>
-
-            {/* Product name */}
-            <h3 className="text-sm font-bold text-pomg-text leading-snug line-clamp-2 group-hover:text-white transition-colors">
-              {product.name}
-            </h3>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1.5">
-              <div className="flex items-center gap-0.5">
-                {renderStars(product.rating)}
-              </div>
-              <span className="text-xs text-pomg-muted">
-                {product.rating.toFixed(1)} ({product.reviewCount})
-              </span>
-            </div>
-
-            {/* Quick specs */}
-            {(product.caliber || product.barrelLength) && (
-              <div className="flex items-center gap-2 flex-wrap">
-                {product.caliber && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-pomg-dark text-pomg-muted border border-pomg-border">
-                    {product.caliber}
-                  </span>
-                )}
-                {product.barrelLength && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-pomg-dark text-pomg-muted border border-pomg-border">
-                    {product.barrelLength} BBL
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Stock indicator */}
-            <div className="flex items-center gap-1.5">
-              {product.inStock ? (
-                <>
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
-                  <span className="text-xs text-emerald-400 font-medium">
-                    In Stock ({product.stockCount})
-                  </span>
-                </>
-              ) : (
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-1.5">
-                    <span className="inline-flex rounded-full h-2 w-2 bg-red-500" />
-                    <span className="text-xs text-red-400 font-medium">
-                      Out of Stock
-                    </span>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    className="text-[10px] font-semibold text-pomg-gold hover:text-pomg-gold/80 transition-colors underline underline-offset-2"
-                  >
-                    Notify Me
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-pomg-border" />
-
-            {/* Price and CTA */}
-            <div className="flex items-end justify-between gap-2">
-              <div className="flex flex-col">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-lg font-bold text-white">
-                    ${product.price.toLocaleString()}
-                  </span>
-                  {hasSavings && (
-                    <span className="text-xs text-pomg-muted line-through">
-                      ${product.msrp.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-                {hasSavings && (
-                  <span className="text-[11px] text-emerald-400 font-medium">
-                    Save ${savings.toLocaleString()}
-                  </span>
-                )}
-              </div>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                disabled={!product.inStock}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                  product.inStock
-                    ? "bg-gradient-to-r from-pomg-purple to-pomg-purple/80 text-white hover:shadow-md hover:shadow-pomg-purple/30 hover:brightness-110 active:scale-95"
-                    : "bg-pomg-dark text-pomg-muted cursor-not-allowed border border-pomg-border"
-                }`}
-              >
-                <ShoppingCart className="h-3.5 w-3.5" />
-                {product.inStock ? "Add" : "Sold Out"}
-              </button>
-            </div>
-          </div>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className="w-full mt-3 py-2 text-xs font-semibold rounded border border-pomg-border-light text-pomg-muted hover:text-pomg-text hover:border-pomg-purple flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
+            >
+              <Bell size={14} />
+              Notify Me
+            </button>
+          )}
         </div>
       </div>
     </Link>

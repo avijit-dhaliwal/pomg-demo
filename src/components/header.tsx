@@ -1,190 +1,152 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  Search,
-  ShoppingCart,
-  Menu,
-  X,
-  ChevronDown,
-  Shield,
-} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Search, ShoppingCart, Menu, X, Shield, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "Silencers", href: "/shop?category=silencers" },
-  { label: "Build Your Setup", href: "/build-your-setup" },
+  { label: "Silencers", href: "/silencers" },
+  { label: "Build Your Setup", href: "/build" },
   { label: "NFA Guide", href: "/nfa-guide" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [cartCount] = useState(3);
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [announcementVisible, setAnnouncementVisible] = useState(true);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll when mobile drawer is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (searchQuery.trim()) {
-        console.log("Search:", searchQuery);
-        setSearchOpen(false);
-        setSearchQuery("");
-      }
-    },
-    [searchQuery],
-  );
-
   return (
     <>
-      {/* ---- Top announcement bar ---- */}
-      <div className="relative z-50 bg-pomg-purple/90 text-center text-xs font-medium tracking-wide text-white py-1.5 px-4 select-none">
-        <Shield className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5" />
-        Free shipping on orders over $150 &mdash; FFL transfers available
-        nationwide
-      </div>
+      {/* Announcement Bar */}
+      <AnimatePresence>
+        {announcementVisible && (
+          <motion.div
+            initial={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-50 bg-pomg-purple/90 backdrop-blur"
+          >
+            <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-2">
+              <div className="flex items-center gap-2 text-center text-xs font-medium text-white sm:text-sm">
+                <Shield className="h-3.5 w-3.5 flex-shrink-0 text-pomg-gold" />
+                <span>
+                  Free shipping on orders over $150 — FFL transfers available
+                  nationwide
+                </span>
+              </div>
+              <button
+                onClick={() => setAnnouncementVisible(false)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-white/60 transition hover:text-white"
+                aria-label="Dismiss announcement"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* ---- Main header ---- */}
+      {/* Main Header */}
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
+        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
           scrolled
-            ? "bg-pomg-dark/95 backdrop-blur-xl shadow-lg shadow-black/30 border-b border-pomg-border/50"
+            ? "border-b border-pomg-border/50 bg-pomg-dark/95 backdrop-blur-xl"
             : "bg-transparent"
         }`}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-[72px]">
-            {/* ---- Logo ---- */}
-            <Link href="/" className="flex items-center gap-2 shrink-0 group">
-              <div className="relative flex items-center">
-                {/* Glow behind logo on hover */}
-                <div className="absolute -inset-3 rounded-full bg-pomg-purple/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <span className="relative text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-                  PIECE OF MIND{" "}
-                  <span className="text-pomg-gold">GUNS</span>
-                </span>
-              </div>
-            </Link>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          {/* Left — Logo */}
+          <Link href="/" className="relative flex-shrink-0">
+            <Image
+              src="/pomg-logo.png"
+              width={120}
+              height={50}
+              alt="Piece of Mind Guns"
+              className="object-contain"
+              priority
+            />
+          </Link>
 
-            {/* ---- Desktop nav ---- */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
+          {/* Center — Desktop Nav */}
+          <nav className="hidden items-center gap-8 lg:flex">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative px-3 py-2 text-sm font-medium text-pomg-text hover:text-white transition-colors group"
+                  className={`font-display text-sm uppercase tracking-wider transition-colors duration-200 ${
+                    isActive
+                      ? "text-pomg-gold"
+                      : "text-pomg-text hover:text-pomg-gold"
+                  }`}
                 >
                   {link.label}
-                  {/* Gold underline indicator */}
-                  <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-pomg-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                 </Link>
-              ))}
-            </nav>
+              );
+            })}
+          </nav>
 
-            {/* ---- Right actions ---- */}
-            <div className="flex items-center gap-1 sm:gap-2">
-              {/* Search toggle (desktop) */}
-              <button
-                onClick={() => setSearchOpen((o) => !o)}
-                aria-label="Toggle search"
-                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full text-pomg-muted hover:text-white hover:bg-pomg-card transition-colors"
-              >
-                <Search className="w-5 h-5" />
-              </button>
+          {/* Right — Actions */}
+          <div className="flex items-center gap-3">
+            {/* Search — desktop */}
+            <button
+              className="hidden rounded-full p-2 text-pomg-muted transition hover:text-pomg-text lg:flex"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </button>
 
-              {/* Cart */}
-              <Link
-                href="/cart"
-                className="relative flex items-center justify-center w-10 h-10 rounded-full text-pomg-muted hover:text-white hover:bg-pomg-card transition-colors"
-                aria-label={`Cart with ${cartCount} items`}
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-pomg-gold text-pomg-dark text-[10px] font-bold leading-none">
-                    {cartCount > 99 ? "99+" : cartCount}
-                  </span>
-                )}
-              </Link>
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="relative rounded-full p-2 text-pomg-muted transition hover:text-pomg-text"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              <span className="absolute -right-0.5 -top-0.5 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-pomg-gold text-[10px] font-bold leading-none text-pomg-darker">
+                3
+              </span>
+            </Link>
 
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileOpen((o) => !o)}
-                aria-label="Toggle menu"
-                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full text-pomg-muted hover:text-white hover:bg-pomg-card transition-colors"
-              >
-                {mobileOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            </div>
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="rounded-full p-2 text-pomg-muted transition hover:text-pomg-text lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </div>
-
-        {/* ---- Desktop search bar (slides down) ---- */}
-        <AnimatePresence>
-          {searchOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden border-t border-pomg-border/40 bg-pomg-dark/95 backdrop-blur-xl hidden sm:block"
-            >
-              <form
-                onSubmit={handleSearch}
-                className="mx-auto max-w-2xl px-4 py-4 flex items-center gap-3"
-              >
-                <Search className="w-5 h-5 text-pomg-muted shrink-0" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search firearms, silencers, optics..."
-                  autoFocus
-                  className="flex-1 bg-transparent text-white placeholder-pomg-muted text-sm outline-none"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded-lg bg-pomg-purple text-white text-sm font-medium hover:bg-pomg-purple/80 transition-colors"
-                >
-                  Search
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="text-pomg-muted hover:text-white transition-colors"
-                  aria-label="Close search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </form>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
-      {/* ---- Mobile drawer overlay ---- */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -193,84 +155,81 @@ export default function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
+              transition={{ duration: 0.25 }}
               onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
             />
 
-            {/* Drawer */}
+            {/* Drawer Panel */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="fixed top-0 right-0 z-50 h-full w-[85vw] max-w-sm bg-pomg-dark border-l border-pomg-border shadow-2xl shadow-black/50 flex flex-col lg:hidden"
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[85vw] flex-col bg-pomg-darker shadow-2xl"
             >
-              {/* Drawer header */}
-              <div className="flex items-center justify-between px-5 h-16 border-b border-pomg-border/60">
-                <span className="text-lg font-bold text-white">Menu</span>
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between border-b border-pomg-border/50 px-5 py-4">
+                <Image
+                  src="/pomg-logo.png"
+                  width={100}
+                  height={42}
+                  alt="Piece of Mind Guns"
+                  className="object-contain"
+                />
                 <button
                   onClick={() => setMobileOpen(false)}
+                  className="rounded-full p-2 text-pomg-muted transition hover:text-pomg-text"
                   aria-label="Close menu"
-                  className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-pomg-card text-pomg-muted hover:text-white transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* Mobile search */}
-              <div className="px-5 py-4 border-b border-pomg-border/40">
-                <form onSubmit={handleSearch} className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pomg-muted" />
+              {/* Search Bar */}
+              <div className="px-5 py-4">
+                <div className="flex items-center gap-2 rounded-lg border border-pomg-border bg-pomg-surface px-3 py-2.5">
+                  <Search className="h-4 w-4 text-pomg-muted" />
                   <input
                     type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-pomg-card border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 transition-colors"
+                    placeholder="Search products..."
+                    className="w-full bg-transparent text-sm text-pomg-text placeholder:text-pomg-dim focus:outline-none"
                   />
-                </form>
+                </div>
               </div>
 
-              {/* Nav links */}
-              <nav className="flex-1 overflow-y-auto py-3">
-                {navLinks.map((link, i) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: 24 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 * i, duration: 0.25 }}
-                  >
+              {/* Nav Links */}
+              <nav className="flex-1 overflow-y-auto px-3 py-2">
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
                     <Link
+                      key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between px-5 py-3.5 text-[15px] font-medium text-pomg-text hover:text-white hover:bg-pomg-card/60 transition-colors"
+                      className={`flex items-center justify-between rounded-lg px-3 py-3.5 font-display text-sm uppercase tracking-wider transition-colors ${
+                        isActive
+                          ? "bg-pomg-purple/10 text-pomg-gold"
+                          : "text-pomg-text hover:bg-pomg-surface hover:text-pomg-gold"
+                      }`}
                     >
                       {link.label}
-                      <ChevronDown className="w-4 h-4 -rotate-90 text-pomg-muted" />
+                      <ChevronRight className="h-4 w-4 text-pomg-dim" />
                     </Link>
-                  </motion.div>
-                ))}
+                  );
+                })}
               </nav>
 
-              {/* Drawer footer */}
-              <div className="px-5 py-5 border-t border-pomg-border/60 space-y-3">
+              {/* Drawer Footer — Cart Button */}
+              <div className="border-t border-pomg-border/50 p-5">
                 <Link
                   href="/cart"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-pomg-gold text-pomg-dark font-semibold text-sm hover:brightness-110 transition"
+                  className="btn-gold flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-display text-sm uppercase tracking-wider"
                 >
-                  <ShoppingCart className="w-4 h-4" />
-                  View Cart
-                  {cartCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 rounded-md bg-pomg-dark/20 text-[11px] font-bold">
-                      {cartCount}
-                    </span>
-                  )}
+                  <ShoppingCart className="h-4 w-4" />
+                  View Cart (3)
                 </Link>
-                <p className="text-center text-[11px] text-pomg-muted">
-                  Mon&ndash;Sat 10 AM&ndash;6 PM &bull; (801) 666-4692
-                </p>
               </div>
             </motion.div>
           </>

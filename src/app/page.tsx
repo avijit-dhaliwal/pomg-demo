@@ -1,16 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import ProductCard from "@/components/product-card";
-import {
-  getFeaturedProducts,
-  products,
-  manufacturers,
-  categories,
-} from "@/data/products";
 import {
   Shield,
   Truck,
@@ -25,255 +17,130 @@ import {
   Target,
   Zap,
   Eye,
+  Package,
+  ChevronDown,
+  Mail,
 } from "lucide-react";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import AgeGate from "@/components/age-gate";
+import ProductCard from "@/components/product-card";
+import { getFeaturedProducts, manufacturers, categories } from "@/data/products";
 
-/* ------------------------------------------------------------------ */
-/*  SECTION DATA                                                       */
-/* ------------------------------------------------------------------ */
-
-const trustBadges = [
-  {
-    icon: Shield,
-    title: "FFL Licensed Dealer",
-    description: "Fully licensed & compliant federal firearms dealer in Utah",
-  },
-  {
-    icon: Truck,
-    title: "Fast Shipping",
-    description: "Free shipping over $150. Most orders ship within 24 hours",
-  },
-  {
-    icon: Phone,
-    title: "Expert Support",
-    description: "Real people who know the product — call, text, or email",
-  },
-  {
-    icon: Award,
-    title: "Authorized Dealer",
-    description: "Factory-authorized for every brand we carry. Full warranty",
-  },
-];
-
-const categoryCards: {
-  id: string;
-  name: string;
-  count: number;
-  icon: typeof Crosshair;
-  gradient: string;
-}[] = [
-  {
-    id: "firearms",
-    name: "Firearms",
-    count: categories.find((c) => c.id === "firearms")?.count ?? 0,
-    icon: Crosshair,
-    gradient: "from-pomg-purple/60 to-pomg-purple/20",
-  },
-  {
-    id: "silencers",
-    name: "Silencers",
-    count: categories.find((c) => c.id === "silencers")?.count ?? 0,
-    icon: Target,
-    gradient: "from-pomg-gold/40 to-pomg-gold/10",
-  },
-  {
-    id: "optics",
-    name: "Optics",
-    count: categories.find((c) => c.id === "optics")?.count ?? 0,
-    icon: Eye,
-    gradient: "from-emerald-600/40 to-emerald-900/10",
-  },
-  {
-    id: "accessories",
-    name: "Accessories",
-    count: categories.find((c) => c.id === "accessories")?.count ?? 0,
-    icon: Zap,
-    gradient: "from-sky-600/40 to-sky-900/10",
-  },
-  {
-    id: "knives",
-    name: "Knives",
-    count: categories.find((c) => c.id === "knives")?.count ?? 0,
-    icon: Crosshair,
-    gradient: "from-red-600/40 to-red-900/10",
-  },
-  {
-    id: "apparel",
-    name: "Apparel",
-    count: categories.find((c) => c.id === "apparel")?.count ?? 0,
-    icon: Award,
-    gradient: "from-amber-600/40 to-amber-900/10",
-  },
-];
+const categoryIcons: Record<string, React.ReactNode> = {
+  firearms: <Crosshair className="w-7 h-7" />,
+  silencers: <Target className="w-7 h-7" />,
+  optics: <Eye className="w-7 h-7" />,
+  accessories: <Zap className="w-7 h-7" />,
+  knives: <Package className="w-7 h-7" />,
+  apparel: <Award className="w-7 h-7" />,
+};
 
 const testimonials = [
   {
-    name: "Jason M.",
+    name: "Jake M.",
+    review:
+      "Picked up a Noveske Gen 4 and a Dead Air Sandman-S. POMG handled the Form 4 start to finish — zero hassle. This is the only dealer I trust for NFA items in Utah.",
     rating: 5,
-    text: "Bought my Noveske Gen 4 from POMG and the experience was flawless. They had it in stock when nobody else did, shipped next day, and followed up to make sure I was happy. These guys actually know what they're selling.",
-    focus: "Noveske Gen 4 N4-PDW",
   },
   {
-    name: "Rachel K.",
+    name: "Sarah T.",
+    review:
+      "Incredible selection and the staff actually knows their stuff. Got fitted for an EOTech EXPS3 and a Modlite setup — night and day difference on my DDM4. Will be back for a suppressor.",
     rating: 5,
-    text: "First time buying a silencer and I was nervous about the NFA process. POMG walked me through every step — fingerprints, photos, Form 4, everything. Got my Sandman-S approved in under 5 months. Cannot recommend them enough.",
-    focus: "Dead Air Sandman-S",
   },
   {
-    name: "Derek T.",
+    name: "Ryan K.",
+    review:
+      "Drove from Provo for their Knights Armament inventory. Worth every mile. Pricing was better than anywhere online, and they had the SR-30 in stock when nobody else did.",
     rating: 5,
-    text: "I've ordered optics and accessories from a dozen different shops online. POMG is the only one where I feel like a person and not a transaction. Prices are competitive, shipping is fast, and the product knowledge is unmatched.",
-    focus: "EOTech EXPS3-0",
   },
 ];
-
-const nfaSteps = [
-  {
-    step: 1,
-    title: "Choose Your Silencer",
-    description:
-      "Browse our curated selection of suppressors from Dead Air, SIG, and more. We only carry what we'd run ourselves.",
-  },
-  {
-    step: 2,
-    title: "We Handle the Paperwork",
-    description:
-      "eForm 4, fingerprints, passport photo — we guide you through every step and file on your behalf. No guesswork.",
-  },
-  {
-    step: 3,
-    title: "Pick Up When Approved",
-    description:
-      "Once the ATF approves your form, we'll notify you same-day. Stop by, complete the 4473, and walk out quiet.",
-  },
-];
-
-/* ------------------------------------------------------------------ */
-/*  COMPONENT                                                          */
-/* ------------------------------------------------------------------ */
 
 export default function HomePage() {
+  const [email, setEmail] = useState("");
   const featured = getFeaturedProducts();
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletter = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newsletterEmail.trim()) {
-      console.log("Newsletter signup:", newsletterEmail);
-      setSubscribed(true);
-      setNewsletterEmail("");
-      setTimeout(() => setSubscribed(false), 5000);
-    }
-  };
-
-  /* ---------- star helper ---------- */
-  const renderStars = (rating: number) =>
-    Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating
-            ? "fill-pomg-gold text-pomg-gold"
-            : "fill-transparent text-pomg-muted/40"
-        }`}
-      />
-    ));
 
   return (
     <>
+      <AgeGate />
       <Header />
 
-      <main className="min-h-screen">
-        {/* ============================================================ */}
-        {/*  1. HERO SECTION                                             */}
-        {/* ============================================================ */}
-        <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-pomg-darker">
-          {/* Background layers */}
-          <div className="absolute inset-0">
-            {/* Dark base gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-pomg-darker via-pomg-dark to-pomg-darker" />
-            {/* Purple radial glow */}
-            <div
-              className="absolute inset-0 opacity-40"
-              style={{
-                background:
-                  "radial-gradient(ellipse 80% 50% at 50% 40%, rgba(67,67,122,0.45) 0%, transparent 70%)",
-              }}
-            />
-            {/* Subtle grain */}
-            <div
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")",
-              }}
-            />
-            {/* Subtle top-down light streak */}
-            <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[60%] opacity-20"
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.15) 0%, transparent 60%)",
-              }}
-            />
-          </div>
+      <main>
+        {/* ═══════════════════════════════════════════════════════
+            1. HERO SECTION
+        ═══════════════════════════════════════════════════════ */}
+        <section className="relative min-h-screen overflow-hidden flex items-center justify-center">
+          {/* Background Image */}
+          <Image
+            src="https://images.unsplash.com/photo-1676496649269-94cec02aca66?w=1920&q=80"
+            alt="Premium firearms collection"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-pomg-darker/80 via-pomg-darker/60 to-pomg-darker" />
+          {/* Noise Texture */}
+          <div className="noise-overlay absolute inset-0" />
 
-          <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center py-32">
-            {/* Pill badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-pomg-border bg-pomg-card/60 backdrop-blur-sm mb-8 animate-fade-in">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-medium text-pomg-muted tracking-wide">
-                Utah&rsquo;s Premier Firearms Dealer
+          {/* Content */}
+          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-pomg-border-light bg-pomg-card/60 backdrop-blur-sm mb-8 animate-fade-in">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-sm text-pomg-muted tracking-wide">
+                Utah&apos;s Premier Firearms Dealer
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.05] animate-slide-up">
-              <span className="text-white">Premium Firearms.</span>
-              <br />
-              <span className="bg-gradient-to-r from-pomg-gold via-pomg-gold to-amber-300 bg-clip-text text-transparent">
-                Uncompromising Quality.
+            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl uppercase leading-[0.95] mb-6 animate-slide-up">
+              <span className="text-white block">PREMIUM FIREARMS.</span>
+              <span className="gradient-text-gold block">
+                UNCOMPROMISING QUALITY.
               </span>
             </h1>
 
-            {/* Sub-text */}
-            <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-pomg-muted leading-relaxed animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Utah&rsquo;s curated collection of the finest firearms, silencers, and
-              accessories. Noveske. Daniel Defense. HK. Dead Air. Knights
+            {/* Subtext */}
+            <p className="text-pomg-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in">
+              Utah&apos;s curated collection of the finest firearms, silencers,
+              and accessories. Noveske. Daniel Defense. HK. Dead Air. Knights
               Armament.
             </p>
 
-            {/* CTAs */}
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.35s" }}>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-slide-up">
               <Link
                 href="/shop"
-                className="group relative inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-pomg-purple to-[#5a5a9e] text-white font-semibold text-base shadow-lg shadow-pomg-purple/25 hover:shadow-xl hover:shadow-pomg-purple/40 hover:brightness-110 transition-all duration-300"
+                className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold"
               >
                 Shop Collection
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 href="/nfa-guide"
-                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl border border-pomg-border text-pomg-text font-semibold text-base hover:border-pomg-purple/50 hover:bg-pomg-card/50 transition-all duration-300"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold border border-pomg-border-light rounded-lg text-white hover:border-pomg-purple hover:text-pomg-purple-light transition-all duration-300"
               >
                 NFA Guide
-                <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5" />
               </Link>
             </div>
 
-            {/* Stats row */}
-            <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.5s" }}>
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-3xl mx-auto animate-fade-in">
               {[
                 { value: "25+", label: "Premium Brands" },
                 { value: "500+", label: "Products" },
-                { value: "4.9\u2605", label: "Customer Rating" },
+                { value: "4.9★", label: "Customer Rating" },
                 { value: "Since 2018", label: "Trusted Dealer" },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-white">
+                  <div className="font-display text-2xl text-white">
                     {stat.value}
                   </div>
-                  <div className="text-xs sm:text-sm text-pomg-muted mt-1">
+                  <div className="text-xs text-pomg-muted uppercase tracking-wider mt-1">
                     {stat.label}
                   </div>
                 </div>
@@ -281,320 +148,334 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "0.7s" }}>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-pomg-muted">
-              Scroll
-            </span>
-            <div className="w-5 h-8 rounded-full border border-pomg-border flex items-start justify-center p-1">
-              <div className="w-1 h-2 rounded-full bg-pomg-purple animate-bounce" />
-            </div>
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
+            <ChevronDown className="w-6 h-6 text-pomg-muted" />
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  2. TRUST BADGES ROW                                         */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-dark py-16 border-y border-pomg-border/50">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              {trustBadges.map((badge) => (
+        {/* ═══════════════════════════════════════════════════════
+            2. TRUST BADGES
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-dark py-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                {
+                  icon: <Shield className="w-6 h-6" />,
+                  title: "FFL Licensed",
+                  desc: "Fully licensed & insured Class III SOT dealer",
+                },
+                {
+                  icon: <Truck className="w-6 h-6" />,
+                  title: "Fast Shipping",
+                  desc: "Same-day shipping on in-stock orders before 2PM",
+                },
+                {
+                  icon: <Phone className="w-6 h-6" />,
+                  title: "Expert Support",
+                  desc: "Real knowledge from experienced shooters",
+                },
+                {
+                  icon: <Award className="w-6 h-6" />,
+                  title: "Authorized Dealer",
+                  desc: "Factory-authorized for every brand we carry",
+                },
+              ].map((badge) => (
                 <div
                   key={badge.title}
-                  className="flex items-start gap-4 p-5 rounded-xl bg-pomg-card border border-pomg-border hover:border-pomg-purple/40 transition-colors duration-300"
+                  className="glass-card p-6 text-center md:text-left"
                 >
-                  <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-pomg-purple/15 shrink-0">
-                    <badge.icon className="h-5 w-5 text-pomg-purple" />
+                  <div className="text-pomg-purple mb-3 flex justify-center md:justify-start">
+                    {badge.icon}
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-white">
-                      {badge.title}
-                    </h3>
-                    <p className="text-xs text-pomg-muted mt-1 leading-relaxed">
-                      {badge.description}
-                    </p>
-                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">
+                    {badge.title}
+                  </h3>
+                  <p className="text-xs text-pomg-muted leading-relaxed">
+                    {badge.desc}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  3. FEATURED PRODUCTS                                        */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-darker py-24">
-          {/* Subtle top glow */}
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-40 opacity-20 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 0%, rgba(67,67,122,0.4) 0%, transparent 70%)",
-            }}
-          />
-
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Section header */}
-            <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pomg-purple mb-3">
-                Curated Selection
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                Featured Collection
+        {/* ═══════════════════════════════════════════════════════
+            3. FEATURED PRODUCTS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-darker py-20">
+          <div className="max-w-7xl mx-auto px-4">
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <h2 className="font-display text-4xl md:text-5xl uppercase text-white mb-4">
+                FEATURED COLLECTION
               </h2>
-              <p className="mt-3 text-pomg-muted max-w-lg mx-auto">
-                Hand-picked by our team. The best of what we carry — in stock
-                and ready to ship.
+              <p className="text-pomg-muted max-w-xl mx-auto">
+                Hand-selected firearms and accessories from the most sought-after
+                manufacturers in the industry.
               </p>
             </div>
 
-            {/* Product grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Product Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-children">
               {featured.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
-            {/* View all CTA */}
-            <div className="mt-12 text-center">
+            {/* View All Link */}
+            <div className="text-center mt-12">
               <Link
                 href="/shop"
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-pomg-border text-pomg-text font-semibold text-sm hover:border-pomg-purple/50 hover:text-white hover:bg-pomg-card/50 transition-all duration-300"
+                className="inline-flex items-center gap-2 text-pomg-gold hover:text-pomg-gold-light transition-colors font-semibold group"
               >
                 View All Products
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  4. CATEGORY SHOWCASE                                        */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-dark py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Section header */}
-            <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pomg-gold mb-3">
-                Browse
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                Shop by Category
+        {/* ═══════════════════════════════════════════════════════
+            4. CATEGORY SHOWCASE
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-dark py-20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="font-display text-4xl md:text-5xl uppercase text-white mb-4">
+                SHOP BY CATEGORY
               </h2>
+              <p className="text-pomg-muted max-w-lg mx-auto">
+                Browse our full catalog organized by category. Every item
+                hand-picked for quality and performance.
+              </p>
             </div>
 
-            {/* Category grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categoryCards.map((cat) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/shop?category=${cat.id}`}
-                  className="group relative flex flex-col items-center justify-center p-6 rounded-xl border border-pomg-border bg-pomg-card overflow-hidden hover:border-pomg-purple/50 hover:-translate-y-1 transition-all duration-300"
+                  className="group bg-pomg-card border border-pomg-border rounded-lg p-6 text-center hover:border-pomg-purple/50 hover:translate-y-[-2px] hover:shadow-[0_4px_20px_rgba(168,85,247,0.15)] transition-all duration-300"
                 >
-                  {/* Gradient bg on hover */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                  />
-
-                  <div className="relative z-10 flex flex-col items-center gap-3">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-pomg-purple/10 group-hover:bg-pomg-purple/20 transition-colors">
-                      <cat.icon className="h-5 w-5 text-pomg-purple group-hover:text-pomg-purple-light transition-colors" />
-                    </div>
-                    <h3 className="text-sm font-semibold text-white text-center">
-                      {cat.name}
-                    </h3>
-                    <span className="text-xs text-pomg-muted">
-                      {cat.count} {cat.count === 1 ? "item" : "items"}
-                    </span>
+                  <div className="text-pomg-purple-light mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                    {categoryIcons[cat.id]}
                   </div>
+                  <h3 className="font-display text-xl uppercase text-white mb-1">
+                    {cat.name}
+                  </h3>
+                  <p className="text-pomg-muted text-xs">
+                    {cat.count} {cat.count === 1 ? "item" : "items"}
+                  </p>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  5. BUILD YOUR SETUP CTA                                     */}
-        {/* ============================================================ */}
-        <section className="relative overflow-hidden">
-          {/* Purple gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pomg-purple via-[#52528c] to-pomg-purple" />
-          {/* Pattern overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.06]"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-            }}
-          />
-          {/* Glow accent */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[120%] opacity-30"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(201,168,76,0.25) 0%, transparent 65%)",
-            }}
-          />
+        {/* ═══════════════════════════════════════════════════════
+            5. BUILD YOUR SETUP CTA
+        ═══════════════════════════════════════════════════════ */}
+        <section className="relative py-24 overflow-hidden bg-gradient-to-br from-pomg-purple/20 via-pomg-dark to-pomg-darker">
+          {/* Crosshatch Pattern Overlay */}
+          <div className="absolute inset-0 opacity-[0.05]">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern
+                  id="crosshatch"
+                  width="16"
+                  height="16"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M0 16L16 0M-4 4L4 -4M12 20L20 12"
+                    stroke="white"
+                    strokeWidth="1"
+                  />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#crosshatch)" />
+            </svg>
+          </div>
 
-          <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-              Build Your Setup
+          <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+            <h2 className="font-display text-5xl md:text-6xl lg:text-7xl uppercase text-white mb-6">
+              BUILD YOUR SETUP
             </h2>
-            <p className="mt-5 max-w-xl mx-auto text-base sm:text-lg text-white/80 leading-relaxed">
-              Configure your perfect platform. Choose your rifle, optic,
-              suppressor, and accessories &mdash; we&rsquo;ll handle the rest.
+            <p className="text-pomg-muted text-lg md:text-xl max-w-2xl mx-auto mb-10">
+              Configure your perfect platform from the ground up. Choose your
+              base firearm, optic, suppressor, light, and accessories — we&apos;ll
+              make sure everything works together.
             </p>
-            <div className="mt-10">
-              <Link
-                href="/build-your-setup"
-                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white text-pomg-purple font-bold text-base shadow-xl shadow-black/20 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
-              >
-                Start Building
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
+            <Link
+              href="/build-your-setup"
+              className="btn-gold inline-flex items-center gap-2 px-10 py-4 text-lg font-semibold"
+            >
+              Start Building
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  6. NFA / SILENCER PROMO                                     */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-darker py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Section header */}
-            <div className="text-center mb-16">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pomg-gold mb-3">
-                NFA Items
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                Silencers Made Simple
+        {/* ═══════════════════════════════════════════════════════
+            6. NFA PROMO — SILENCERS MADE SIMPLE
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-darker py-20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-14">
+              <h2 className="font-display text-4xl md:text-5xl uppercase text-white mb-4">
+                SILENCERS MADE SIMPLE
               </h2>
-              <p className="mt-3 text-pomg-muted max-w-2xl mx-auto leading-relaxed">
-                Buying a suppressor doesn&rsquo;t have to be intimidating. We&rsquo;ve
-                streamlined the entire NFA process so you can focus on what
-                matters &mdash; picking the right can.
+              <p className="text-pomg-muted max-w-2xl mx-auto text-lg">
+                Buying a suppressor doesn&apos;t have to be complicated. As a Class
+                III SOT dealer, we handle the entire NFA process so you can focus
+                on what matters — shooting quiet.
               </p>
             </div>
 
-            {/* 3-step process */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-              {nfaSteps.map((item, idx) => (
-                <div key={item.step} className="relative">
-                  {/* Connector line between steps (desktop only) */}
-                  {idx < nfaSteps.length - 1 && (
-                    <div className="hidden md:block absolute top-10 left-[calc(50%+3rem)] w-[calc(100%-6rem)] h-px bg-gradient-to-r from-pomg-purple/50 to-pomg-purple/10" />
-                  )}
+            {/* 3 Step Cards */}
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {/* Gold connector lines on desktop */}
+              <div className="hidden md:block absolute top-16 left-[calc(33.33%+0.5rem)] right-[calc(33.33%+0.5rem)] h-[2px] bg-gradient-to-r from-pomg-gold/60 via-pomg-gold to-pomg-gold/60" />
 
-                  <div className="flex flex-col items-center text-center p-6 rounded-xl bg-pomg-card border border-pomg-border hover:border-pomg-purple/40 transition-colors duration-300">
-                    {/* Step number */}
-                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-pomg-purple to-pomg-purple/60 text-white font-bold text-lg mb-5 shadow-lg shadow-pomg-purple/20">
-                      {item.step}
-                    </div>
-                    <h3 className="text-base font-semibold text-white mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-pomg-muted leading-relaxed">
-                      {item.description}
-                    </p>
+              {[
+                {
+                  step: 1,
+                  title: "CHOOSE",
+                  desc: "Browse our full silencer collection. We carry Dead Air, SureFire, Q, and more. Not sure what fits? We'll help.",
+                  icon: <Crosshair className="w-6 h-6" />,
+                },
+                {
+                  step: 2,
+                  title: "PAPERWORK",
+                  desc: "We handle the ATF Form 4, fingerprint cards, passport photos, and eForm submission. You just sign.",
+                  icon: <Shield className="w-6 h-6" />,
+                },
+                {
+                  step: 3,
+                  title: "PICK UP",
+                  desc: "Once your eForm 4 is approved, we'll call you. Come pick up your suppressor and leave quiet.",
+                  icon: <Award className="w-6 h-6" />,
+                },
+              ].map((step) => (
+                <div
+                  key={step.step}
+                  className="glass-card p-8 text-center relative"
+                >
+                  {/* Step Number Circle */}
+                  <div className="w-12 h-12 rounded-full bg-pomg-gold/20 border-2 border-pomg-gold flex items-center justify-center mx-auto mb-5">
+                    <span className="font-display text-xl text-pomg-gold">
+                      {step.step}
+                    </span>
                   </div>
+                  <div className="text-pomg-purple mb-4 flex justify-center">
+                    {step.icon}
+                  </div>
+                  <h3 className="font-display text-2xl text-white mb-3">
+                    {step.title}
+                  </h3>
+                  <p className="text-pomg-muted text-sm leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
               ))}
             </div>
 
-            {/* Average wait time + CTA */}
-            <div className="mt-12 flex flex-col items-center gap-6">
-              <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-pomg-card border border-pomg-border">
-                <Clock className="h-5 w-5 text-pomg-gold" />
-                <div className="text-left">
-                  <p className="text-xs text-pomg-muted">
-                    Average eForm 4 Wait Time
-                  </p>
-                  <p className="text-sm font-semibold text-white">
-                    4 &ndash; 6 Months (2024 avg)
-                  </p>
-                </div>
+            {/* Wait Time & CTA */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-pomg-border bg-pomg-card/60 mb-8">
+                <Clock className="w-4 h-4 text-pomg-gold" />
+                <span className="text-sm text-pomg-muted">
+                  Current eForm 4 Average:{" "}
+                  <span className="text-pomg-gold font-semibold">
+                    4-6 Months
+                  </span>
+                </span>
               </div>
-
+              <br />
               <Link
                 href="/nfa-guide"
-                className="group inline-flex items-center gap-2 text-pomg-purple font-semibold text-sm hover:text-pomg-purple-light transition-colors"
+                className="inline-flex items-center gap-2 text-pomg-gold hover:text-pomg-gold-light transition-colors font-semibold group mt-4"
               >
                 Read the Full NFA Guide
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  7. BRAND LOGOS ROW                                          */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-dark py-16 border-y border-pomg-border/50">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-pomg-muted mb-8">
+        {/* ═══════════════════════════════════════════════════════
+            7. BRAND LOGOS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-dark py-16">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <p className="font-display text-pomg-muted text-sm tracking-[0.25em] uppercase mb-10">
               Authorized Dealer
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              {manufacturers.slice(0, 12).map((brand) => (
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+              {manufacturers.slice(0, 15).map((brand) => (
                 <span
                   key={brand}
-                  className="px-4 py-2 rounded-lg bg-pomg-card border border-pomg-border text-xs sm:text-sm font-medium text-pomg-text/70 hover:text-white hover:border-pomg-purple/40 transition-all duration-300 cursor-default"
+                  className="font-display text-pomg-dim hover:text-pomg-text tracking-wide text-lg transition-colors duration-300 cursor-default"
                 >
-                  {brand}
+                  {brand.toUpperCase()}
                 </span>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  8. TESTIMONIALS                                             */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-darker py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {/* Section header */}
-            <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-pomg-purple mb-3">
-                Testimonials
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                What Our Customers Say
+        {/* ═══════════════════════════════════════════════════════
+            8. TESTIMONIALS
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-darker py-20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="font-display text-4xl md:text-5xl uppercase text-white mb-4">
+                WHAT OUR CUSTOMERS SAY
               </h2>
+              <p className="text-pomg-muted max-w-lg mx-auto">
+                Real reviews from verified buyers. We let our customers and our
+                inventory speak for themselves.
+              </p>
             </div>
 
-            {/* Testimonial cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {testimonials.map((t) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.map((review) => (
                 <div
-                  key={t.name}
-                  className="flex flex-col p-6 rounded-xl bg-pomg-card border border-pomg-border hover:border-pomg-purple/30 transition-colors duration-300"
+                  key={review.name}
+                  className="glass-card p-8 flex flex-col"
                 >
                   {/* Stars */}
-                  <div className="flex items-center gap-0.5 mb-4">
-                    {renderStars(t.rating)}
+                  <div className="flex gap-1 mb-4">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-pomg-gold text-pomg-gold"
+                      />
+                    ))}
                   </div>
-
-                  {/* Review text */}
-                  <p className="flex-1 text-sm text-pomg-text leading-relaxed mb-5">
-                    &ldquo;{t.text}&rdquo;
+                  {/* Review Text */}
+                  <p className="text-pomg-text italic leading-relaxed mb-6 flex-1">
+                    &ldquo;{review.review}&rdquo;
                   </p>
-
-                  {/* Divider */}
-                  <div className="border-t border-pomg-border mb-4" />
-
-                  {/* Customer info */}
-                  <div className="flex items-center justify-between">
+                  {/* Reviewer */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-pomg-purple/20 flex items-center justify-center">
+                      <span className="font-display text-pomg-purple text-sm">
+                        {review.name.charAt(0)}
+                      </span>
+                    </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">
-                        {t.name}
+                      <p className="text-white text-sm font-semibold">
+                        {review.name}
                       </p>
-                      <p className="text-xs text-pomg-muted">
+                      <p className="text-xs text-pomg-muted flex items-center gap-1">
+                        <Shield className="w-3 h-3 text-green-500" />
                         Verified Buyer
                       </p>
                     </div>
-                    <span className="text-[10px] font-medium text-pomg-purple bg-pomg-purple/10 px-2 py-1 rounded">
-                      {t.focus}
-                    </span>
                   </div>
                 </div>
               ))}
@@ -602,176 +483,149 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  9. NEWSLETTER                                               */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-dark py-20 border-y border-pomg-border/50">
-          {/* Subtle background glow */}
-          <div
-            className="absolute inset-0 opacity-15 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(67,67,122,0.5) 0%, transparent 70%)",
-            }}
-          />
-
-          <div className="relative mx-auto max-w-xl px-4 sm:px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Stay in the Loop
+        {/* ═══════════════════════════════════════════════════════
+            9. NEWSLETTER
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-dark py-16">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <h2 className="font-display text-3xl md:text-4xl uppercase text-white mb-4">
+              STAY IN THE LOOP
             </h2>
-            <p className="text-pomg-muted text-sm leading-relaxed mb-8">
-              Be first to know about new inventory, exclusive drops, and NFA
-              updates. No spam, ever.
+            <p className="text-pomg-muted mb-8 max-w-lg mx-auto">
+              Get first access to new arrivals, exclusive deals, restocks, and NFA
+              updates. No spam — just the good stuff.
             </p>
 
             <form
-              onSubmit={handleNewsletter}
-              className="flex flex-col sm:flex-row gap-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setEmail("");
+              }}
+              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4"
             >
-              <input
-                type="email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="flex-1 px-4 py-3 rounded-xl bg-pomg-card border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-              />
-              <button
-                type="submit"
-                disabled={subscribed}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-pomg-purple to-[#5a5a9e] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-lg shadow-pomg-purple/20"
-              >
-                {subscribed ? "Subscribed!" : "Subscribe"}
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pomg-muted" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="w-full bg-pomg-card border border-pomg-border rounded-lg pl-10 pr-4 py-3 text-white placeholder:text-pomg-dim focus:outline-none focus:border-pomg-purple transition-colors"
+                />
+              </div>
+              <button type="submit" className="btn-primary px-6 py-3 font-semibold whitespace-nowrap">
+                Subscribe
               </button>
             </form>
 
-            {subscribed && (
-              <p className="mt-3 text-xs text-pomg-gold animate-fade-in">
-                Welcome aboard! Check your inbox for a confirmation.
-              </p>
-            )}
-
-            <p className="mt-4 text-[11px] text-pomg-muted">
-              We respect your privacy. Unsubscribe anytime with one click.
+            <p className="text-xs text-pomg-dim">
+              We respect your privacy. Unsubscribe anytime. No data shared with
+              third parties.
             </p>
           </div>
         </section>
 
-        {/* ============================================================ */}
-        {/*  10. STORE INFO                                              */}
-        {/* ============================================================ */}
-        <section className="relative bg-pomg-darker py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-              {/* Left: Store details */}
+        {/* ═══════════════════════════════════════════════════════
+            10. STORE INFO
+        ═══════════════════════════════════════════════════════ */}
+        <section className="bg-pomg-darker py-20">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+              {/* Info Column */}
               <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-pomg-purple/15">
-                    <MapPin className="h-5 w-5 text-pomg-purple" />
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white">
-                    Visit Our Store
-                  </h2>
-                </div>
+                <h2 className="font-display text-4xl md:text-5xl uppercase text-white mb-8">
+                  VISIT THE SHOP
+                </h2>
 
                 <div className="space-y-6">
                   {/* Address */}
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-pomg-muted mb-2">
-                      Address
-                    </h3>
-                    <a
-                      href="https://maps.google.com/?q=825+N+300+W+Suite+WA-011+Salt+Lake+City+UT+84103"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-pomg-text hover:text-white transition-colors text-sm leading-relaxed"
-                    >
-                      825 N 300 W, Suite WA-011
-                      <br />
-                      Salt Lake City, UT 84103
-                    </a>
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-pomg-muted mb-2">
-                      Phone
-                    </h3>
-                    <a
-                      href="tel:+18016664692"
-                      className="text-pomg-text hover:text-white transition-colors text-sm flex items-center gap-2"
-                    >
-                      <Phone className="h-4 w-4 text-pomg-purple" />
-                      (801) 666-4692
-                    </a>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-pomg-purple/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <MapPin className="w-5 h-5 text-pomg-purple" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg text-white mb-1">
+                        LOCATION
+                      </h3>
+                      <p className="text-pomg-muted text-sm leading-relaxed">
+                        Piece of Mind Guns
+                        <br />
+                        Salt Lake City, UT
+                        <br />
+                        <span className="text-pomg-dim text-xs">
+                          Exact address provided upon appointment confirmation
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   {/* Hours */}
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-pomg-muted mb-3">
-                      Store Hours
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4 text-pomg-purple shrink-0" />
-                        <div className="flex justify-between flex-1 max-w-xs">
-                          <span className="text-sm text-pomg-muted">
-                            Online
-                          </span>
-                          <span className="text-sm text-pomg-text font-medium">
-                            Mon &ndash; Sat, 10 AM &ndash; 6 PM
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-4 w-4 text-pomg-gold shrink-0" />
-                        <div className="flex justify-between flex-1 max-w-xs">
-                          <span className="text-sm text-pomg-muted">
-                            In-Store
-                          </span>
-                          <span className="text-sm text-pomg-text font-medium">
-                            Wed &ndash; Sat, Noon &ndash; 6 PM
-                          </span>
-                        </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-pomg-purple/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Clock className="w-5 h-5 text-pomg-purple" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg text-white mb-1">
+                        HOURS
+                      </h3>
+                      <div className="text-pomg-muted text-sm space-y-1">
+                        <p>Mon - Fri: 10:00 AM – 6:00 PM</p>
+                        <p>Saturday: 10:00 AM – 4:00 PM</p>
+                        <p>Sunday: By Appointment</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Contact CTA */}
-                  <div className="pt-2">
-                    <Link
-                      href="/contact"
-                      className="group inline-flex items-center gap-2 text-pomg-purple font-semibold text-sm hover:text-pomg-purple-light transition-colors"
-                    >
-                      Get Directions & Contact Info
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                  {/* Phone */}
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-pomg-purple/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Phone className="w-5 h-5 text-pomg-purple" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg text-white mb-1">
+                        CONTACT
+                      </h3>
+                      <p className="text-pomg-muted text-sm">
+                        <a
+                          href="tel:+18015551776"
+                          className="hover:text-pomg-purple transition-colors"
+                        >
+                          (801) 555-1776
+                        </a>
+                      </p>
+                      <p className="text-pomg-muted text-sm">
+                        <a
+                          href="mailto:info@pieceofmindguns.com"
+                          className="hover:text-pomg-purple transition-colors"
+                        >
+                          info@pieceofmindguns.com
+                        </a>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right: Map placeholder */}
-              <div className="flex items-center justify-center rounded-xl bg-pomg-card border border-pomg-border overflow-hidden min-h-[320px]">
-                <div className="flex flex-col items-center gap-4 text-center p-8">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-pomg-purple/10">
-                    <MapPin className="h-7 w-7 text-pomg-purple/60" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-pomg-text">
-                      Salt Lake City, Utah
-                    </p>
-                    <p className="text-xs text-pomg-muted mt-1">
-                      825 N 300 W, Suite WA-011
-                    </p>
-                  </div>
+              {/* Map Placeholder */}
+              <div className="bg-pomg-card border border-pomg-border rounded-lg overflow-hidden aspect-[4/3] flex items-center justify-center relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-pomg-purple/5 to-pomg-dark" />
+                <div className="relative z-10 text-center p-8">
+                  <MapPin className="w-12 h-12 text-pomg-purple/40 mx-auto mb-4" />
+                  <p className="font-display text-xl text-white mb-2">
+                    SALT LAKE CITY, UT
+                  </p>
+                  <p className="text-pomg-muted text-sm mb-6">
+                    Located in the heart of Utah&apos;s firearms community
+                  </p>
                   <a
-                    href="https://maps.google.com/?q=825+N+300+W+Suite+WA-011+Salt+Lake+City+UT+84103"
+                    href="https://maps.google.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-pomg-purple/15 text-pomg-purple text-xs font-semibold hover:bg-pomg-purple/25 transition-colors"
+                    className="inline-flex items-center gap-2 text-pomg-purple hover:text-pomg-purple-light transition-colors text-sm font-semibold"
                   >
-                    Open in Google Maps
-                    <ArrowRight className="h-3 w-3" />
+                    Get Directions
+                    <ArrowRight className="w-4 h-4" />
                   </a>
                 </div>
               </div>

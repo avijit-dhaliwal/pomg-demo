@@ -17,351 +17,348 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Data                                                               */
+/*  DATA                                                               */
 /* ------------------------------------------------------------------ */
 
 const values = [
   {
     icon: Award,
     title: "Quality",
-    desc: "We carry only brands we personally trust and shoot. Every item in our inventory is hand-selected for reliability, craftsmanship, and performance.",
+    description:
+      "We only carry products we'd stake our own name on. Every firearm, silencer, and accessory in our shop has been vetted for quality, reliability, and value. No junk, no gimmicks — just the best.",
   },
   {
     icon: Heart,
     title: "Service",
-    desc: "Whether you\u2019re buying your first firearm or adding another silencer to the collection, our team provides expert guidance without the attitude.",
+    description:
+      "We treat every customer like a friend. Whether you're buying your first pistol or building a suppressed SBR, you'll get honest advice, patient guidance, and a no-pressure shopping experience.",
   },
   {
     icon: Users,
     title: "Community",
-    desc: "We believe in responsible gun ownership and the Second Amendment. This store exists because of a community that shares those values.",
+    description:
+      "We're shooters, hunters, and competitors ourselves. This shop exists because we wanted a place where like-minded people can find premium gear, share knowledge, and build relationships.",
   },
   {
     icon: Shield,
     title: "Trust",
-    desc: "We\u2019re authorized dealers for every brand we carry. No grey-market inventory, no questionable sourcing \u2014 just legitimate products from legitimate channels.",
+    description:
+      "Transparent pricing. No hidden fees. No bait-and-switch. When we make a promise, we keep it. Our reputation is built on trust and we protect it on every single transaction.",
   },
 ];
 
 const brands = [
   "Noveske",
   "Daniel Defense",
-  "Heckler & Koch",
+  "Sig Sauer",
+  "HK",
   "B&T",
-  "Dead Air Silencers",
+  "Wilson Combat",
+  "Dead Air",
   "SilencerCo",
   "Surefire",
   "CGS Group",
   "Eotech",
   "Trijicon",
   "Aimpoint",
-  "Leupold",
+  "Nightforce",
   "Geissele",
-  "Hodge Defense",
-  "KAC (Knight\u2019s Armament)",
-  "LMT (Lewis Machine & Tool)",
-  "Sig Sauer",
-  "FN America",
+  "Magpul",
   "Benchmade",
   "Microtech",
+  "BCM",
+  "LMT",
+];
+
+const storeHours = [
+  { day: "Monday – Friday", hours: "10:00 AM – 7:00 PM" },
+  { day: "Saturday", hours: "10:00 AM – 5:00 PM" },
+  { day: "Sunday", hours: "Closed" },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Component                                                          */
+/*  COMPONENT                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-pomg-darker">
+    <>
       <Header />
 
-      {/* ============ HERO ============ */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-pomg-purple/5 blur-[120px] pointer-events-none" />
-
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pomg-purple/10 border border-pomg-purple/20 text-pomg-purple-light text-xs font-semibold uppercase tracking-widest mb-6">
-            <Heart className="w-3.5 h-3.5" />
-            Our Story
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight">
-            Built by Enthusiasts,{" "}
-            <span className="text-pomg-gold">For Enthusiasts</span>
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-pomg-muted max-w-2xl mx-auto leading-relaxed">
-            Piece of Mind Guns started with a simple idea: create the kind of
-            store we always wanted to walk into \u2014 curated, knowledgeable,
-            and stocked with the best.
-          </p>
-        </div>
-      </section>
-
-      {/* ============ FOUNDING STORY ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Image placeholder */}
-          <div className="aspect-[4/3] rounded-2xl bg-pomg-card border border-pomg-border flex items-center justify-center">
-            <div className="text-center">
-              <Shield className="w-16 h-16 text-pomg-purple/30 mx-auto mb-3" />
-              <span className="text-pomg-muted text-sm">Store Photo</span>
+      <main className="min-h-screen bg-pomg-dark">
+        {/* ── Hero ────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden border-b border-pomg-border">
+          <div className="noise-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent" />
+          <div className="relative mx-auto max-w-7xl px-4 py-28 text-center sm:px-6 lg:px-8">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pomg-gold/30 bg-pomg-gold/10 px-4 py-1.5 text-sm text-pomg-gold-light">
+              <Star className="h-4 w-4" />
+              Utah&apos;s Premium Firearms Dealer
             </div>
-          </div>
-
-          {/* Story */}
-          <div className="space-y-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">
-              How It Started
-            </h2>
-            <div className="space-y-4 text-pomg-text text-sm leading-relaxed">
-              <p>
-                It started in a basement. A collection that grew from a passion
-                for quality firearms, a deep appreciation for precision
-                engineering, and a frustration with the shopping experience at
-                most gun stores.
-              </p>
-              <p>
-                We wanted a place where you could find Noveske next to HK,
-                where Dead Air silencers sat alongside SilencerCo, and where
-                the staff actually knew the difference. A place that felt more
-                like walking into a friend&rsquo;s collection than a big-box
-                retailer.
-              </p>
-              <p>
-                Piece of Mind Guns was born out of that vision. We opened our
-                doors in Salt Lake City with a simple promise:{" "}
-                <strong className="text-white">
-                  stock only what we&rsquo;d personally buy, and treat every
-                  customer the way we&rsquo;d want to be treated.
-                </strong>
-              </p>
-              <p>
-                Today, we&rsquo;re proud to be one of Utah&rsquo;s premier
-                destinations for premium firearms, silencers, optics, and
-                accessories. Our inventory is curated, our team is passionate,
-                and our commitment to the community is unwavering.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ MISSION ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-pomg-card border border-pomg-purple/20 rounded-2xl p-8 sm:p-12 text-center relative overflow-hidden">
-          {/* subtle glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-pomg-purple/5 via-transparent to-pomg-gold/5 pointer-events-none" />
-
-          <div className="relative">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">
-              Our Mission
-            </h2>
-            <p className="text-lg sm:text-xl text-pomg-text leading-relaxed max-w-2xl mx-auto">
-              Providing access to the guns, silencers, and accessories that
-              we&rsquo;ve always dreamed of \u2014 paired with the knowledge and
-              service to help you make the right choice.
+            <h1 className="font-display text-5xl uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Our Story
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-pomg-muted">
+              How a passion for quality firearms turned into Utah&apos;s
+              go-to destination for premium guns, silencers, and accessories.
             </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ VALUES ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
-          What We Stand For
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {values.map((v) => (
-            <div
-              key={v.title}
-              className="bg-pomg-card border border-pomg-border rounded-2xl p-6 hover:border-pomg-purple/40 transition-colors group"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-pomg-purple/10 border border-pomg-purple/20 text-pomg-purple-light group-hover:bg-pomg-purple/20 transition-colors">
-                  <v.icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-semibold text-white">{v.title}</h3>
-              </div>
-              <p className="text-pomg-muted text-sm leading-relaxed">
-                {v.desc}
+        {/* ── Founding Story ──────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                From the Basement to the Shop Floor
+              </h2>
+              <div className="section-divider mb-6 mt-4" />
+              <p className="text-pomg-muted leading-relaxed">
+                Piece of Mind Guns started the way most great things do — with
+                obsession. We were the guys who spent every weekend at the range,
+                who researched every barrel profile and trigger pull weight, who
+                couldn&apos;t stop building and tinkering.
+              </p>
+              <p className="mt-4 text-pomg-muted leading-relaxed">
+                It began in a basement. Buying, selling, and trading firearms
+                with friends who trusted our taste and knowledge. Word spread. The
+                collection grew. Pretty soon, the basement wasn&apos;t big enough.
+              </p>
+              <p className="mt-4 text-pomg-muted leading-relaxed">
+                We opened Piece of Mind Guns because we saw a gap — most gun
+                stores felt like hardware stores. Fluorescent lights, bare walls,
+                and staff who didn&apos;t know the difference between an HK roller
+                lock and a direct impingement AR. We wanted something different: a
+                curated experience for people who care about quality.
+              </p>
+              <p className="mt-4 text-pomg-muted leading-relaxed">
+                Today we&apos;re a licensed Class III / SOT dealer, stocking the
+                best brands in the industry. From your first firearm to your fifth
+                silencer — we&apos;re here to make every purchase feel right.
               </p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ============ TEAM ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-pomg-card border border-pomg-border rounded-2xl p-8 sm:p-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Our Team
-              </h2>
-              <div className="space-y-4 text-pomg-text text-sm leading-relaxed">
-                <p>
-                  Every member of our team is a shooter, collector, or industry
-                  professional. We don&rsquo;t hire salespeople \u2014 we hire
-                  enthusiasts who happen to be great at helping others find the
-                  right gear.
-                </p>
-                <p>
-                  From NFA paperwork specialists to gunsmiths and competitive
-                  shooters, our staff brings real-world experience to every
-                  interaction. Have a question about suppressor host selection,
-                  optic mounting, or building your first AR? We&rsquo;ve been
-                  there.
-                </p>
-                <p className="text-pomg-muted italic">
-                  Stop by the store and say hello. We&rsquo;re always happy to
-                  talk shop.
-                </p>
+            <div className="space-y-6">
+              <div className="glass-card p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-pomg-purple/10">
+                    <Shield className="h-7 w-7 text-pomg-purple-light" />
+                  </div>
+                  <div>
+                    <p className="font-display text-2xl text-pomg-gold">Class III / SOT</p>
+                    <p className="text-sm text-pomg-muted">
+                      Licensed NFA Dealer
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Team photo placeholder */}
-            <div className="aspect-[4/3] rounded-xl bg-pomg-darker border border-pomg-border flex items-center justify-center">
-              <div className="text-center">
-                <Users className="w-16 h-16 text-pomg-purple/30 mx-auto mb-3" />
-                <span className="text-pomg-muted text-sm">Team Photo</span>
+              <div className="glass-card p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-pomg-purple/10">
+                    <Award className="h-7 w-7 text-pomg-purple-light" />
+                  </div>
+                  <div>
+                    <p className="font-display text-2xl text-pomg-gold">20+</p>
+                    <p className="text-sm text-pomg-muted">
+                      Premium Brands Authorized
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="glass-card p-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-pomg-purple/10">
+                    <Users className="h-7 w-7 text-pomg-purple-light" />
+                  </div>
+                  <div>
+                    <p className="font-display text-2xl text-pomg-gold">
+                      Hundreds
+                    </p>
+                    <p className="text-sm text-pomg-muted">
+                      NFA Transfers Processed
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ QUOTE CALLOUT ============ */}
-      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
-          <Quote className="w-10 h-10 text-pomg-gold/40 mx-auto mb-6" />
-          <blockquote className="text-2xl sm:text-3xl font-bold text-white leading-snug italic">
-            &ldquo;If you like quality, you&rsquo;re in the right place.&rdquo;
-          </blockquote>
-          <div className="mt-4 w-16 h-1 bg-pomg-gold/40 rounded-full mx-auto" />
-        </div>
-      </section>
+        {/* ── Mission ─────────────────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              Our Mission
+            </h2>
+            <div className="section-divider mx-auto mb-8 mt-4" />
+            <p className="text-xl leading-relaxed text-pomg-muted">
+              Providing access to the guns, silencers, and accessories that
+              we&apos;ve always dreamed of — curated for quality, priced
+              fairly, and backed by people who genuinely know and love this
+              industry. Every customer leaves with{" "}
+              <span className="text-white">peace of mind</span>.
+            </p>
+          </div>
+        </section>
 
-      {/* ============ STORE INFO ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
-          Visit Us
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            {
-              icon: MapPin,
-              label: "Address",
-              lines: ["825 N 300 W", "Suite WA-011", "Salt Lake City, UT 84103"],
-            },
-            {
-              icon: Clock,
-              label: "Hours",
-              lines: [
-                "Online: Mon\u2013Sat 10 AM\u20136 PM",
-                "In-Store: Wed\u2013Sat Noon\u20136 PM",
-                "Closed Sunday",
-              ],
-            },
-            {
-              icon: Phone,
-              label: "Phone",
-              lines: ["(801) 666-4692"],
-              href: "tel:+18016664692",
-            },
-            {
-              icon: Mail,
-              label: "Email",
-              lines: ["team@pomg.com"],
-              href: "mailto:team@pomg.com",
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="bg-pomg-card border border-pomg-border rounded-2xl p-6 text-center"
-            >
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-pomg-purple/10 border border-pomg-purple/20 mx-auto mb-4">
-                <item.icon className="w-5 h-5 text-pomg-purple-light" />
+        {/* ── Values ──────────────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              What We Stand For
+            </h2>
+            <div className="section-divider mx-auto mb-6 mt-4" />
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {values.map((v) => (
+              <div
+                key={v.title}
+                className="glass-card group p-6 transition-colors hover:border-pomg-purple/40"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-pomg-purple/10 transition-colors group-hover:bg-pomg-purple/20">
+                  <v.icon className="h-6 w-6 text-pomg-purple-light" />
+                </div>
+                <h3 className="font-display text-xl uppercase text-white">
+                  {v.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-pomg-muted">
+                  {v.description}
+                </p>
               </div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
-                {item.label}
-              </h3>
-              <div className="space-y-1">
-                {item.lines.map((line, i) =>
-                  item.href && item.lines.length === 1 ? (
-                    <a
-                      key={i}
-                      href={item.href}
-                      className="text-sm text-pomg-muted hover:text-white transition-colors"
-                    >
-                      {line}
-                    </a>
-                  ) : (
-                    <p key={i} className="text-sm text-pomg-muted">
-                      {line}
-                    </p>
-                  ),
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* ============ BRANDS WE CARRY ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
-          Brands We Carry
-        </h2>
-        <p className="text-pomg-muted text-center max-w-xl mx-auto mb-12">
-          We&rsquo;re authorized dealers for the industry&rsquo;s most respected
-          manufacturers.
-        </p>
+        {/* ── Quote Callout ───────────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <Quote className="mx-auto mb-6 h-10 w-10 text-pomg-gold/40" />
+            <p className="font-display text-4xl uppercase leading-tight tracking-tight sm:text-5xl">
+              <span className="gradient-text-gold">
+                If you like quality, you&apos;re in the right place.
+              </span>
+            </p>
+            <div className="mx-auto mt-8 h-px w-16 bg-pomg-gold/30" />
+            <p className="mt-4 text-sm text-pomg-muted">
+              — Piece of Mind Guns
+            </p>
+          </div>
+        </section>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {brands.map((brand) => (
-            <div
-              key={brand}
-              className="flex items-center justify-center h-20 rounded-xl bg-pomg-card border border-pomg-border hover:border-pomg-purple/30 transition-colors group"
-            >
-              <div className="flex items-center gap-2">
-                <Star className="w-3.5 h-3.5 text-pomg-gold/40 group-hover:text-pomg-gold transition-colors" />
-                <span className="text-sm font-medium text-pomg-muted group-hover:text-white transition-colors">
+        {/* ── Brands We Carry ─────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              Brands We Carry
+            </h2>
+            <div className="section-divider mx-auto mb-6 mt-4" />
+            <p className="mx-auto max-w-2xl text-pomg-muted">
+              Authorized dealer for 20+ of the industry&apos;s most respected
+              manufacturers. Only brands that meet our quality standard make
+              the shelf.
+            </p>
+          </div>
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+            {brands.map((brand) => (
+              <div
+                key={brand}
+                className="flex items-center justify-center rounded-lg border border-pomg-border bg-pomg-surface/30 px-4 py-4 text-center transition-colors hover:border-pomg-gold/30 hover:bg-pomg-surface/50"
+              >
+                <span className="font-display text-sm uppercase tracking-wider text-pomg-muted">
                   {brand}
                 </span>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* ============ CTA ============ */}
-      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-          Come See What We&rsquo;ve Got
-        </h2>
-        <p className="text-pomg-muted text-lg mb-8 max-w-xl mx-auto">
-          Browse our collection online or visit the store in Salt Lake City.
-          We&rsquo;d love to help you find your next piece.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-pomg-gold text-pomg-dark font-bold text-sm hover:brightness-110 transition"
-          >
-            Shop Now
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-pomg-border text-pomg-text font-semibold text-sm hover:border-pomg-purple/40 hover:text-white transition-colors"
-          >
-            Get in Touch
-          </Link>
-        </div>
-      </section>
+        {/* ── Store Info ──────────────────────────────────────────── */}
+        <section className="border-y border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+                Visit Us
+              </h2>
+              <div className="section-divider mx-auto mb-6 mt-4" />
+            </div>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+              {/* Address */}
+              <div className="glass-card flex flex-col items-center p-8 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pomg-purple/10">
+                  <MapPin className="h-7 w-7 text-pomg-purple-light" />
+                </div>
+                <h3 className="font-display text-lg uppercase text-white">
+                  Location
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-pomg-muted">
+                  Piece of Mind Guns
+                  <br />
+                  Utah
+                </p>
+              </div>
+
+              {/* Hours */}
+              <div className="glass-card flex flex-col items-center p-8 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pomg-purple/10">
+                  <Clock className="h-7 w-7 text-pomg-purple-light" />
+                </div>
+                <h3 className="font-display text-lg uppercase text-white">
+                  Hours
+                </h3>
+                <div className="mt-3 space-y-1">
+                  {storeHours.map((h) => (
+                    <p key={h.day} className="text-sm text-pomg-muted">
+                      <span className="text-pomg-text">{h.day}:</span>{" "}
+                      {h.hours}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div className="glass-card flex flex-col items-center p-8 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pomg-purple/10">
+                  <Phone className="h-7 w-7 text-pomg-purple-light" />
+                </div>
+                <h3 className="font-display text-lg uppercase text-white">
+                  Contact
+                </h3>
+                <div className="mt-3 space-y-2">
+                  <p className="flex items-center justify-center gap-2 text-sm text-pomg-muted">
+                    <Phone className="h-3.5 w-3.5 text-pomg-dim" />
+                    (801) 555-POMG
+                  </p>
+                  <p className="flex items-center justify-center gap-2 text-sm text-pomg-muted">
+                    <Mail className="h-3.5 w-3.5 text-pomg-dim" />
+                    info@pieceofmindguns.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA ─────────────────────────────────────────────────── */}
+        <section className="py-24">
+          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+            <h2 className="font-display text-4xl uppercase tracking-tight text-white">
+              See What We&apos;ve Got
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-pomg-muted">
+              Browse our curated collection of firearms, silencers, optics, and
+              accessories. New inventory added regularly.
+            </p>
+            <div className="mt-8">
+              <Link href="/shop" className="btn-primary">
+                Shop Now
+                <Star className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
-    </div>
+    </>
   );
 }

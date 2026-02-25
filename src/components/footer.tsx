@@ -1,32 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  Instagram,
-  Youtube,
-  Facebook,
-  ChevronRight,
-  Shield,
-} from "lucide-react";
+import { Instagram, Youtube, Facebook, Shield, MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const shopLinks = [
-  { label: "Firearms", href: "/shop?category=firearms" },
-  { label: "Silencers", href: "/shop?category=silencers" },
-  { label: "Optics", href: "/shop?category=optics" },
-  { label: "Accessories", href: "/shop?category=accessories" },
-  { label: "Knives", href: "/shop?category=knives" },
+  { label: "Firearms", href: "/shop/firearms" },
+  { label: "Silencers", href: "/silencers" },
+  { label: "Optics", href: "/shop/optics" },
+  { label: "Accessories", href: "/shop/accessories" },
+  { label: "Knives", href: "/shop/knives" },
   { label: "All Products", href: "/shop" },
 ];
 
 const resourceLinks = [
   { label: "NFA Guide", href: "/nfa-guide" },
-  { label: "How Buying Works", href: "/how-buying-works" },
-  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "How Buying Works", href: "/how-it-works" },
+  { label: "Shipping Policy", href: "/shipping" },
   { label: "FFL Transfers", href: "/ffl-transfers" },
   { label: "FAQ", href: "/faq" },
 ];
@@ -38,143 +28,63 @@ const companyLinks = [
   { label: "Careers", href: "/careers" },
 ];
 
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com/pomgguns",
-    icon: Instagram,
-  },
-  {
-    label: "YouTube",
-    href: "https://youtube.com/@pomgguns",
-    icon: Youtube,
-  },
-  {
-    label: "Facebook",
-    href: "https://facebook.com/pomgguns",
-    icon: Facebook,
-  },
+const socials = [
+  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+  { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
+  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
 ];
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      // In a real app this would call an API
-      console.log("Newsletter signup:", email);
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 4000);
-    }
-  };
-
   return (
-    <footer className="relative bg-pomg-dark border-t border-pomg-border/60">
-      {/* Decorative top gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pomg-purple/50 to-transparent" />
+    <footer>
+      {/* Top Divider */}
+      <div className="section-divider" />
 
-      {/* ---- Main footer content ---- */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
-          {/* ---- Brand column ---- */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Logo */}
-            <Link href="/" className="inline-block group">
-              <span className="text-2xl font-extrabold tracking-tight text-white">
-                PIECE OF MIND{" "}
-                <span className="text-pomg-gold">GUNS</span>
-              </span>
-            </Link>
-
-            <p className="text-pomg-muted text-sm leading-relaxed max-w-xs">
-              Utah&rsquo;s premier destination for premium firearms &amp;
-              accessories. Expert guidance, curated selection, and a commitment
-              to responsible ownership.
-            </p>
-
-            {/* Contact details */}
-            <div className="space-y-3">
-              <a
-                href="https://maps.google.com/?q=825+N+300+W+Suite+WA-011+Salt+Lake+City+UT+84103"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-3 text-sm text-pomg-text hover:text-white transition-colors group"
-              >
-                <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-pomg-purple group-hover:text-pomg-gold transition-colors" />
-                <span>
-                  825 N 300 W, Suite WA-011
-                  <br />
-                  Salt Lake City, UT 84103
-                </span>
-              </a>
-
-              <a
-                href="tel:+18016664692"
-                className="flex items-center gap-3 text-sm text-pomg-text hover:text-white transition-colors group"
-              >
-                <Phone className="w-4 h-4 shrink-0 text-pomg-purple group-hover:text-pomg-gold transition-colors" />
-                (801) 666-4692
-              </a>
-
-              <a
-                href="mailto:team@pomg.com"
-                className="flex items-center gap-3 text-sm text-pomg-text hover:text-white transition-colors group"
-              >
-                <Mail className="w-4 h-4 shrink-0 text-pomg-purple group-hover:text-pomg-gold transition-colors" />
-                team@pomg.com
-              </a>
-            </div>
-
-            {/* Hours */}
-            <div className="flex items-start gap-3 text-sm">
-              <Clock className="w-4 h-4 mt-0.5 shrink-0 text-pomg-purple" />
-              <div className="space-y-1">
-                <div className="flex justify-between gap-4">
-                  <span className="text-pomg-muted">Online</span>
-                  <span className="text-pomg-text">Mon&ndash;Sat 10 AM&ndash;6 PM</span>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <span className="text-pomg-muted">In-Store</span>
-                  <span className="text-pomg-text">Wed&ndash;Sat Noon&ndash;6 PM</span>
-                </div>
+      {/* Main Footer */}
+      <div className="bg-pomg-dark">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            {/* Column 1 — Brand */}
+            <div className="space-y-5">
+              <Image
+                src="/pomg-logo.png"
+                width={100}
+                height={42}
+                alt="Piece of Mind Guns"
+                className="object-contain"
+              />
+              <p className="text-sm leading-relaxed text-pomg-muted">
+                Utah&apos;s premier destination for premium firearms &amp;
+                accessories
+              </p>
+              <div className="flex items-center gap-3">
+                {socials.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-pomg-border text-pomg-muted transition hover:border-pomg-purple hover:text-pomg-purple-light"
+                  >
+                    <social.icon className="h-4 w-4" />
+                  </a>
+                ))}
               </div>
             </div>
 
-            {/* Social icons */}
-            <div className="flex items-center gap-3 pt-1">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="flex items-center justify-center w-10 h-10 rounded-xl bg-pomg-card border border-pomg-border text-pomg-muted hover:text-white hover:border-pomg-purple/50 hover:bg-pomg-purple/10 transition-all duration-200"
-                >
-                  <social.icon className="w-4.5 h-4.5" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* ---- Link columns ---- */}
-          <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
-            {/* Shop */}
+            {/* Column 2 — Shop */}
             <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              <h4 className="font-display text-sm uppercase tracking-wider text-pomg-gold">
                 Shop
-              </h3>
-              <ul className="space-y-2.5">
+              </h4>
+              <ul className="mt-4 space-y-2.5">
                 {shopLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="group flex items-center gap-1.5 text-sm text-pomg-muted hover:text-pomg-text transition-colors"
+                      className="text-sm text-pomg-muted transition hover:text-pomg-text"
                     >
-                      <ChevronRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-pomg-gold" />
                       {link.label}
                     </Link>
                   </li>
@@ -182,19 +92,18 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Resources */}
+            {/* Column 3 — Resources */}
             <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              <h4 className="font-display text-sm uppercase tracking-wider text-pomg-gold">
                 Resources
-              </h3>
-              <ul className="space-y-2.5">
+              </h4>
+              <ul className="mt-4 space-y-2.5">
                 {resourceLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="group flex items-center gap-1.5 text-sm text-pomg-muted hover:text-pomg-text transition-colors"
+                      className="text-sm text-pomg-muted transition hover:text-pomg-text"
                     >
-                      <ChevronRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-pomg-gold" />
                       {link.label}
                     </Link>
                   </li>
@@ -202,102 +111,87 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Company */}
+            {/* Column 4 — Company + Store Info */}
             <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              <h4 className="font-display text-sm uppercase tracking-wider text-pomg-gold">
                 Company
-              </h3>
-              <ul className="space-y-2.5">
+              </h4>
+              <ul className="mt-4 space-y-2.5">
                 {companyLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="group flex items-center gap-1.5 text-sm text-pomg-muted hover:text-pomg-text transition-colors"
+                      className="text-sm text-pomg-muted transition hover:text-pomg-text"
                     >
-                      <ChevronRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-pomg-gold" />
                       {link.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
-          </div>
 
-          {/* ---- Newsletter column ---- */}
-          <div className="lg:col-span-3 space-y-5">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-              Stay in the Loop
-            </h3>
-            <p className="text-sm text-pomg-muted leading-relaxed">
-              Get first access to new inventory, exclusive deals, and NFA
-              process updates.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pomg-muted" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-pomg-card border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-                />
+              {/* Store Info */}
+              <div className="mt-6 space-y-2.5 border-t border-pomg-border/40 pt-5">
+                <div className="flex items-start gap-2 text-sm text-pomg-muted">
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-pomg-dim" />
+                  <span>825 N 300 W, Suite WA-011, SLC UT 84103</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-pomg-muted">
+                  <Phone className="h-3.5 w-3.5 flex-shrink-0 text-pomg-dim" />
+                  <a
+                    href="tel:+18016664692"
+                    className="transition hover:text-pomg-text"
+                  >
+                    (801) 666-4692
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-pomg-muted">
+                  <Mail className="h-3.5 w-3.5 flex-shrink-0 text-pomg-dim" />
+                  <a
+                    href="mailto:team@pomg.com"
+                    className="transition hover:text-pomg-text"
+                  >
+                    team@pomg.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-pomg-muted">
+                  <Clock className="h-3.5 w-3.5 flex-shrink-0 text-pomg-dim" />
+                  <span>Mon–Sat 10am–6pm</span>
+                </div>
               </div>
-              <button
-                type="submit"
-                disabled={subscribed}
-                className="w-full py-3 rounded-xl bg-pomg-purple text-white text-sm font-semibold hover:bg-pomg-purple/80 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-              >
-                {subscribed ? "Subscribed!" : "Subscribe"}
-              </button>
-            </form>
-
-            {subscribed && (
-              <p className="text-xs text-pomg-gold animate-fade-in">
-                Welcome aboard! Check your inbox for a confirmation.
-              </p>
-            )}
-
-            <p className="text-[11px] text-pomg-muted leading-relaxed">
-              No spam, ever. Unsubscribe anytime. We respect your privacy.
-            </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ---- Bottom bar ---- */}
-      <div className="border-t border-pomg-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            {/* Left: copyright & legal */}
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1 text-xs text-pomg-muted">
-              <span>&copy; 2026 Piece of Mind Guns LLC. All rights reserved.</span>
-              <span className="hidden sm:inline text-pomg-border">|</span>
-              <Link
-                href="/privacy"
-                className="hover:text-pomg-text transition-colors"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-pomg-text transition-colors"
-              >
-                Terms
-              </Link>
+        {/* Bottom Bar */}
+        <div className="border-t border-pomg-border/30">
+          <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-5 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
+            {/* Left */}
+            <p className="text-xs text-pomg-dim">
+              &copy; 2026 Piece of Mind Guns. All rights reserved.
+            </p>
+
+            {/* Center */}
+            <div className="flex items-center gap-1.5 text-xs text-pomg-muted">
+              <Shield className="h-3.5 w-3.5 text-pomg-purple-light" />
+              <span>Federal Firearms Licensee</span>
             </div>
 
-            {/* Right: FFL info + demo badge */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-[11px] text-pomg-muted">
-                <Shield className="w-3.5 h-3.5 text-pomg-purple" />
-                <span>FFL #9-87-XXX-XX-XX-XXXXX</span>
-              </div>
-
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pomg-gold/10 border border-pomg-gold/20 text-pomg-gold text-[10px] font-bold uppercase tracking-widest">
-                <span className="w-1.5 h-1.5 rounded-full bg-pomg-gold animate-pulse" />
+            {/* Right */}
+            <div className="flex items-center gap-3 text-xs">
+              <Link
+                href="/privacy"
+                className="text-pomg-muted transition hover:text-pomg-text"
+              >
+                Privacy Policy
+              </Link>
+              <span className="text-pomg-dim">|</span>
+              <Link
+                href="/terms"
+                className="text-pomg-muted transition hover:text-pomg-text"
+              >
+                Terms of Service
+              </Link>
+              <span className="ml-2 inline-flex items-center rounded-full border border-pomg-border/50 bg-pomg-surface/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-pomg-dim">
                 Demo Site
               </span>
             </div>

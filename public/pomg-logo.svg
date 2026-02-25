@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100" width="200" height="100">
+  <defs>
+    <!-- Purple glow filter for outline effect -->
+    <filter id="purpleGlow" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur"/>
+      <feFlood flood-color="#9B8DC8" flood-opacity="0.85" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle outer glow for premium feel -->
+    <filter id="outerGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+      <feFlood flood-color="#9B8DC8" flood-opacity="0.4" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background (transparent) -->
+
+  <!-- PIECE - top line, bold italic slanted -->
+  <g filter="url(#outerGlow)">
+    <!-- Purple stroke/outline layer -->
+    <text
+      x="100" y="40"
+      font-family="'Impact', 'Arial Black', 'Helvetica Neue', sans-serif"
+      font-weight="900"
+      font-style="italic"
+      font-size="38"
+      text-anchor="middle"
+      letter-spacing="5"
+      fill="none"
+      stroke="#9B8DC8"
+      stroke-width="2.5"
+      transform="skewX(-8) translate(7,0)"
+    >PIECE</text>
+    <!-- White fill layer -->
+    <text
+      x="100" y="40"
+      font-family="'Impact', 'Arial Black', 'Helvetica Neue', sans-serif"
+      font-weight="900"
+      font-style="italic"
+      font-size="38"
+      text-anchor="middle"
+      letter-spacing="5"
+      fill="#FFFFFF"
+      transform="skewX(-8) translate(7,0)"
+    >PIECE</text>
+  </g>
+
+  <!-- OF MIND - second line, bold italic slanted -->
+  <g filter="url(#outerGlow)">
+    <!-- Purple stroke/outline layer -->
+    <text
+      x="100" y="72"
+      font-family="'Impact', 'Arial Black', 'Helvetica Neue', sans-serif"
+      font-weight="900"
+      font-style="italic"
+      font-size="34"
+      text-anchor="middle"
+      letter-spacing="4"
+      fill="none"
+      stroke="#9B8DC8"
+      stroke-width="2.5"
+      transform="skewX(-8) translate(7,0)"
+    >OF MIND</text>
+    <!-- White fill layer -->
+    <text
+      x="100" y="72"
+      font-family="'Impact', 'Arial Black', 'Helvetica Neue', sans-serif"
+      font-weight="900"
+      font-style="italic"
+      font-size="34"
+      text-anchor="middle"
+      letter-spacing="4"
+      fill="#FFFFFF"
+      transform="skewX(-8) translate(7,0)"
+    >OF MIND</text>
+  </g>
+
+  <!-- Registered trademark symbol -->
+  <text
+    x="168" y="62"
+    font-family="'Helvetica Neue', 'Arial', sans-serif"
+    font-weight="400"
+    font-size="8"
+    fill="#9B8DC8"
+    transform="skewX(-8)"
+  >&#174;</text>
+
+  <!-- Subtle accent line under text for premium feel -->
+  <line
+    x1="30" y1="82"
+    x2="170" y2="82"
+    stroke="#9B8DC8"
+    stroke-width="1"
+    opacity="0.5"
+    transform="skewX(-8) translate(7,0)"
+  />
+
+  <!-- GUNS - small subtext -->
+  <text
+    x="100" y="93"
+    font-family="'Impact', 'Arial Black', 'Helvetica Neue', sans-serif"
+    font-weight="700"
+    font-style="italic"
+    font-size="12"
+    text-anchor="middle"
+    letter-spacing="8"
+    fill="#9B8DC8"
+    opacity="0.9"
+    transform="skewX(-8) translate(7,0)"
+  >GUNS</text>
+</svg>

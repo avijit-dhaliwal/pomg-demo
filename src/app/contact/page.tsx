@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, FormEvent } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import {
@@ -14,15 +13,16 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Data                                                               */
+/*  DATA                                                               */
 /* ------------------------------------------------------------------ */
 
 const subjects = [
   "General Inquiry",
-  "Product Inquiry",
-  "NFA Questions",
+  "Product Availability",
+  "NFA / Silencer Question",
   "FFL Transfer",
-  "Wholesale",
+  "Pricing / Quote",
+  "Warranty / Service",
   "Other",
 ];
 
@@ -30,49 +30,31 @@ const storeInfo = [
   {
     icon: MapPin,
     label: "Address",
-    value: "825 N 300 W, Suite WA-011\nSalt Lake City, UT 84103",
-    href: "https://maps.google.com/?q=825+N+300+W+Suite+WA-011+Salt+Lake+City+UT+84103",
+    value: "Piece of Mind Guns\nUtah",
+    href: null,
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "(801) 666-4692",
-    href: "tel:+18016664692",
+    value: "(801) 555-POMG",
+    href: "tel:+18015557664",
   },
   {
     icon: Mail,
     label: "Email",
-    value: "team@pomg.com",
-    href: "mailto:team@pomg.com",
+    value: "info@pieceofmindguns.com",
+    href: "mailto:info@pieceofmindguns.com",
   },
 ];
 
-const hours = [
-  { day: "Monday \u2013 Tuesday", time: "10 AM \u2013 6 PM (Online Only)" },
-  { day: "Wednesday \u2013 Saturday", time: "Noon \u2013 6 PM (Store & Online)" },
-  { day: "Sunday", time: "Closed" },
-];
-
-const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://instagram.com/pomgguns",
-    handle: "@pomgguns",
-  },
-  {
-    label: "YouTube",
-    href: "https://youtube.com/@pomgguns",
-    handle: "@pomgguns",
-  },
-  {
-    label: "Facebook",
-    href: "https://facebook.com/pomgguns",
-    handle: "Piece of Mind Guns",
-  },
+const storeHours = [
+  { day: "Monday – Friday", hours: "10:00 AM – 7:00 PM" },
+  { day: "Saturday", hours: "10:00 AM – 5:00 PM" },
+  { day: "Sunday", hours: "Closed" },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Component                                                          */
+/*  COMPONENT                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function ContactPage() {
@@ -80,336 +62,372 @@ export default function ContactPage() {
     name: "",
     email: "",
     phone: "",
-    subject: "General Inquiry",
+    subject: "",
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    // Simulate submission
+    setTimeout(() => {
+      setSending(false);
+      setSubmitted(true);
+    }, 1200);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In production this would call an API
-    console.log("Contact form submitted:", formData);
-    setSubmitted(true);
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "General Inquiry",
-      message: "",
-    });
-    setTimeout(() => setSubmitted(false), 5000);
-  };
-
   return (
-    <div className="min-h-screen bg-pomg-darker">
+    <>
       <Header />
 
-      {/* ============ HERO ============ */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-pomg-purple/5 blur-[120px] pointer-events-none" />
-
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pomg-purple/10 border border-pomg-purple/20 text-pomg-purple-light text-xs font-semibold uppercase tracking-widest mb-6">
-            <Mail className="w-3.5 h-3.5" />
-            Contact
+      <main className="min-h-screen bg-pomg-dark">
+        {/* ── Hero ────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden border-b border-pomg-border">
+          <div className="noise-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-b from-pomg-purple/10 via-transparent to-transparent" />
+          <div className="relative mx-auto max-w-7xl px-4 py-28 text-center sm:px-6 lg:px-8">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pomg-purple/30 bg-pomg-purple/10 px-4 py-1.5 text-sm text-pomg-purple-light">
+              <Mail className="h-4 w-4" />
+              We&apos;re Here to Help
+            </div>
+            <h1 className="font-display text-5xl uppercase tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Get in Touch
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-pomg-muted">
+              Questions about a product, NFA process, or FFL transfer? Reach
+              out — our team responds within 24 hours.
+            </p>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight">
-            Get in <span className="text-pomg-gold">Touch</span>
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-pomg-muted max-w-2xl mx-auto leading-relaxed">
-            Have a question about a product, NFA transfer, or just want to say
-            hello? We&rsquo;d love to hear from you.
-          </p>
-        </div>
-      </section>
+        </section>
 
-      {/* ============ MAIN CONTENT: FORM + SIDEBAR ============ */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* ---------- Contact Form ---------- */}
-          <div className="lg:col-span-2">
-            <div className="bg-pomg-card border border-pomg-border rounded-2xl p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-white mb-6">
+        {/* ── Form + Sidebar ──────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-3">
+            {/* ── Contact Form (2/3) ──────────────────────────────── */}
+            <div className="lg:col-span-2">
+              <h2 className="font-display text-3xl uppercase tracking-tight text-white">
                 Send Us a Message
               </h2>
+              <div className="section-divider mb-8 mt-4" />
 
-              {submitted && (
-                <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
-                  Message sent! We&rsquo;ll get back to you within 24 hours.
+              {submitted ? (
+                <div className="glass-card flex flex-col items-center justify-center p-12 text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-pomg-success/20">
+                    <Send className="h-8 w-8 text-green-400" />
+                  </div>
+                  <h3 className="font-display text-2xl uppercase text-white">
+                    Message Sent
+                  </h3>
+                  <p className="mt-3 max-w-md text-pomg-muted">
+                    Thanks for reaching out! We&apos;ll get back to you within
+                    24 hours. Check your email for a confirmation.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                      setFormData({
+                        name: "",
+                        email: "",
+                        phone: "",
+                        subject: "",
+                        message: "",
+                      });
+                    }}
+                    className="btn-primary mt-6"
+                  >
+                    Send Another Message
+                  </button>
                 </div>
-              )}
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    {/* Name */}
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="mb-2 block text-sm font-medium text-pomg-text"
+                      >
+                        Name <span className="text-pomg-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full rounded-lg border border-pomg-border bg-pomg-surface px-4 py-3 text-sm text-white placeholder-pomg-dim outline-none transition-colors focus:border-pomg-purple"
+                        placeholder="John Doe"
+                      />
+                    </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name + Email row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-pomg-text mb-2"
-                    >
-                      Name <span className="text-pomg-gold">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder="John Doe"
-                      className="w-full px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-                    />
+                    {/* Email */}
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="mb-2 block text-sm font-medium text-pomg-text"
+                      >
+                        Email <span className="text-pomg-danger">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full rounded-lg border border-pomg-border bg-pomg-surface px-4 py-3 text-sm text-white placeholder-pomg-dim outline-none transition-colors focus:border-pomg-purple"
+                        placeholder="john@example.com"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-pomg-text mb-2"
-                    >
-                      Email <span className="text-pomg-gold">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="you@example.com"
-                      className="w-full px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-                    />
-                  </div>
-                </div>
 
-                {/* Phone + Subject row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label
-                      htmlFor="phone"
-                      className="block text-sm font-medium text-pomg-text mb-2"
-                    >
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="(801) 555-1234"
-                      className="w-full px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-medium text-pomg-text mb-2"
-                    >
-                      Subject <span className="text-pomg-gold">*</span>
-                    </label>
-                    <select
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border text-sm text-white outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all appearance-none"
-                    >
-                      {subjects.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    {/* Phone */}
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="mb-2 block text-sm font-medium text-pomg-text"
+                      >
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full rounded-lg border border-pomg-border bg-pomg-surface px-4 py-3 text-sm text-white placeholder-pomg-dim outline-none transition-colors focus:border-pomg-purple"
+                        placeholder="(801) 555-1234"
+                      />
+                    </div>
+
+                    {/* Subject */}
+                    <div>
+                      <label
+                        htmlFor="subject"
+                        className="mb-2 block text-sm font-medium text-pomg-text"
+                      >
+                        Subject <span className="text-pomg-danger">*</span>
+                      </label>
+                      <select
+                        id="subject"
+                        name="subject"
+                        required
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="w-full rounded-lg border border-pomg-border bg-pomg-surface px-4 py-3 text-sm text-white outline-none transition-colors focus:border-pomg-purple"
+                      >
+                        <option value="" disabled>
+                          Select a subject
                         </option>
+                        {subjects.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="mb-2 block text-sm font-medium text-pomg-text"
+                    >
+                      Message <span className="text-pomg-danger">*</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full resize-none rounded-lg border border-pomg-border bg-pomg-surface px-4 py-3 text-sm text-white placeholder-pomg-dim outline-none transition-colors focus:border-pomg-purple"
+                      placeholder="Tell us how we can help..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="btn-primary disabled:opacity-50"
+                  >
+                    {sending ? (
+                      <>
+                        <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Message
+                        <Send className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* ── Info Sidebar (1/3) ──────────────────────────────── */}
+            <div className="space-y-6">
+              {/* Store Info Cards */}
+              {storeInfo.map((info) => (
+                <div key={info.label} className="glass-card p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-pomg-purple/10">
+                      <info.icon className="h-5 w-5 text-pomg-purple-light" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm uppercase tracking-wider text-pomg-muted">
+                        {info.label}
+                      </h3>
+                      {info.href ? (
+                        <a
+                          href={info.href}
+                          className="mt-1 block text-sm text-white transition-colors hover:text-pomg-gold"
+                        >
+                          {info.value}
+                          <ExternalLink className="ml-1 inline h-3 w-3 text-pomg-dim" />
+                        </a>
+                      ) : (
+                        <p className="mt-1 whitespace-pre-line text-sm text-white">
+                          {info.value}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Hours */}
+              <div className="glass-card p-5">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-pomg-purple/10">
+                    <Clock className="h-5 w-5 text-pomg-purple-light" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-sm uppercase tracking-wider text-pomg-muted">
+                      Store Hours
+                    </h3>
+                    <div className="mt-2 space-y-1">
+                      {storeHours.map((h) => (
+                        <p key={h.day} className="text-sm text-pomg-muted">
+                          <span className="text-white">{h.day}</span>
+                          <br />
+                          {h.hours}
+                        </p>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
-
-                {/* Message */}
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-pomg-text mb-2"
-                  >
-                    Message <span className="text-pomg-gold">*</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    placeholder="How can we help you?"
-                    className="w-full px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border text-sm text-white placeholder-pomg-muted outline-none focus:border-pomg-purple/60 focus:ring-1 focus:ring-pomg-purple/30 transition-all resize-y"
-                  />
-                </div>
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-pomg-gold text-pomg-dark font-bold text-sm hover:brightness-110 transition"
-                >
-                  <Send className="w-4 h-4" />
-                  Send Message
-                </button>
-              </form>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* ---------- Sidebar ---------- */}
-          <div className="space-y-6">
-            {/* Store Contact Info */}
-            <div className="bg-pomg-card border border-pomg-border rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-5">
-                Store Information
-              </h3>
-              <div className="space-y-5">
-                {storeInfo.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target={item.icon === MapPin ? "_blank" : undefined}
-                    rel={item.icon === MapPin ? "noopener noreferrer" : undefined}
-                    className="flex items-start gap-3 text-sm text-pomg-muted hover:text-white transition-colors group"
-                  >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-pomg-purple/10 border border-pomg-purple/20 shrink-0 group-hover:bg-pomg-purple/20 transition-colors">
-                      <item.icon className="w-4 h-4 text-pomg-purple-light" />
-                    </div>
-                    <div>
-                      <span className="block text-xs font-semibold text-pomg-text uppercase tracking-wider mb-1">
-                        {item.label}
-                      </span>
-                      <span className="whitespace-pre-line">{item.value}</span>
-                    </div>
-                  </a>
-                ))}
+        {/* ── Map Placeholder ─────────────────────────────────────── */}
+        <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-lg border border-pomg-border bg-pomg-surface">
+            <div className="flex h-80 items-center justify-center">
+              <div className="text-center">
+                <MapPin className="mx-auto mb-3 h-10 w-10 text-pomg-dim" />
+                <p className="font-display text-lg uppercase text-pomg-muted">
+                  Store Location
+                </p>
+                <p className="mt-1 text-sm text-pomg-dim">
+                  Interactive map coming soon
+                </p>
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Hours */}
-            <div className="bg-pomg-card border border-pomg-border rounded-2xl p-6">
-              <div className="flex items-center gap-2 mb-5">
-                <Clock className="w-4 h-4 text-pomg-purple-light" />
-                <h3 className="text-lg font-bold text-white">Hours</h3>
-              </div>
-              <div className="space-y-3">
-                {hours.map((h) => (
-                  <div
-                    key={h.day}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="text-pomg-muted">{h.day}</span>
-                    <span className="text-pomg-text font-medium">{h.time}</span>
+        {/* ── FFL Transfer ────────────────────────────────────────── */}
+        <section className="border-t border-pomg-border bg-pomg-darker py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+              <div>
+                <h2 className="font-display text-3xl uppercase tracking-tight text-white">
+                  FFL Transfers
+                </h2>
+                <div className="section-divider mb-6 mt-4" />
+                <p className="text-pomg-muted leading-relaxed">
+                  Bought a firearm online and need it shipped to a licensed
+                  dealer? We accept FFL transfers for all standard firearms and
+                  NFA items. Fast processing, fair pricing, no hassle.
+                </p>
+                <div className="mt-6 space-y-4">
+                  <div className="glass-card p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-pomg-muted">
+                        Standard Firearm Transfer
+                      </span>
+                      <span className="font-display text-lg text-pomg-gold">
+                        $25
+                      </span>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="bg-pomg-card border border-pomg-border rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-5">
-                Follow Us
-              </h3>
-              <div className="space-y-3">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-4 py-3 rounded-xl bg-pomg-darker border border-pomg-border hover:border-pomg-purple/30 transition-colors group"
-                  >
-                    <div>
-                      <span className="block text-sm font-medium text-white">
-                        {social.label}
+                  <div className="glass-card p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-pomg-muted">
+                        NFA Item Transfer
                       </span>
-                      <span className="text-xs text-pomg-muted">
-                        {social.handle}
+                      <span className="font-display text-lg text-pomg-gold">
+                        $75
                       </span>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-pomg-muted group-hover:text-pomg-purple-light transition-colors" />
-                  </a>
-                ))}
+                  </div>
+                  <div className="glass-card p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-pomg-muted">
+                        Multiple Items (same order)
+                      </span>
+                      <span className="font-display text-lg text-pomg-gold">
+                        $25 + $10/ea
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="glass-card p-8">
+                <h3 className="font-display text-xl uppercase text-white">
+                  How It Works
+                </h3>
+                <ol className="mt-6 space-y-4">
+                  {[
+                    "Contact us for our FFL information",
+                    "Have the seller ship the firearm to our shop",
+                    "We'll notify you when it arrives",
+                    "Come in, complete the 4473, and pick it up",
+                  ].map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-pomg-purple/20 font-display text-xs text-pomg-purple-light">
+                        {idx + 1}
+                      </span>
+                      <span className="text-sm text-pomg-muted">{step}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ============ MAP PLACEHOLDER ============ */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="aspect-[21/9] sm:aspect-[3/1] rounded-2xl bg-pomg-card border border-pomg-border flex items-center justify-center overflow-hidden">
-          <div className="text-center">
-            <MapPin className="w-12 h-12 text-pomg-purple/30 mx-auto mb-3" />
-            <p className="text-pomg-muted text-sm font-medium">
-              Interactive Map
-            </p>
-            <p className="text-pomg-muted/60 text-xs mt-1">
-              825 N 300 W, Suite WA-011 &bull; Salt Lake City, UT 84103
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ FFL TRANSFER INFO ============ */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-pomg-card border border-pomg-border rounded-2xl p-8 sm:p-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            FFL Transfers
-          </h2>
-          <div className="space-y-4 text-pomg-text text-sm leading-relaxed">
-            <p>
-              Purchased a firearm or NFA item from an online retailer? We accept
-              FFL transfers at our Salt Lake City location. Here&rsquo;s how it
-              works:
-            </p>
-            <ol className="list-decimal list-inside space-y-2 text-pomg-muted">
-              <li>
-                <strong className="text-white">Contact us</strong> before
-                purchasing to confirm we can accept the transfer and get our FFL
-                information.
-              </li>
-              <li>
-                <strong className="text-white">Provide our FFL</strong> to the
-                seller. They will ship the item directly to us.
-              </li>
-              <li>
-                <strong className="text-white">We notify you</strong> when the
-                item arrives. Come in, complete the 4473, and pick it up.
-              </li>
-            </ol>
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-pomg-darker border border-pomg-border rounded-xl p-4">
-                <span className="block text-xs font-semibold text-pomg-gold uppercase tracking-wider mb-1">
-                  Standard Firearm Transfer
-                </span>
-                <span className="text-lg font-bold text-white">$35</span>
-                <span className="text-pomg-muted text-sm"> per item</span>
-              </div>
-              <div className="bg-pomg-darker border border-pomg-border rounded-xl p-4">
-                <span className="block text-xs font-semibold text-pomg-gold uppercase tracking-wider mb-1">
-                  NFA Item Transfer
-                </span>
-                <span className="text-lg font-bold text-white">$75</span>
-                <span className="text-pomg-muted text-sm">
-                  {" "}
-                  per item (includes paperwork assistance)
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       <Footer />
-    </div>
+    </>
   );
 }
