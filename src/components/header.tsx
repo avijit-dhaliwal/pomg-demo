@@ -9,11 +9,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "Silencers", href: "/silencers" },
-  { label: "Build Your Setup", href: "/build" },
+  { label: "Silencers", href: "/shop?category=silencers" },
+  { label: "Build Your Setup", href: "/build-your-setup" },
   { label: "NFA Guide", href: "/nfa-guide" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "The Pitch", href: "/pitch" },
 ];
 
 export default function Header() {
@@ -124,7 +124,7 @@ export default function Header() {
 
             {/* Cart */}
             <Link
-              href="/cart"
+              href="/shop"
               className="relative rounded-full p-2 text-pomg-muted transition hover:text-pomg-text"
               aria-label="Cart"
             >
@@ -223,7 +223,7 @@ export default function Header() {
               {/* Drawer Footer — Cart Button */}
               <div className="border-t border-pomg-border/50 p-5">
                 <Link
-                  href="/cart"
+                  href="/shop"
                   onClick={() => setMobileOpen(false)}
                   className="btn-gold flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-display text-sm uppercase tracking-wider"
                 >

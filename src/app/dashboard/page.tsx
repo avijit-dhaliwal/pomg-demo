@@ -4,7 +4,18 @@ import { useState } from "react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import AnalyticsDashboard from "@/components/analytics-dashboard";
-import { BarChart3, Calendar, Download } from "lucide-react";
+import NFAPipelineTracker from "@/components/nfa-pipeline-tracker";
+import CustomerInsightsPanel from "@/components/customer-insights-panel";
+import SEOReportPanel from "@/components/seo-report-panel";
+import {
+  BarChart3,
+  Calendar,
+  Download,
+  Shield,
+  Users,
+  Search,
+  TrendingUp,
+} from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -12,12 +23,22 @@ import { BarChart3, Calendar, Download } from "lucide-react";
 
 const dateRanges = ["7 Days", "30 Days", "90 Days", "12 Months", "All Time"];
 
+const dashboardTabs = [
+  { id: "analytics", label: "Analytics", icon: TrendingUp },
+  { id: "nfa-pipeline", label: "NFA Pipeline", icon: Shield },
+  { id: "customers", label: "Customers", icon: Users },
+  { id: "seo", label: "SEO Report", icon: Search },
+] as const;
+
+type TabId = (typeof dashboardTabs)[number]["id"];
+
 /* ------------------------------------------------------------------ */
 /*  COMPONENT                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function DashboardPage() {
   const [activeRange, setActiveRange] = useState("30 Days");
+  const [activeTab, setActiveTab] = useState<TabId>("analytics");
 
   return (
     <>
@@ -73,9 +94,43 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ── Dashboard ───────────────────────────────────────────── */}
+        {/* ── Tab Navigation ─────────────────────────────────────── */}
+        <div className="border-b border-pomg-border bg-pomg-darker/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav className="flex gap-1 overflow-x-auto py-1 scrollbar-none">
+              {dashboardTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-pomg-purple/15 text-pomg-purple-light border border-pomg-purple/30"
+                        : "text-pomg-muted hover:text-pomg-text hover:bg-pomg-surface border border-transparent"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                    {tab.id === "nfa-pipeline" && (
+                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-pomg-gold/20 text-[10px] font-bold text-pomg-gold">
+                        12
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* ── Tab Content ────────────────────────────────────────── */}
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <AnalyticsDashboard />
+          {activeTab === "analytics" && <AnalyticsDashboard />}
+          {activeTab === "nfa-pipeline" && <NFAPipelineTracker />}
+          {activeTab === "customers" && <CustomerInsightsPanel />}
+          {activeTab === "seo" && <SEOReportPanel />}
         </section>
 
         {/* ── Footer Note ─────────────────────────────────────────── */}

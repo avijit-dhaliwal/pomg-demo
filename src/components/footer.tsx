@@ -24,7 +24,8 @@ const resourceLinks = [
 const companyLinks = [
   { label: "Our Story", href: "/about" },
   { label: "Contact", href: "/contact" },
-  { label: "Dashboard Demo", href: "/dashboard" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "The Pitch", href: "/pitch" },
 ];
 
 const socials = [
