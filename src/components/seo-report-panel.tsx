@@ -25,6 +25,7 @@ import {
   technicalIssues,
   seoStats,
 } from "@/data/seo-report";
+import { isDemoMode } from "@/lib/demoMetrics";
 import type {
   KeywordOpportunity,
   ContentGap,
@@ -51,6 +52,7 @@ const scoreCards = [
     projected: seoStats.projectedOrganicTraffic,
     suffix: "/mo",
     icon: TrendingUp,
+    source: isDemoMode ? "Example metric (GA4-style dataset)" : "GA4 live metric",
   },
   {
     label: "Keywords Ranking",
@@ -58,6 +60,7 @@ const scoreCards = [
     projected: seoStats.projectedKeywords,
     suffix: "",
     icon: Search,
+    source: isDemoMode ? "Example metric (SEO dataset)" : "Search Console live metric",
   },
   {
     label: "Domain Authority",
@@ -65,6 +68,7 @@ const scoreCards = [
     projected: seoStats.projectedDA,
     suffix: "",
     icon: Globe,
+    source: isDemoMode ? "Example metric (Semrush-style score)" : "Live provider score",
   },
   {
     label: "Local SEO Score",
@@ -72,6 +76,7 @@ const scoreCards = [
     projected: seoStats.projectedLocalScore,
     suffix: "/100",
     icon: MapPin,
+    source: isDemoMode ? "Example metric (local SEO model)" : "Live local SEO metric",
   },
 ];
 
@@ -140,6 +145,7 @@ function SEOScoreOverview() {
                 </span>
               </span>
             </div>
+            <p className="mt-2 text-[11px] text-pomg-dim">{card.source}</p>
           </div>
         );
       })}
@@ -649,6 +655,11 @@ function MissingTrafficCallout() {
             unranked keywords at an average CPC equivalent. This traffic is
             currently going to competitors.
           </p>
+          <p className="text-[11px] text-pomg-dim mt-2">
+            {isDemoMode
+              ? "Example metric. Replaced with live SEO data upon integration."
+              : "Live metric sourced from connected SEO providers."}
+          </p>
         </div>
 
         {/* Right stats */}
@@ -693,7 +704,8 @@ export default function SEOReportPanel() {
             SEO Opportunity Report
           </h2>
           <p className="text-sm text-pomg-muted mt-1">
-            Keyword gaps, competitor intelligence &amp; technical audit
+            Keyword gaps, competitor intelligence &amp; technical audit{" "}
+            {isDemoMode ? "(example dataset)" : "(live dataset)"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -703,7 +715,8 @@ export default function SEOReportPanel() {
           </span>
           <span className="px-3 py-1.5 text-xs font-medium bg-pomg-purple/20 border border-pomg-purple/40 rounded-lg text-pomg-purple-light flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5" />
-            {keywordOpportunities.length} Keywords
+            {keywordOpportunities.length}{" "}
+            {isDemoMode ? "Example Keywords" : "Tracked Keywords"}
           </span>
         </div>
       </div>

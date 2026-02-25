@@ -352,7 +352,7 @@ export const products: Product[] = [
     image: "https://cdn11.bigcommerce.com/s-ldghm7ewbc/images/stencil/1280x1280/products/259/1098/Sandman_S_black_keymo__53437.1740413815.png",
     images: ["https://cdn11.bigcommerce.com/s-ldghm7ewbc/images/stencil/1280x1280/products/259/1098/Sandman_S_black_keymo__53437.1740413815.png", "https://cdn11.bigcommerce.com/s-ldghm7ewbc/images/stencil/1280x1280/products/259/1094/sandman_s_slider_2__21955.1740413815.jpg"],
     caliber: "5.56 - .308",
-    description: "The Dead Air Sandman-S is the do-everything rifle silencer. Stellite baffles that can handle full-auto mag dumps, KeyMo mounting for tool-free attachment, and sound reduction that puts it at the top of its class. The most popular rifle suppressor in America for a reason.",
+    description: "The Dead Air Sandman-S is a do-everything rifle silencer. Stellite baffles handle full-auto mag dumps, KeyMo mounting enables tool-free attachment, and sound reduction keeps it in the top tier of rifle suppressors.",
     specs: {
       Caliber: "Up to .308 Win / 7.62 NATO",
       Length: '6.8"',
@@ -619,7 +619,7 @@ export const products: Product[] = [
     msrp: 419,
     image: "https://cdn11.bigcommerce.com/s-fecqh2764q/images/stencil/1280x1280/products/942/1178/M640DF-BK-PRO-profile__78350.1683915102.jpg",
     images: ["https://cdn11.bigcommerce.com/s-fecqh2764q/images/stencil/1280x1280/products/942/1178/M640DF-BK-PRO-profile__78350.1683915102.jpg"],
-    description: "The Modlite PLHv2 throws a 69,000 candela beam that reaches out to 300+ yards. The most capable handheld weapon light on the market. Includes ModButton Lite, 18650 body, and rechargeable battery.",
+    description: "The Modlite PLHv2 throws a 69,000 candela beam that reaches out to 300+ yards. A high-output handheld weapon light setup that includes ModButton Lite, 18650 body, and rechargeable battery.",
     specs: {
       Output: "1,350 lumens / 69,000 candela",
       Runtime: "1 hour (high)",
@@ -651,7 +651,7 @@ export const products: Product[] = [
     msrp: 270,
     image: "https://images.unsplash.com/photo-1713643562457-d958596c7022?w=600&fit=crop",
     images: ["https://images.unsplash.com/photo-1713643562457-d958596c7022?w=600&fit=crop"],
-    description: "The Geissele Super Semi-Automatic Enhanced trigger is the most popular precision trigger upgrade for the AR-15. Two-stage design with a crisp 3.5 lb break. Drop-in installation. The upgrade that transforms how your rifle shoots.",
+    description: "The Geissele Super Semi-Automatic Enhanced trigger is a widely used precision trigger upgrade for the AR-15. Two-stage design with a crisp 3.5 lb break and drop-in installation.",
     specs: {
       Type: "Two-stage",
       "Pull Weight": "3.5 lbs (total)",
@@ -683,7 +683,7 @@ export const products: Product[] = [
     msrp: 225,
     image: "https://cdn11.bigcommerce.com/s-ldghm7ewbc/images/stencil/1280x1280/products/259/1094/sandman_s_slider_2__21955.1740413815.jpg",
     images: ["https://cdn11.bigcommerce.com/s-ldghm7ewbc/images/stencil/1280x1280/products/259/1094/sandman_s_slider_2__21955.1740413815.jpg"],
-    description: "The Dead Air KeyMo adapter turns any Dead Air suppressor into a quick-detach system. One-handed attachment, rock-solid lockup, and the most popular mounting system in the suppressor industry.",
+    description: "The Dead Air KeyMo adapter turns compatible Dead Air suppressors into a quick-detach system with one-handed attachment and rock-solid lockup.",
     specs: {
       Compatibility: "Dead Air Sandman series / Wolfman",
       "Muzzle Device": "KeyMo mount required",

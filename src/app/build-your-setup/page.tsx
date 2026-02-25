@@ -10,8 +10,6 @@ import {
   ChevronLeft,
   Check,
   ShoppingCart,
-  Plus,
-  Minus,
   X,
   Target,
   Crosshair,
@@ -37,7 +35,7 @@ const platforms: Platform[] = [
     name: "AR-15",
     icon: Crosshair,
     description:
-      "The most versatile and popular rifle platform in America. Modular, accurate, and endlessly configurable.",
+      "A versatile rifle platform known for modularity, accuracy, and broad aftermarket support.",
     compatibleCategories: ["firearms", "silencers", "optics", "accessories"],
   },
   {

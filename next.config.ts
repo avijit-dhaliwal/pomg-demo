@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  env: {
+    DATA_MODE: process.env.DATA_MODE ?? "demo",
+    LIVE_METRICS_JSON: process.env.LIVE_METRICS_JSON ?? "",
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn11.bigcommerce.com" },

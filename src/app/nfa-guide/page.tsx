@@ -90,7 +90,7 @@ const steps = [
     icon: Clock,
     title: "Wait Period",
     description:
-      "ATF processing times change frequently. As of February 2026, ATF reports eForms Form 4 (Trust) averaging about 11 days, while industry trackers often show medians closer to a few weeks depending on filing type. We'll monitor your submission and notify you the moment your stamp is approved. During this time, your item is held securely at our shop. Some states allow conjugal visits - Utah does.",
+      "ATF processing times vary and change frequently. As of early 2026, ATF reports median eForm 4 processing times around ~11 days for individual submissions, while industry trackers show approvals typically in the days-to-weeks range depending on submission type (Individual vs Trust). We monitor timelines and keep customers updated throughout the process.",
   },
   {
     number: 6,
@@ -172,7 +172,7 @@ const faqs = [
   {
     question: "How long does the NFA approval process take?",
     answer:
-      "ATF processing times fluctuate. As of February 2026, ATF lists eForms Form 4 Trust submissions around 11 days, and third-party trackers often show medians in the multi-week range depending on filing type. We e-file every Form 4 and keep you updated throughout the process.",
+      "ATF processing times vary and change frequently. As of early 2026, ATF reports median eForm 4 processing times around ~11 days for individual submissions, while industry trackers show approvals typically in the days-to-weeks range depending on submission type (Individual vs Trust). We monitor timelines and keep customers updated throughout the process.",
   },
   {
     question: "Can I shoot my silencer while waiting for the stamp?",
@@ -187,7 +187,7 @@ const faqs = [
   {
     question: "Are silencers legal in Utah?",
     answer:
-      "Yes! Utah is one of the most NFA-friendly states in the country. Silencers, SBRs, SBSs, and AOWs are all legal. There are no state-level restrictions beyond federal law. Utah also has a state-level silencer protection act.",
+      "Yes. Utah is generally considered NFA-friendly, and silencers, SBRs, SBSs, and AOWs are legal under current state and federal law. Always verify the latest state requirements before purchase or travel.",
   },
   {
     question: "What is a gun trust and do I need one?",
@@ -207,7 +207,7 @@ const faqs = [
   {
     question: "What happens if my Form 4 is denied?",
     answer:
-      "Denials are rare if you're legally eligible. If denied, you'll receive a letter from the ATF explaining why. Common reasons include errors on the form or background check issues. In most cases, we can help resolve the issue and resubmit. The $200 tax is refundable if denied.",
+      "If denied, you'll receive a letter from the ATF explaining why. Common reasons include form errors or background check issues. We can help review the denial reason and resubmit when appropriate. The $200 tax is generally refundable if denied.",
   },
 ];
 
@@ -260,8 +260,8 @@ export default function NfaGuidePage() {
               </p>
               <p className="mt-4 text-pomg-muted leading-relaxed">
                 Despite the extra paperwork, buying an NFA item is{" "}
-                <strong className="text-white">completely legal</strong> in most states
-                — including Utah. The process simply requires patience and proper
+                <strong className="text-white">legal in many states</strong> —
+                including Utah. The process simply requires patience and proper
                 documentation. We handle 90% of the paperwork for you.
               </p>
               <p className="mt-4 text-pomg-muted leading-relaxed">
@@ -536,17 +536,18 @@ export default function NfaGuidePage() {
                 </h2>
                 <div className="section-divider mb-6 mt-4" />
                 <p className="text-pomg-muted leading-relaxed">
-                  Utah is one of the most NFA-friendly states in the nation. All NFA
-                  items — silencers, SBRs, SBSs, and AOWs — are fully legal with no
-                  state-level restrictions beyond federal law.
+                  Utah is generally considered NFA-friendly. Silencers, SBRs,
+                  SBSs, and AOWs are currently legal under state and federal law.
+                  Always verify current statutes and travel rules before
+                  purchasing or transporting NFA items.
                 </p>
                 <ul className="mt-6 space-y-3">
                   {[
-                    "All NFA items legal — no state restrictions",
+                    "NFA items are currently legal under state and federal law",
                     "Utah Silencer Protection Act in effect",
                     "Conjugal visits allowed at your dealer",
-                    "No state waiting period beyond federal process",
-                    "Hunting with suppressors is fully legal",
+                    "No separate state waiting period beyond federal process",
+                    "Hunting with suppressors is currently legal",
                     "No magazine capacity restrictions",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">

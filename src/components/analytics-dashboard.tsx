@@ -34,22 +34,37 @@ import {
   summaryMetrics,
   revenueProjection,
 } from "@/data/analytics";
+import { isDemoMode } from "@/lib/demoMetrics";
 
 /* ─── helpers ─── */
 const formatCurrency = (n: number) => "$" + n.toLocaleString();
-const formatNumber = (n: number) => n.toLocaleString();
+const formatNumber = (n: number | string) =>
+  typeof n === "number" ? n.toLocaleString() : n;
+
+interface ChartTooltipEntry {
+  name?: string;
+  value?: number | string;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: ChartTooltipEntry[];
+  label?: string;
+}
 
 /* ─── custom recharts tooltip ─── */
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-pomg-card border border-pomg-border rounded-lg px-4 py-3 shadow-xl">
       <p className="text-pomg-muted text-xs mb-1">{label}</p>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry, i) => (
         <p key={i} className="text-pomg-text text-sm font-semibold">
-          {entry.name}: {typeof entry.value === "number" && entry.name?.toLowerCase().includes("rev")
+          {entry.name}:{" "}
+          {typeof entry.value === "number" &&
+          entry.name?.toLowerCase().includes("rev")
             ? formatCurrency(entry.value)
-            : formatNumber(entry.value)}
+            : formatNumber(entry.value ?? "—")}
         </p>
       ))}
     </div>
@@ -495,7 +510,7 @@ function RevenueProjection() {
         {/* Current */}
         <div className="bg-pomg-dark border border-pomg-border rounded-xl p-5">
           <p className="text-xs text-pomg-muted uppercase tracking-wider mb-2">
-            Current Monthly
+            {isDemoMode ? "Example Current Monthly" : "Current Monthly"}
           </p>
           <p className="text-2xl font-bold text-pomg-text tabular-nums">
             {formatCurrency(current.monthlyRevenue)}
@@ -530,7 +545,7 @@ function RevenueProjection() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#43437A]/10 to-transparent" />
           <div className="relative">
             <p className="text-xs text-pomg-gold uppercase tracking-wider mb-2 font-semibold">
-              Projected Monthly
+              {isDemoMode ? "Example Projected Monthly" : "Projected Monthly"}
             </p>
             <p className="text-3xl font-bold text-pomg-text tabular-nums">
               {formatCurrency(projected.monthlyRevenue)}
@@ -590,7 +605,8 @@ export default function AnalyticsDashboard() {
         <div>
           <h2 className="text-2xl font-bold text-pomg-text">Analytics</h2>
           <p className="text-sm text-pomg-muted mt-1">
-            February 2026 &middot; Example Store Performance
+            February 2026 &middot;{" "}
+            {isDemoMode ? "Example Store Performance" : "Store Performance"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -598,7 +614,7 @@ export default function AnalyticsDashboard() {
             Last 30 days
           </span>
           <span className="px-3 py-1.5 text-xs font-medium bg-pomg-purple/20 border border-pomg-purple/40 rounded-lg text-pomg-purple-light">
-            Simulated
+            {isDemoMode ? "Simulated" : "Live"}
           </span>
         </div>
       </div>

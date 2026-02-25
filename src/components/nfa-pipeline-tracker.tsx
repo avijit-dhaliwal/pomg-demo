@@ -25,9 +25,21 @@ import {
   nfaApplications,
   nfaPipelineStats,
 } from "@/data/nfa-pipeline";
+import { isDemoMode } from "@/lib/demoMetrics";
 
 /* ─── helpers ─── */
 const formatCurrency = (n: number) => "$" + n.toLocaleString();
+
+interface ChartTooltipEntry {
+  name?: string;
+  value?: number | string;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: ChartTooltipEntry[];
+  label?: string;
+}
 
 const statusPriority: Record<NFAApplication["status"], number> = {
   "Ready for Pickup": 0,
@@ -46,12 +58,12 @@ const statusColors: Record<NFAApplication["status"], string> = {
 };
 
 /* ─── custom recharts tooltip ─── */
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-pomg-card border border-pomg-border rounded-lg px-4 py-3 shadow-xl">
       <p className="text-pomg-muted text-xs mb-1">{label}</p>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry, i) => (
         <p key={i} className="text-pomg-text text-sm font-semibold">
           {entry.name}: {entry.value}
         </p>
@@ -138,7 +150,9 @@ function PipelineValueSummary() {
           Pipeline Value
         </h3>
         <p className="text-sm text-pomg-muted mt-0.5">
-          Total NFA items in pipeline
+          {isDemoMode
+            ? "Example NFA items in pipeline"
+            : "Total NFA items in pipeline"}
         </p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -157,7 +171,7 @@ function PipelineValueSummary() {
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-pomg-purple-light" />
             <p className="text-xs text-pomg-muted uppercase tracking-wider">
-              Avg Wait
+              {isDemoMode ? "Example Avg Wait" : "Avg Wait"}
             </p>
           </div>
           <p className="text-2xl font-bold text-pomg-text tabular-nums">
@@ -424,8 +438,8 @@ export default function NFAPipelineTracker() {
             NFA Pipeline Tracker
           </h2>
           <p className="text-sm text-pomg-muted mt-1">
-            {nfaPipelineStats.totalActive} active applications &middot; eForm 4
-            processing
+            {nfaPipelineStats.totalActive} active applications &middot;{" "}
+            {isDemoMode ? "example eForm 4 workflow" : "eForm 4 processing"}
           </p>
         </div>
         <div className="flex items-center gap-2">

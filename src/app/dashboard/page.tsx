@@ -8,6 +8,8 @@ import NFAPipelineTracker from "@/components/nfa-pipeline-tracker";
 import CustomerInsightsPanel from "@/components/customer-insights-panel";
 import SEOReportPanel from "@/components/seo-report-panel";
 import DemoDataBanner from "@/components/demo-data-banner";
+import { isDemoMode } from "@/lib/demoMetrics";
+import { nfaPipelineStats } from "@/data/nfa-pipeline";
 import {
   BarChart3,
   Calendar,
@@ -56,13 +58,14 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-pomg-gold/30 bg-pomg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-pomg-gold">
-                  Demo Data
+                  {isDemoMode ? "Demo Data" : "Live Data"}
                 </div>
                 <h1 className="font-display text-4xl uppercase tracking-tight text-white sm:text-5xl">
                   Revenue Intelligence
                 </h1>
                 <p className="mt-3 max-w-xl text-pomg-muted">
-                  POMG Performance Analytics &mdash; simulated revenue,
+                  POMG Performance Analytics &mdash;{" "}
+                  {isDemoMode ? "simulated" : "live"} revenue,
                   inventory velocity, and customer insights for strategic
                   decision-making.
                 </p>
@@ -118,7 +121,7 @@ export default function DashboardPage() {
                     {tab.label}
                     {tab.id === "nfa-pipeline" && (
                       <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-pomg-gold/20 text-[10px] font-bold text-pomg-gold">
-                        12
+                        {nfaPipelineStats.totalActive}
                       </span>
                     )}
                   </button>
@@ -142,8 +145,9 @@ export default function DashboardPage() {
             <div className="flex items-center justify-center gap-3 text-center">
               <BarChart3 className="h-4 w-4 text-pomg-dim" />
               <p className="text-xs text-pomg-dim">
-                Demo site: analytics, revenue, and projections are simulated
-                until connected to verified client systems.
+                {isDemoMode
+                  ? "Demo site: analytics, revenue, and projections are simulated until connected to verified client systems."
+                  : "Live mode: analytics, revenue, and projections are sourced from connected systems."}
               </p>
             </div>
           </div>

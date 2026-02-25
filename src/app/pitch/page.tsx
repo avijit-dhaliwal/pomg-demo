@@ -6,6 +6,7 @@ import DemoDataBanner from "@/components/demo-data-banner";
 import Link from "next/link";
 import { revenueProjection } from "@/data/analytics";
 import { seoStats } from "@/data/seo-report";
+import { demoMetrics, isDemoMode } from "@/lib/demoMetrics";
 import {
   ChevronDown,
   AlertTriangle,
@@ -35,44 +36,6 @@ function fmtUSD(n: number): string {
 }
 
 /* ─── Data ─── */
-const problems = [
-  {
-    icon: AlertTriangle,
-    title: "No Analytics",
-    color: "text-pomg-danger",
-    desc: "You\u2019re making inventory and marketing decisions blind. Zero visibility into what\u2019s selling, what\u2019s stalling, and why.",
-  },
-  {
-    icon: TrendingDown,
-    title: "No Conversion Optimization",
-    color: "text-orange-400",
-    desc: "Demo benchmark: 91% of visitors who view products leave without adding to cart. Typical ecommerce benchmarks are often closer to the 70-80% range.",
-  },
-  {
-    icon: Clock,
-    title: "No NFA Pipeline Tracking",
-    color: "text-orange-400",
-    desc: "NFA timelines fluctuate from days to weeks depending on filing type. Without status tracking, customers still feel left in the dark during the wait.",
-  },
-  {
-    icon: Search,
-    title: "No SEO Strategy",
-    color: "text-pomg-danger",
-    desc: "Authority score (example): 18. Ranking keywords (example): 120. Larger competitors often rank for thousands+.",
-  },
-  {
-    icon: Users,
-    title: "No Customer Intelligence",
-    color: "text-orange-400",
-    desc: "You don\u2019t know your top customers\u2019 LTV, repeat purchase rate, or what they\u2019ll buy next.",
-  },
-  {
-    icon: Mail,
-    title: "No Email Marketing",
-    color: "text-pomg-danger",
-    desc: "Potential subscribers (example): 2,847. Zero automated flows. Every lost email is a lost repeat sale.",
-  },
-];
 
 const modules = [
   {
@@ -96,7 +59,7 @@ const modules = [
   {
     icon: Wrench,
     name: "Build Your Setup",
-    desc: "Interactive configuration wizard that increases AOV by $125+ through intelligent bundling.",
+    desc: "Interactive configuration wizard that increases AOV through intelligent bundling.",
     href: "/build-your-setup",
   },
   {
@@ -145,12 +108,58 @@ const timeline = [
 ];
 
 export default function PitchPage() {
+  const exampleLabel = isDemoMode ? "Example" : "Current";
+  const sourceLabel = isDemoMode
+    ? "Example dataset. Replaced with live SEO data upon integration."
+    : "Live source: GA4 + Search Console + SEO connector.";
   const currentMonthly = revenueProjection.current.monthlyRevenue;
   const projectedMonthly = revenueProjection.projected.monthlyRevenue;
   const deltaMonthly = projectedMonthly - currentMonthly;
   const currentAnnual = revenueProjection.current.annualRevenue;
   const projectedAnnual = revenueProjection.projected.annualRevenue;
   const deltaAnnual = projectedAnnual - currentAnnual;
+  const problems = [
+    {
+      icon: AlertTriangle,
+      title: "No Analytics",
+      color: "text-pomg-danger",
+      desc: "You’re making inventory and marketing decisions blind. Zero visibility into what’s selling, what’s stalling, and why.",
+    },
+    {
+      icon: TrendingDown,
+      title: "No Conversion Optimization",
+      color: "text-orange-400",
+      desc: `${exampleLabel} benchmark: ${Math.round(
+        demoMetrics.productViewDropoffRate * 100,
+      )}% of visitors who view products leave without adding to cart. Typical ecommerce benchmarks are often closer to the ${Math.round(
+        demoMetrics.industryDropoffRangeLow * 100,
+      )}-${Math.round(demoMetrics.industryDropoffRangeHigh * 100)}% range.`,
+    },
+    {
+      icon: Clock,
+      title: "No NFA Pipeline Tracking",
+      color: "text-orange-400",
+      desc: "Suppressor purchasing still involves a structured ATF approval process. While modern eForms have significantly reduced processing times, buyers still value clarity, updates, and guidance throughout submission and approval.",
+    },
+    {
+      icon: Search,
+      title: "No SEO Strategy",
+      color: "text-pomg-danger",
+      desc: `Authority score (${exampleLabel.toLowerCase()}): ${demoMetrics.authorityScore}. Ranking keywords (${exampleLabel.toLowerCase()}): ${demoMetrics.rankingKeywords.toLocaleString()}. Larger competitors often rank for ${demoMetrics.competitorKeywords.toLocaleString()}+ keywords.`,
+    },
+    {
+      icon: Users,
+      title: "No Customer Intelligence",
+      color: "text-orange-400",
+      desc: "You don’t know your top customers’ LTV, repeat purchase rate, or what they’ll buy next.",
+    },
+    {
+      icon: Mail,
+      title: "No Email Marketing",
+      color: "text-pomg-danger",
+      desc: `Potential subscribers (${exampleLabel.toLowerCase()}): ${demoMetrics.subscriberOpportunity.toLocaleString()}. Zero automated flows. Every lost email is a lost repeat sale.`,
+    },
+  ];
 
   return (
     <>
@@ -225,12 +234,25 @@ export default function PitchPage() {
                 </span>
               </div>
               <p className="mt-3 text-pomg-muted">
-                estimated monthly organic opportunity (example model)
+                estimated monthly organic opportunity (
+                {isDemoMode ? "example model" : "live model"})
               </p>
               <p className="mt-2 text-xs text-pomg-dim">
                 Modeled using SEO traffic-value estimates and benchmark CPC
                 assumptions.
               </p>
+              <p className="mt-1 text-xs text-pomg-dim">{sourceLabel}</p>
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px]">
+                <span className="rounded-full border border-pomg-border px-2 py-1 text-pomg-dim">
+                  Authority Score ({exampleLabel} - Semrush-style metric)
+                </span>
+                <span className="rounded-full border border-pomg-border px-2 py-1 text-pomg-dim">
+                  Ranking Keywords ({exampleLabel} dataset)
+                </span>
+                <span className="rounded-full border border-pomg-border px-2 py-1 text-pomg-dim">
+                  Traffic Value (Estimated CPC model - {exampleLabel})
+                </span>
+              </div>
             </div>
 
             {/* Gap cards */}
@@ -323,11 +345,13 @@ export default function PitchPage() {
             <h2 className="mb-16 text-center font-display text-4xl uppercase text-white md:text-5xl">
               THE NUMBERS
             </h2>
-            <p className="mx-auto mb-10 max-w-3xl text-center text-xs text-pomg-gold/80">
-              Example scenario only. Metrics below are simulated and replaced
-              with verified client data after GA4, Search Console, and commerce
-              platform connections.
-            </p>
+            {isDemoMode && (
+              <p className="mx-auto mb-10 max-w-3xl text-center text-xs text-pomg-gold/80">
+                Example scenario only. Metrics below are simulated and replaced
+                with verified client data after GA4, Search Console, and
+                commerce platform connections.
+              </p>
+            )}
 
             {/* Monthly comparison */}
             <div className="mx-auto mb-16 max-w-4xl">
@@ -335,7 +359,9 @@ export default function PitchPage() {
                 {/* Current */}
                 <div className="rounded-xl border border-pomg-border bg-pomg-card p-8 text-center">
                   <p className="mb-2 text-xs uppercase tracking-widest text-pomg-dim">
-                    Example Current Monthly Revenue
+                    {isDemoMode
+                      ? "Example Current Monthly Revenue"
+                      : "Current Monthly Revenue"}
                   </p>
                   <p className="font-display text-4xl text-pomg-muted lg:text-5xl">
                     {fmtUSD(currentMonthly)}
@@ -355,7 +381,9 @@ export default function PitchPage() {
                 {/* Projected */}
                 <div className="rounded-xl border border-pomg-gold/30 bg-pomg-card p-8 text-center glow-gold">
                   <p className="mb-2 text-xs uppercase tracking-widest text-pomg-gold/70">
-                    Example Projected Monthly Revenue
+                    {isDemoMode
+                      ? "Example Projected Monthly Revenue"
+                      : "Projected Monthly Revenue"}
                   </p>
                   <p className="font-display text-4xl text-pomg-gold lg:text-5xl">
                     {fmtUSD(projectedMonthly)}
@@ -397,7 +425,7 @@ export default function PitchPage() {
               <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-pomg-dim">
-                    Example Current
+                    {isDemoMode ? "Example Current" : "Current"}
                   </p>
                   <p className="font-display text-3xl text-pomg-muted">
                     {fmtUSD(currentAnnual)}
@@ -406,7 +434,7 @@ export default function PitchPage() {
                 <ArrowRight className="h-6 w-6 rotate-90 text-pomg-dim md:rotate-0" />
                 <div>
                   <p className="text-xs uppercase tracking-widest text-pomg-gold/70">
-                    Example Projected
+                    {isDemoMode ? "Example Projected" : "Projected"}
                   </p>
                   <p className="font-display text-3xl text-pomg-gold">
                     {fmtUSD(projectedAnnual)}
