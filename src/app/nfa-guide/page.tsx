@@ -90,7 +90,7 @@ const steps = [
     icon: Clock,
     title: "Wait Period",
     description:
-      "Current ATF eForm processing times average 4-6 months, though times vary. We'll notify you the moment your stamp is approved. During this time, your item is held securely at our shop. Some states allow conjugal visits — Utah does.",
+      "ATF processing times change frequently. As of February 2026, ATF reports eForms Form 4 (Trust) averaging about 11 days, while industry trackers often show medians closer to a few weeks depending on filing type. We'll monitor your submission and notify you the moment your stamp is approved. During this time, your item is held securely at our shop. Some states allow conjugal visits - Utah does.",
   },
   {
     number: 6,
@@ -172,7 +172,7 @@ const faqs = [
   {
     question: "How long does the NFA approval process take?",
     answer:
-      "E-filed Form 4 applications currently average 4-6 months. Paper forms take significantly longer (8-12+ months). We exclusively use e-filing to get you your item as fast as possible. Times fluctuate based on ATF volume.",
+      "ATF processing times fluctuate. As of February 2026, ATF lists eForms Form 4 Trust submissions around 11 days, and third-party trackers often show medians in the multi-week range depending on filing type. We e-file every Form 4 and keep you updated throughout the process.",
   },
   {
     question: "Can I shoot my silencer while waiting for the stamp?",
@@ -266,7 +266,7 @@ export default function NfaGuidePage() {
               </p>
               <p className="mt-4 text-pomg-muted leading-relaxed">
                 At Piece of Mind Guns, we specialize in NFA transfers and silencer
-                sales. We've processed hundreds of Form 4s and have the experience to
+                sales. We&apos;ve processed hundreds of Form 4s and have the experience to
                 make your purchase smooth and stress-free.
               </p>
             </div>
@@ -394,7 +394,7 @@ export default function NfaGuidePage() {
               <div className="section-divider mx-auto mb-6 mt-4" />
               <p className="mx-auto max-w-2xl text-pomg-muted">
                 You can register NFA items to yourself individually or through a gun
-                trust. Here's a side-by-side comparison.
+                trust. Here&apos;s a side-by-side comparison.
               </p>
             </div>
 

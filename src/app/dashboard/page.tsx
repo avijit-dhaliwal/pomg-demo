@@ -7,6 +7,7 @@ import AnalyticsDashboard from "@/components/analytics-dashboard";
 import NFAPipelineTracker from "@/components/nfa-pipeline-tracker";
 import CustomerInsightsPanel from "@/components/customer-insights-panel";
 import SEOReportPanel from "@/components/seo-report-panel";
+import DemoDataBanner from "@/components/demo-data-banner";
 import {
   BarChart3,
   Calendar,
@@ -45,6 +46,8 @@ export default function DashboardPage() {
       <Header />
 
       <main className="min-h-screen bg-pomg-dark">
+        <DemoDataBanner />
+
         {/* ── Hero ────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-b border-pomg-border">
           <div className="noise-overlay" />
@@ -59,7 +62,7 @@ export default function DashboardPage() {
                   Revenue Intelligence
                 </h1>
                 <p className="mt-3 max-w-xl text-pomg-muted">
-                  POMG Performance Analytics &mdash; real-time revenue,
+                  POMG Performance Analytics &mdash; simulated revenue,
                   inventory velocity, and customer insights for strategic
                   decision-making.
                 </p>
@@ -139,9 +142,8 @@ export default function DashboardPage() {
             <div className="flex items-center justify-center gap-3 text-center">
               <BarChart3 className="h-4 w-4 text-pomg-dim" />
               <p className="text-xs text-pomg-dim">
-                Dashboard displays demo data for demonstration purposes.
-                Revenue figures, inventory metrics, and customer analytics
-                are simulated.
+                Demo site: analytics, revenue, and projections are simulated
+                until connected to verified client systems.
               </p>
             </div>
           </div>

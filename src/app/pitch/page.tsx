@@ -2,6 +2,7 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import DemoDataBanner from "@/components/demo-data-banner";
 import Link from "next/link";
 import { revenueProjection } from "@/data/analytics";
 import { seoStats } from "@/data/seo-report";
@@ -45,19 +46,19 @@ const problems = [
     icon: TrendingDown,
     title: "No Conversion Optimization",
     color: "text-orange-400",
-    desc: "91% of visitors who view products leave without adding to cart. Industry average drop-off is 75%.",
+    desc: "Demo benchmark: 91% of visitors who view products leave without adding to cart. Typical ecommerce benchmarks are often closer to the 70-80% range.",
   },
   {
     icon: Clock,
     title: "No NFA Pipeline Tracking",
     color: "text-orange-400",
-    desc: "Your customers wait 4\u20136 months for their suppressor. You have no system to keep them engaged during that wait.",
+    desc: "NFA timelines fluctuate from days to weeks depending on filing type. Without status tracking, customers still feel left in the dark during the wait.",
   },
   {
     icon: Search,
     title: "No SEO Strategy",
     color: "text-pomg-danger",
-    desc: "Domain authority: 18. You rank for 120 keywords. Your competitors rank for 14,000+.",
+    desc: "Authority score (example): 18. Ranking keywords (example): 120. Larger competitors often rank for thousands+.",
   },
   {
     icon: Users,
@@ -69,7 +70,7 @@ const problems = [
     icon: Mail,
     title: "No Email Marketing",
     color: "text-pomg-danger",
-    desc: "2,847 potential subscribers. Zero automated flows. Every lost email is a lost repeat sale.",
+    desc: "Potential subscribers (example): 2,847. Zero automated flows. Every lost email is a lost repeat sale.",
   },
 ];
 
@@ -156,6 +157,8 @@ export default function PitchPage() {
       <Header />
 
       <main>
+        <DemoDataBanner />
+
         {/* ═══════════════════════════════════════════════════════
             1. HERO — "THE REVENUE ENGINE"
         ═══════════════════════════════════════════════════════ */}
@@ -222,7 +225,11 @@ export default function PitchPage() {
                 </span>
               </div>
               <p className="mt-3 text-pomg-muted">
-                in missed organic traffic value
+                estimated monthly organic opportunity (example model)
+              </p>
+              <p className="mt-2 text-xs text-pomg-dim">
+                Modeled using SEO traffic-value estimates and benchmark CPC
+                assumptions.
               </p>
             </div>
 
@@ -316,6 +323,11 @@ export default function PitchPage() {
             <h2 className="mb-16 text-center font-display text-4xl uppercase text-white md:text-5xl">
               THE NUMBERS
             </h2>
+            <p className="mx-auto mb-10 max-w-3xl text-center text-xs text-pomg-gold/80">
+              Example scenario only. Metrics below are simulated and replaced
+              with verified client data after GA4, Search Console, and commerce
+              platform connections.
+            </p>
 
             {/* Monthly comparison */}
             <div className="mx-auto mb-16 max-w-4xl">
@@ -323,7 +335,7 @@ export default function PitchPage() {
                 {/* Current */}
                 <div className="rounded-xl border border-pomg-border bg-pomg-card p-8 text-center">
                   <p className="mb-2 text-xs uppercase tracking-widest text-pomg-dim">
-                    Current Monthly Revenue
+                    Example Current Monthly Revenue
                   </p>
                   <p className="font-display text-4xl text-pomg-muted lg:text-5xl">
                     {fmtUSD(currentMonthly)}
@@ -343,7 +355,7 @@ export default function PitchPage() {
                 {/* Projected */}
                 <div className="rounded-xl border border-pomg-gold/30 bg-pomg-card p-8 text-center glow-gold">
                   <p className="mb-2 text-xs uppercase tracking-widest text-pomg-gold/70">
-                    Projected Monthly Revenue
+                    Example Projected Monthly Revenue
                   </p>
                   <p className="font-display text-4xl text-pomg-gold lg:text-5xl">
                     {fmtUSD(projectedMonthly)}
@@ -385,7 +397,7 @@ export default function PitchPage() {
               <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-pomg-dim">
-                    Current
+                    Example Current
                   </p>
                   <p className="font-display text-3xl text-pomg-muted">
                     {fmtUSD(currentAnnual)}
@@ -394,7 +406,7 @@ export default function PitchPage() {
                 <ArrowRight className="h-6 w-6 rotate-90 text-pomg-dim md:rotate-0" />
                 <div>
                   <p className="text-xs uppercase tracking-widest text-pomg-gold/70">
-                    Projected
+                    Example Projected
                   </p>
                   <p className="font-display text-3xl text-pomg-gold">
                     {fmtUSD(projectedAnnual)}

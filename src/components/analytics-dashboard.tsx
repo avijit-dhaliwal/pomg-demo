@@ -590,7 +590,7 @@ export default function AnalyticsDashboard() {
         <div>
           <h2 className="text-2xl font-bold text-pomg-text">Analytics</h2>
           <p className="text-sm text-pomg-muted mt-1">
-            February 2026 &middot; Store Performance
+            February 2026 &middot; Example Store Performance
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -598,7 +598,7 @@ export default function AnalyticsDashboard() {
             Last 30 days
           </span>
           <span className="px-3 py-1.5 text-xs font-medium bg-pomg-purple/20 border border-pomg-purple/40 rounded-lg text-pomg-purple-light">
-            Live
+            Simulated
           </span>
         </div>
       </div>
