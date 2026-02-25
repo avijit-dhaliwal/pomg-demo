@@ -8,6 +8,7 @@ export default function AgeGate() {
 
   useEffect(() => {
     const stored = localStorage.getItem("pomg-age-confirmed");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setConfirmed(stored === "true");
   }, []);
 

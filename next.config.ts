@@ -2,8 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   env: {
-    DATA_MODE: process.env.DATA_MODE ?? "demo",
-    LIVE_METRICS_JSON: process.env.LIVE_METRICS_JSON ?? "",
+    NEXT_PUBLIC_DATA_MODE: process.env.NEXT_PUBLIC_DATA_MODE ?? "demo",
+    NEXT_PUBLIC_LIVE_METRICS_JSON:
+      process.env.NEXT_PUBLIC_LIVE_METRICS_JSON ??
+      process.env.LIVE_METRICS_JSON ??
+      "",
+    DATA_MODE: process.env.DATA_MODE ?? process.env.NEXT_PUBLIC_DATA_MODE ?? "demo",
+    LIVE_METRICS_JSON:
+      process.env.LIVE_METRICS_JSON ??
+      process.env.NEXT_PUBLIC_LIVE_METRICS_JSON ??
+      "",
   },
   images: {
     remotePatterns: [

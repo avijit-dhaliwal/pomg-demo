@@ -611,7 +611,7 @@ export default function AnalyticsDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <span className="px-3 py-1.5 text-xs font-medium bg-pomg-dark border border-pomg-border rounded-lg text-pomg-muted">
-            Last 30 days
+            {isDemoMode ? "Last 30 days (Demo Sample)" : "Last 30 days"}
           </span>
           <span className="px-3 py-1.5 text-xs font-medium bg-pomg-purple/20 border border-pomg-purple/40 rounded-lg text-pomg-purple-light">
             {isDemoMode ? "Simulated" : "Live"}

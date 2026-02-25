@@ -30,8 +30,23 @@ import {
 const formatCurrency = (n: number) => "$" + n.toLocaleString();
 const formatNumber = (n: number) => n.toLocaleString();
 
+interface SegmentDatum {
+  segment: string;
+  count: number;
+  revenue: number;
+}
+
+interface TooltipPayloadEntry {
+  payload: SegmentDatum;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+}
+
 /* ─── custom recharts tooltip ─── */
-function ChartTooltip({ active, payload }: any) {
+function ChartTooltip({ active, payload }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   const data = payload[0].payload;
   return (

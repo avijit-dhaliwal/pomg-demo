@@ -23,7 +23,7 @@ import {
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ProductCard from "@/components/product-card";
-import { getProductBySlug, getRelatedProducts, Product } from "@/data/products";
+import { getProductBySlug, getRelatedProducts } from "@/data/products";
 
 type Tab = "description" | "specifications" | "shipping" | "reviews";
 
@@ -317,9 +317,11 @@ export default function ProductDetailPage() {
                       NFA / Tax Stamp Item
                     </p>
                     <p className="text-xs text-pomg-muted mt-1 leading-relaxed">
-                      This item requires a $200 federal tax stamp and ATF Form 4 approval. 
-                      Average wait time is 4–9 months. We handle all paperwork and guide you 
-                      through the entire process.
+                      This item requires a $200 federal tax stamp and ATF Form 4
+                      approval. Processing timelines vary by submission type and
+                      filing method, and modern eForms are often measured in
+                      days-to-weeks. We handle paperwork and guide you through
+                      the entire process.
                     </p>
                     <Link
                       href="/nfa-guide"
@@ -583,8 +585,9 @@ export default function ProductDetailPage() {
                         <p className="text-sm text-pomg-muted mt-1">
                           This is an NFA-regulated item. After purchase, we&apos;ll hold the item at our 
                           facility and submit your ATF Form 4 for processing. Once your tax stamp is 
-                          approved (typically 4–9 months), we&apos;ll ship to your designated FFL/SOT dealer 
-                          or you can pick up at our Salt Lake City location.
+                          approved, we&apos;ll ship to your designated FFL/SOT dealer or you can pick up at
+                          our Salt Lake City location. Processing times vary by submission type and
+                          method, and modern eForms approvals are often measured in days-to-weeks.
                         </p>
                       </div>
                     </div>

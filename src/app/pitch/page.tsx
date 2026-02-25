@@ -80,28 +80,28 @@ const timeline = [
   {
     phase: 1,
     title: "Foundation",
-    weeks: "Weeks 1\u20132",
+    weeks: "typically ~2 weeks (example schedule)",
     desc: "Design system, architecture, product data migration, core shopping experience",
     active: true,
   },
   {
     phase: 2,
     title: "Intelligence",
-    weeks: "Weeks 3\u20134",
+    weeks: "typically ~2 weeks (example schedule)",
     desc: "Analytics dashboard, NFA pipeline tracker, customer segmentation engine",
     active: false,
   },
   {
     phase: 3,
     title: "Growth",
-    weeks: "Weeks 5\u20136",
+    weeks: "typically ~2 weeks (example schedule)",
     desc: "SEO optimization, content strategy, email marketing integration, Build Your Setup wizard",
     active: false,
   },
   {
     phase: 4,
     title: "Launch & Optimize",
-    weeks: "Weeks 7\u20138",
+    weeks: "typically ~2 weeks (example schedule)",
     desc: "QA, performance tuning, deployment, monitoring setup, training",
     active: false,
   },
@@ -130,22 +130,22 @@ export default function PitchPage() {
       title: "No Conversion Optimization",
       color: "text-orange-400",
       desc: `${exampleLabel} benchmark: ${Math.round(
-        demoMetrics.productViewDropoffRate * 100,
+        demoMetrics.engagement.productViewDropoffRate * 100,
       )}% of visitors who view products leave without adding to cart. Typical ecommerce benchmarks are often closer to the ${Math.round(
-        demoMetrics.industryDropoffRangeLow * 100,
-      )}-${Math.round(demoMetrics.industryDropoffRangeHigh * 100)}% range.`,
+        demoMetrics.engagement.industryDropoffRangeLow * 100,
+      )}-${Math.round(demoMetrics.engagement.industryDropoffRangeHigh * 100)}% range.`,
     },
     {
       icon: Clock,
       title: "No NFA Pipeline Tracking",
       color: "text-orange-400",
-      desc: "Suppressor purchasing still involves a structured ATF approval process. While modern eForms have significantly reduced processing times, buyers still value clarity, updates, and guidance throughout submission and approval.",
+      desc: "Suppressor buyers still navigate an ATF approval process that can take days to weeks depending on submission type and method. Modern eForms processing has significantly reduced wait times, though customers value transparency and engagement throughout their approval journey.",
     },
     {
       icon: Search,
       title: "No SEO Strategy",
       color: "text-pomg-danger",
-      desc: `Authority score (${exampleLabel.toLowerCase()}): ${demoMetrics.authorityScore}. Ranking keywords (${exampleLabel.toLowerCase()}): ${demoMetrics.rankingKeywords.toLocaleString()}. Larger competitors often rank for ${demoMetrics.competitorKeywords.toLocaleString()}+ keywords.`,
+      desc: `Authority score (${exampleLabel.toLowerCase()}): ${demoMetrics.seoValues.authorityScore}. Ranking keywords (${exampleLabel.toLowerCase()}): ${demoMetrics.seoValues.rankingKeywords.toLocaleString()}. Larger competitors often rank for ${demoMetrics.seoValues.competitorKeywords.toLocaleString()}+ keywords.`,
     },
     {
       icon: Users,
@@ -157,7 +157,7 @@ export default function PitchPage() {
       icon: Mail,
       title: "No Email Marketing",
       color: "text-pomg-danger",
-      desc: `Potential subscribers (${exampleLabel.toLowerCase()}): ${demoMetrics.subscriberOpportunity.toLocaleString()}. Zero automated flows. Every lost email is a lost repeat sale.`,
+      desc: `Potential subscribers (${exampleLabel.toLowerCase()}): ${demoMetrics.engagement.subscriberCount.toLocaleString()}. Zero automated flows. Every lost email is a lost repeat sale.`,
     },
   ];
 
@@ -234,8 +234,9 @@ export default function PitchPage() {
                 </span>
               </div>
               <p className="mt-3 text-pomg-muted">
-                estimated monthly organic opportunity (
-                {isDemoMode ? "example model" : "live model"})
+                {isDemoMode
+                  ? "Estimated missed organic traffic value (example scenario; simulated data)."
+                  : "Estimated missed organic traffic value (live model)."}
               </p>
               <p className="mt-2 text-xs text-pomg-dim">
                 Modeled using SEO traffic-value estimates and benchmark CPC
@@ -325,6 +326,41 @@ export default function PitchPage() {
                   </Link>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-12 rounded-2xl border border-pomg-border bg-pomg-card/70 p-8 md:p-10">
+              <h3 className="font-display text-2xl uppercase text-white md:text-3xl">
+                Generative Engine Optimization (GEO)
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed text-pomg-muted md:text-base">
+                Generative Engine Optimization (GEO) refers to optimizing site
+                structure and content so AI-driven search systems are more
+                likely to surface your brand accurately in AI-generated
+                responses. Traditional SEO focuses on ranked links; GEO focuses
+                on accurate inclusion in generated answers.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-pomg-muted md:text-base">
+                This improves visibility in experiences powered by Google SGE,
+                ChatGPT, Gemini, and similar large language model search
+                interfaces.
+              </p>
+              <div className="mt-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-pomg-gold/80">
+                  GEO Implementation Areas
+                </p>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-pomg-muted">
+                  <li>Clear, structured content with strong context signals</li>
+                  <li>Schema and metadata optimized for generative systems</li>
+                  <li>
+                    Conversational and informational content designed for AI
+                    citation
+                  </li>
+                  <li>
+                    FAQ and guide content that addresses suppressor laws, ATF
+                    process questions, and transfer concerns
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>

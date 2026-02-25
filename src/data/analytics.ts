@@ -130,88 +130,41 @@ export const categoryRevenue: CategoryRevenue[] = categoryDefinitions.map(
   },
 );
 
-export const topProducts: TopProduct[] = [
-  {
-    name: "Noveske Gen 4 N4-PDW",
-    revenue: 38340,
-    units: 12,
-    views: 1847,
-    conversionRate: 0.65,
-    trend: "up",
+const topProductDefinitions = [
+  { name: "Noveske Gen 4 N4-PDW", avgPrice: 3195, views: 1847, trend: "up", share: 0.17 },
+  { name: "Dead Air Sandman-S", avgPrice: 949, views: 2103, trend: "up", share: 0.15 },
+  { name: "Daniel Defense DDM4 V7", avgPrice: 2125, views: 3241, trend: "stable", share: 0.13 },
+  { name: "HK SP5", avgPrice: 2999, views: 4102, trend: "up", share: 0.11 },
+  { name: "EOTech EXPS3-0", avgPrice: 729, views: 1876, trend: "stable", share: 0.1 },
+  { name: "SIG MCX Spear LT", avgPrice: 2599, views: 2890, trend: "up", share: 0.09 },
+  { name: "Aimpoint Micro T-2", avgPrice: 839, views: 1654, trend: "up", share: 0.08 },
+  { name: "Geissele SSA-E Trigger", avgPrice: 245, views: 987, trend: "stable", share: 0.07 },
+  { name: "Dead Air Wolfman", avgPrice: 899, views: 1432, trend: "down", share: 0.06 },
+  { name: "Nighthawk President", avgPrice: 4299, views: 876, trend: "up", share: 0.04 },
+] as const;
+
+const topProductRevenuePool = Math.round(summaryMetricsModel.totalRevenue * 0.82);
+const topProductRevenueValues = allocateByWeights(
+  topProductRevenuePool,
+  topProductDefinitions.map((product) => product.share),
+);
+
+export const topProducts: TopProduct[] = topProductDefinitions.map(
+  (product, index) => {
+    const revenue = topProductRevenueValues[index];
+    const units = Math.max(Math.round(revenue / product.avgPrice), 1);
+    const conversionRate = Number(((units / product.views) * 100).toFixed(2));
+
+    return {
+      name: product.name,
+      revenue,
+      units,
+      views: product.views,
+      conversionRate,
+      trend: product.trend,
+    };
   },
-  {
-    name: "Dead Air Sandman-S",
-    revenue: 31968,
-    units: 32,
-    views: 2103,
-    conversionRate: 1.52,
-    trend: "up",
-  },
-  {
-    name: "Daniel Defense DDM4 V7",
-    revenue: 28686,
-    units: 14,
-    views: 3241,
-    conversionRate: 0.43,
-    trend: "stable",
-  },
-  {
-    name: "HK SP5",
-    revenue: 26991,
-    units: 9,
-    views: 4102,
-    conversionRate: 0.22,
-    trend: "up",
-  },
-  {
-    name: "EOTech EXPS3-0",
-    revenue: 22715,
-    units: 35,
-    views: 1876,
-    conversionRate: 1.87,
-    trend: "stable",
-  },
-  {
-    name: "SIG MCX Spear LT",
-    revenue: 22392,
-    units: 8,
-    views: 2890,
-    conversionRate: 0.28,
-    trend: "up",
-  },
-  {
-    name: "Aimpoint Micro T-2",
-    revenue: 20376,
-    units: 24,
-    views: 1654,
-    conversionRate: 1.45,
-    trend: "up",
-  },
-  {
-    name: "Geissele SSA-E Trigger",
-    revenue: 16800,
-    units: 70,
-    views: 987,
-    conversionRate: 7.09,
-    trend: "stable",
-  },
-  {
-    name: "Dead Air Wolfman",
-    revenue: 15386,
-    units: 14,
-    views: 1432,
-    conversionRate: 0.98,
-    trend: "down",
-  },
-  {
-    name: "Nighthawk President",
-    revenue: 12897,
-    units: 3,
-    views: 876,
-    conversionRate: 0.34,
-    trend: "up",
-  },
-];
+);
 
 const trafficSourceDefinitions = [
   { source: "Organic Search", share: 0.38, conversionRate: 3.0 },

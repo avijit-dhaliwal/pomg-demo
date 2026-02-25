@@ -2,6 +2,7 @@
 
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Search, SlidersHorizontal, X, ChevronDown, Filter, Package } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -368,7 +369,9 @@ function ShopContent() {
         {/* ── Page Header ── */}
         <div className="mb-8">
           <nav className="flex items-center gap-2 text-xs text-pomg-dim mb-4">
-            <a href="/" className="hover:text-pomg-muted transition-colors">Home</a>
+            <Link href="/" className="hover:text-pomg-muted transition-colors">
+              Home
+            </Link>
             <ChevronDown className="h-3 w-3 -rotate-90" />
             <span className="text-pomg-muted">Shop</span>
           </nav>
