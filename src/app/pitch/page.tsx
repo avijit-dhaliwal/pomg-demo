@@ -329,35 +329,125 @@ export default function PitchPage() {
             </div>
 
             <div className="mt-12 rounded-2xl border border-pomg-border bg-pomg-card/70 p-8 md:p-10">
-              <h3 className="font-display text-2xl uppercase text-white md:text-3xl">
-                Generative Engine Optimization (GEO)
-              </h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-pomg-purple/15">
+                  <Brain className="h-6 w-6 text-pomg-purple-light" />
+                </div>
+                <h3 className="font-display text-2xl uppercase text-white md:text-3xl">
+                  Generative Engine Optimization (GEO)
+                </h3>
+              </div>
+
+              <p className="text-sm leading-relaxed text-pomg-gold md:text-base font-medium">
+                The biggest distribution opportunity since early Google.
+              </p>
               <p className="mt-4 text-sm leading-relaxed text-pomg-muted md:text-base">
-                Generative Engine Optimization (GEO) refers to optimizing site
-                structure and content so AI-driven search systems are more
-                likely to surface your brand accurately in AI-generated
-                responses. Traditional SEO focuses on ranked links; GEO focuses
-                on accurate inclusion in generated answers.
+                Buyers are skipping traditional search entirely. They ask
+                ChatGPT, Gemini, and Perplexity for recommendations — and get
+                2–3 summarized options. They choose from that list. If
+                you&apos;re not on it, you don&apos;t exist.
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-pomg-muted md:text-base">
-                This improves visibility in experiences powered by Google SGE,
-                ChatGPT, Gemini, and similar large language model search
-                interfaces.
-              </p>
+
+              {/* 3-column benefit cards */}
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border border-pomg-gold/20 bg-pomg-dark p-5">
+                  <p className="text-xs text-pomg-gold uppercase tracking-wider font-semibold mb-2">
+                    Ready-to-Buy Traffic
+                  </p>
+                  <p className="text-sm text-pomg-muted">
+                    You show up when buyers are{" "}
+                    <span className="text-white font-medium">
+                      ready to purchase
+                    </span>{" "}
+                    — not casually browsing. AI recommendations carry
+                    pre-filtered buying intent.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-pomg-gold/20 bg-pomg-dark p-5">
+                  <p className="text-xs text-pomg-gold uppercase tracking-wider font-semibold mb-2">
+                    Borrowed Trust
+                  </p>
+                  <p className="text-sm text-pomg-muted">
+                    You{" "}
+                    <span className="text-white font-medium">
+                      borrow the trust
+                    </span>{" "}
+                    users already have for AI instead of earning credibility from
+                    scratch through years of reviews and rankings.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-pomg-gold/20 bg-pomg-dark p-5">
+                  <p className="text-xs text-pomg-gold uppercase tracking-wider font-semibold mb-2">
+                    Competitive Displacement
+                  </p>
+                  <p className="text-sm text-pomg-muted">
+                    You{" "}
+                    <span className="text-white font-medium">
+                      sideline competitors
+                    </span>{" "}
+                    by appearing in AI recommendations before they even reach
+                    traditional search results.
+                  </p>
+                </div>
+              </div>
+
+              {/* Case Studies */}
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-pomg-success/20 bg-pomg-dark p-5">
+                  <p className="text-xs text-pomg-muted mb-1">
+                    B2C SaaS Client
+                  </p>
+                  <p className="font-display text-2xl text-pomg-success">
+                    185 → 1,300+
+                  </p>
+                  <p className="text-xs text-pomg-muted mt-1">
+                    clicks/day in 90 days after GEO implementation
+                  </p>
+                </div>
+                <div className="rounded-xl border border-pomg-success/20 bg-pomg-dark p-5">
+                  <p className="text-xs text-pomg-muted mb-1">
+                    AI Scheduling Tool
+                  </p>
+                  <p className="font-display text-2xl text-pomg-success">
+                    200 → 1,300+
+                  </p>
+                  <p className="text-xs text-pomg-muted mt-1">
+                    daily clicks after LLM-focused distribution strategy
+                  </p>
+                </div>
+              </div>
+
+              {/* Urgency callout */}
+              <div className="mt-6 rounded-lg border border-pomg-border bg-pomg-dark/50 p-5">
+                <p className="text-sm text-pomg-muted">
+                  The window where AI-driven distribution is under-saturated is
+                  closing. Companies that embed themselves into AI citations
+                  today become the{" "}
+                  <span className="text-white font-medium">
+                    default answers tomorrow
+                  </span>
+                  . Everyone else competes for the leftovers.
+                </p>
+              </div>
+
               <div className="mt-5">
                 <p className="text-xs uppercase tracking-[0.2em] text-pomg-gold/80">
-                  GEO Implementation Areas
+                  Our GEO Strategy Targets
                 </p>
                 <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-pomg-muted">
-                  <li>Clear, structured content with strong context signals</li>
-                  <li>Schema and metadata optimized for generative systems</li>
                   <li>
-                    Conversational and informational content designed for AI
-                    citation
+                    AI citation authority and LLM recommendation positioning
                   </li>
                   <li>
-                    FAQ and guide content that addresses suppressor laws, ATF
-                    process questions, and transfer concerns
+                    Community signal amplification across high-engagement
+                    platforms
+                  </li>
+                  <li>
+                    Structured data optimized for AI comprehension and citation
+                  </li>
+                  <li>
+                    LLM visibility monitoring across ChatGPT, Gemini, and
+                    Perplexity
                   </li>
                 </ul>
               </div>

@@ -394,3 +394,46 @@ export const seoStats = {
   projectedContentScore: seoMetricsModel.projectedContentScore,
   missingTrafficValue: seoMetricsModel.missingTrafficValue,
 };
+
+/* ═══════════════════════════════════════════════════════
+   GEO (Generative Engine Optimization) Data
+   ═══════════════════════════════════════════════════════ */
+
+export interface GEOMetric {
+  label: string;
+  current: number;
+  projected: number;
+  suffix: string;
+}
+
+export interface GEOCaseStudy {
+  name: string;
+  before: number;
+  after: number;
+  unit: string;
+  timeframe: string;
+}
+
+export const geoMetrics: GEOMetric[] = [
+  { label: "AI Citation Score", current: 3, projected: 72, suffix: "/100" },
+  { label: "LLM Brand Mentions", current: 2, projected: 85, suffix: "/mo" },
+  { label: "AI Search Visibility", current: 4, projected: 68, suffix: "%" },
+  { label: "Community Authority", current: 8, projected: 74, suffix: "/100" },
+];
+
+export const geoCaseStudies: GEOCaseStudy[] = [
+  {
+    name: "B2C SaaS Client",
+    before: 185,
+    after: 1300,
+    unit: "clicks/day",
+    timeframe: "90 days",
+  },
+  {
+    name: "AI Scheduling Tool",
+    before: 200,
+    after: 1300,
+    unit: "daily clicks",
+    timeframe: "GEO strategy",
+  },
+];

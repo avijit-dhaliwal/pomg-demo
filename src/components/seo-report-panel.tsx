@@ -8,29 +8,24 @@ import {
   Search,
   Globe,
   MapPin,
-  FileText,
   Tag,
   AlertCircle,
-  AlertTriangle,
-  Info,
   DollarSign,
   Zap,
   BarChart3,
-  ExternalLink,
+  Bot,
+  ArrowRight,
 } from "lucide-react";
 import {
   keywordOpportunities,
   competitors,
-  contentGaps,
   technicalIssues,
   seoStats,
+  geoMetrics,
+  geoCaseStudies,
 } from "@/data/seo-report";
 import { isDemoMode } from "@/lib/demoMetrics";
-import type {
-  KeywordOpportunity,
-  ContentGap,
-  TechnicalIssue,
-} from "@/data/seo-report";
+import type { KeywordOpportunity } from "@/data/seo-report";
 
 /* ─── helpers ─── */
 const formatNumber = (n: number) => n.toLocaleString();
@@ -179,7 +174,7 @@ function CategoryBadge({
 }) {
   const icons: Record<typeof category, typeof Tag> = {
     Product: Tag,
-    Informational: FileText,
+    Informational: Search,
     Local: MapPin,
     Brand: Globe,
   };
@@ -189,28 +184,6 @@ function CategoryBadge({
       <Icon className="w-3 h-3" />
       {category}
     </span>
-  );
-}
-
-function DifficultyBar({ difficulty }: { difficulty: number }) {
-  const color =
-    difficulty < 30
-      ? "bg-pomg-success"
-      : difficulty <= 50
-        ? "bg-yellow-500"
-        : "bg-pomg-danger";
-  return (
-    <div className="flex items-center gap-2">
-      <div className="w-16 h-1.5 bg-pomg-dark rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${difficulty}%` }}
-        />
-      </div>
-      <span className="text-xs text-pomg-muted tabular-nums w-6 text-right">
-        {difficulty}
-      </span>
-    </div>
   );
 }
 
@@ -230,8 +203,8 @@ function KeywordOpportunitiesTable() {
             Keyword Opportunities
           </h3>
           <p className="text-sm text-pomg-muted mt-0.5">
-            {keywordOpportunities.length} keywords tracked &middot; Sorted
-            by opportunity
+            {keywordOpportunities.length} keywords analyzed &middot; Sorted by
+            revenue potential
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs">
@@ -261,9 +234,6 @@ function KeywordOpportunitiesTable() {
               </th>
               <th className="text-right text-pomg-muted font-medium pb-3 px-3">
                 Volume
-              </th>
-              <th className="text-left text-pomg-muted font-medium pb-3 px-3">
-                Difficulty
               </th>
               <th className="text-right text-pomg-muted font-medium pb-3 px-3">
                 Potential
@@ -298,9 +268,6 @@ function KeywordOpportunitiesTable() {
                 </td>
                 <td className="py-3 px-3 text-right text-pomg-muted tabular-nums">
                   {formatNumber(kw.searchVolume)}
-                </td>
-                <td className="py-3 px-3">
-                  <DifficultyBar difficulty={kw.difficulty} />
                 </td>
                 <td className="py-3 px-3 text-right text-pomg-text font-semibold tabular-nums">
                   {formatNumber(kw.potentialTraffic)}
@@ -445,178 +412,252 @@ function CompetitorComparisonTable() {
 }
 
 /* ═══════════════════════════════════════════════════════
-   D. Content Gap Opportunities
+   D. Generative Engine Optimization (GEO)
    ═══════════════════════════════════════════════════════ */
 
-function DifficultyBadge({ difficulty }: { difficulty: ContentGap["difficulty"] }) {
-  const styles: Record<typeof difficulty, string> = {
-    Easy: "bg-pomg-success/15 text-pomg-success border-pomg-success/30",
-    Medium: "bg-yellow-500/15 text-yellow-500 border-yellow-500/30",
-    Hard: "bg-pomg-danger/15 text-pomg-danger border-pomg-danger/30",
-  };
+function GEOOpportunitySection() {
   return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md border ${styles[difficulty]}`}
-    >
-      {difficulty}
-    </span>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: ContentGap["priority"] }) {
-  const styles: Record<typeof priority, string> = {
-    High: "bg-pomg-purple/20 text-pomg-purple-light border-pomg-purple/40",
-    Medium: "bg-pomg-gold/15 text-pomg-gold border-pomg-gold/30",
-    Low: "bg-pomg-dark text-pomg-muted border-pomg-border",
-  };
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-md border ${styles[priority]}`}
-    >
-      {priority}
-    </span>
-  );
-}
-
-function ContentGapCards() {
-  const sorted = [...contentGaps].sort((a, b) => {
-    const priorityOrder: Record<string, number> = {
-      High: 0,
-      Medium: 1,
-      Low: 2,
-    };
-    if (priorityOrder[a.priority] !== priorityOrder[b.priority])
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    return b.estimatedTraffic - a.estimatedTraffic;
-  });
-
-  return (
-    <div className="bg-pomg-card border border-pomg-border rounded-xl p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-lg font-semibold text-pomg-text">
-            Content Gap Opportunities
-          </h3>
-          <p className="text-sm text-pomg-muted mt-0.5">
-            {contentGaps.length} content pieces to capture missing traffic
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-pomg-muted">
-          <FileText className="w-3.5 h-3.5" />
-          Sorted by priority &amp; traffic
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {sorted.map((gap) => (
-          <div
-            key={gap.topic}
-            className="bg-pomg-dark border border-pomg-border rounded-lg p-4 hover:border-pomg-purple/40 transition-all duration-300 group"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <h4 className="text-sm font-medium text-pomg-text leading-snug group-hover:text-white transition-colors">
-                {gap.topic}
-              </h4>
-              <ExternalLink className="w-3.5 h-3.5 text-pomg-dim shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="flex items-center flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-pomg-muted bg-pomg-card rounded-md border border-pomg-border">
-                <TrendingUp className="w-3 h-3" />
-                {formatNumber(gap.estimatedTraffic)}/mo
-              </span>
-              <DifficultyBadge difficulty={gap.difficulty} />
-              <PriorityBadge priority={gap.priority} />
-              <span className="inline-flex items-center px-2 py-0.5 text-xs text-pomg-dim bg-pomg-card rounded-md border border-pomg-border">
-                {gap.type}
-              </span>
-            </div>
+    <div className="relative overflow-hidden bg-pomg-card border-2 border-pomg-purple/40 rounded-xl p-6">
+      <div className="absolute inset-0 bg-gradient-to-br from-pomg-purple/5 via-transparent to-pomg-gold/5" />
+      <div className="relative">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 rounded-xl bg-pomg-purple/15 border border-pomg-purple/30">
+            <Bot className="w-6 h-6 text-pomg-purple-light" />
           </div>
-        ))}
+          <div>
+            <h3 className="text-lg font-semibold text-pomg-text">
+              Generative Engine Optimization (GEO)
+            </h3>
+            <p className="text-sm text-pomg-muted">
+              The biggest distribution channel since early Google
+            </p>
+          </div>
+        </div>
+
+        {/* GEO Metric Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {geoMetrics.map((metric) => {
+            const gain = percentGain(metric.current, metric.projected);
+            return (
+              <div
+                key={metric.label}
+                className="bg-pomg-dark rounded-lg border border-pomg-border p-4"
+              >
+                <p className="text-xs text-pomg-muted mb-2">{metric.label}</p>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-bold text-pomg-text tabular-nums">
+                    {metric.current}
+                  </span>
+                  <ArrowRight className="w-3 h-3 text-pomg-dim shrink-0" />
+                  <span className="text-lg font-bold text-pomg-gold tabular-nums">
+                    {metric.projected}
+                    <span className="text-xs text-pomg-gold-light font-normal">
+                      {metric.suffix}
+                    </span>
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-pomg-success">
+                  +{gain}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Why GEO Matters */}
+        <div className="bg-pomg-dark/50 rounded-lg border border-pomg-border p-5 mb-4">
+          <p className="text-sm font-semibold text-pomg-text mb-3">
+            When you appear in AI buyer recommendations:
+          </p>
+          <div className="space-y-2.5">
+            {[
+              {
+                text: "You show up when they're",
+                bold: "ready to buy",
+                rest: " — not casually browsing",
+              },
+              {
+                text: "You",
+                bold: "borrow the trust",
+                rest: " users already have for AI instead of earning it from scratch",
+              },
+              {
+                text: "You",
+                bold: "sideline competitors",
+                rest: " by appearing in recommendations before they reach search",
+              },
+            ].map((item) => (
+              <div key={item.bold} className="flex items-start gap-3">
+                <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-pomg-gold" />
+                <p className="text-sm text-pomg-muted">
+                  {item.text}{" "}
+                  <span className="text-pomg-text font-medium">
+                    {item.bold}
+                  </span>
+                  {item.rest}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Case Studies */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          {geoCaseStudies.map((study) => (
+            <div
+              key={study.name}
+              className="bg-pomg-dark rounded-lg border border-pomg-success/20 p-4"
+            >
+              <p className="text-xs text-pomg-muted mb-2">{study.name}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm text-pomg-dim tabular-nums">
+                  {study.before}
+                </span>
+                <ArrowRight className="w-3 h-3 text-pomg-success shrink-0" />
+                <span className="text-xl font-bold text-pomg-success tabular-nums">
+                  {study.after.toLocaleString()}+
+                </span>
+              </div>
+              <p className="text-xs text-pomg-muted mt-1">
+                {study.unit} &middot; {study.timeframe}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-[11px] text-pomg-dim">
+          {isDemoMode
+            ? "GEO metrics are example projections based on comparable implementations."
+            : "GEO metrics sourced from AI search monitoring."}
+        </p>
       </div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════
-   E. Technical Issues
+   E. Growth Readiness Score
    ═══════════════════════════════════════════════════════ */
 
-function SeverityIcon({ severity }: { severity: TechnicalIssue["severity"] }) {
-  switch (severity) {
-    case "Critical":
-      return <AlertCircle className="w-4 h-4 text-pomg-danger" />;
-    case "Warning":
-      return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-    case "Info":
-      return <Info className="w-4 h-4 text-blue-400" />;
-  }
-}
-
-function TechnicalIssuesList() {
-  const severityOrder: Record<string, number> = {
-    Critical: 0,
-    Warning: 1,
-    Info: 2,
-  };
-  const sorted = [...technicalIssues].sort(
-    (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
-  );
-
-  const criticalCount = sorted.filter((i) => i.severity === "Critical").length;
-  const warningCount = sorted.filter((i) => i.severity === "Warning").length;
+function GrowthReadinessScore() {
+  const criticalCount = technicalIssues.filter(
+    (i) => i.severity === "Critical"
+  ).length;
+  const warningCount = technicalIssues.filter(
+    (i) => i.severity === "Warning"
+  ).length;
+  const infoCount = technicalIssues.filter(
+    (i) => i.severity === "Info"
+  ).length;
 
   return (
     <div className="bg-pomg-card border border-pomg-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-pomg-text">
-            Technical SEO Issues
+            Growth Readiness
           </h3>
           <p className="text-sm text-pomg-muted mt-0.5">
-            {technicalIssues.length} issues found &middot;{" "}
-            <span className="text-pomg-danger">{criticalCount} critical</span>
-            {" "}&middot;{" "}
-            <span className="text-yellow-500">{warningCount} warnings</span>
+            Technical foundation assessment
           </p>
         </div>
         <div className="px-3 py-1.5 text-xs font-medium bg-pomg-danger/15 border border-pomg-danger/30 rounded-lg text-pomg-danger">
           Score: {seoStats.technicalScore}/100
         </div>
       </div>
-      <div className="space-y-2">
-        {sorted.map((issue) => {
-          const severityStyles: Record<string, string> = {
-            Critical: "border-pomg-danger/30 bg-pomg-danger/5",
-            Warning: "border-yellow-500/20 bg-yellow-500/5",
-            Info: "border-blue-400/20 bg-blue-400/5",
-          };
-          return (
-            <div
-              key={issue.issue}
-              className={`flex items-start gap-3 rounded-lg border p-4 transition-all duration-200 hover:border-opacity-60 ${severityStyles[issue.severity]}`}
-            >
-              <div className="mt-0.5 shrink-0">
-                <SeverityIcon severity={issue.severity} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-pomg-text">
-                  {issue.issue}
-                </p>
-                <p className="text-xs text-pomg-muted mt-1">
-                  {issue.impact}
-                </p>
-              </div>
-              {issue.pages > 0 && (
-                <div className="shrink-0 text-right">
-                  <span className="text-sm font-semibold text-pomg-text tabular-nums">
-                    {issue.pages}
-                  </span>
-                  <p className="text-xs text-pomg-muted">pages</p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+
+      {/* Score visualization */}
+      <div className="flex items-center justify-center mb-8">
+        <div className="relative">
+          <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+            <circle
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="8"
+              className="text-pomg-dark"
+            />
+            <circle
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="8"
+              strokeDasharray={`${(seoStats.technicalScore / 100) * 327} 327`}
+              strokeLinecap="round"
+              className="text-pomg-danger"
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center flex-col">
+            <span className="text-3xl font-bold text-pomg-text tabular-nums">
+              {seoStats.technicalScore}
+            </span>
+            <span className="text-xs text-pomg-dim">/100</span>
+          </div>
+        </div>
       </div>
+
+      {/* Issue breakdown */}
+      <div className="space-y-3 mb-6">
+        <div className="flex items-center justify-between p-3 bg-pomg-dark rounded-lg">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-pomg-danger" />
+            <span className="text-sm text-pomg-muted">Critical Issues</span>
+          </div>
+          <span className="text-sm font-bold text-pomg-danger tabular-nums">
+            {criticalCount}
+          </span>
+        </div>
+        <div className="flex items-center justify-between p-3 bg-pomg-dark rounded-lg">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-yellow-500" />
+            <span className="text-sm text-pomg-muted">Warnings</span>
+          </div>
+          <span className="text-sm font-bold text-yellow-500 tabular-nums">
+            {warningCount}
+          </span>
+        </div>
+        <div className="flex items-center justify-between p-3 bg-pomg-dark rounded-lg">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-blue-400" />
+            <span className="text-sm text-pomg-muted">Improvements</span>
+          </div>
+          <span className="text-sm font-bold text-blue-400 tabular-nums">
+            {infoCount}
+          </span>
+        </div>
+      </div>
+
+      {/* Projected score */}
+      <div className="pt-4 border-t border-pomg-border">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-pomg-gold uppercase tracking-wider font-semibold">
+            Projected Score
+          </span>
+          <span className="text-xl font-bold text-pomg-gold tabular-nums">
+            {seoStats.projectedTechnicalScore}
+            <span className="text-xs text-pomg-gold-light font-normal">
+              /100
+            </span>
+          </span>
+        </div>
+        <div className="h-2 bg-pomg-dark rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-pomg-danger via-yellow-500 to-pomg-success"
+            style={{
+              width: `${seoStats.projectedTechnicalScore}%`,
+            }}
+          />
+        </div>
+      </div>
+
+      <p className="mt-4 text-[11px] text-pomg-dim">
+        Full technical audit &amp; remediation plan included with engagement.
+      </p>
     </div>
   );
 }
@@ -701,10 +742,10 @@ export default function SEOReportPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-pomg-text">
-            SEO Opportunity Report
+            SEO &amp; GEO Growth Report
           </h2>
           <p className="text-sm text-pomg-muted mt-1">
-            Keyword gaps, competitor intelligence &amp; technical audit{" "}
+            Revenue opportunities, AI visibility &amp; competitive analysis{" "}
             {isDemoMode ? "(example dataset)" : "(live dataset)"}
           </p>
         </div>
@@ -727,17 +768,17 @@ export default function SEOReportPanel() {
       {/* B. SEO Score Overview */}
       <SEOScoreOverview />
 
-      {/* C. Keyword Opportunities Table */}
+      {/* C. GEO Opportunity */}
+      <GEOOpportunitySection />
+
+      {/* D. Keyword Opportunities Table */}
       <KeywordOpportunitiesTable />
 
-      {/* D. Competitor Comparison + Technical Issues side by side on large screens */}
+      {/* E. Competitor Comparison + Growth Readiness side by side */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <CompetitorComparisonTable />
-        <TechnicalIssuesList />
+        <GrowthReadinessScore />
       </div>
-
-      {/* E. Content Gap Opportunities */}
-      <ContentGapCards />
     </div>
   );
 }
